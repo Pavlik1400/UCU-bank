@@ -9,8 +9,20 @@
 - [Contributors](#contributors)
 
 ## Introduction
-!TODO
-General idea of the project
+UCU Bank - simple implementation of online banking system. 
+
+This project is semester project for two courses: Software architecture (SWA) & Information security (IS), so it has to fit the following "general" requirements:
+- Flexible and reliable microservice architecture   - SWA course
+- Secure architecture with modern security features - IS course
+
+### Implementation requirements
+- Simple web interface, where user can create/log in account using his passport data
+- User can create many cards
+- User can make money transactions to other users
+- User can make deposit or take credit with fixed percentage
+- There should be privileged accounts of bank workers, where they see all accounts, amount of money on cards, personal information of users
+- All transaction data, and data about amount of money should be dublicated on many databases, and secured properly
+- It should be guaranteed that in case of any software or hardware error, system remains consistent and correct (i.e. there should not be situation, when error happened while processing transaction, money on sending account are withdrawn, and they didn't appear on other account, or vice versa)
 
 ## Features
 ### Security features
