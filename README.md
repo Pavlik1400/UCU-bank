@@ -41,7 +41,7 @@ This project is a semester project for two courses: Software architecture (SWA) 
 
 ## Tools and frameworks
 
-Base language - python 3.10. For front-end - ReactJS 17.0.2
+Base language - python 3.8. For front-end - ReactJS 17.0.2
 
 ### Base frameworks:
 
@@ -77,7 +77,7 @@ Base language - python 3.10. For front-end - ReactJS 17.0.2
 !TODO
 
 ## Contributors
-UCU tag - project of four [APPS UCU](https://apps.ucu.edu.ua/en/) students:
+UCU bank - project of four [APPS UCU](https://apps.ucu.edu.ua/en/) students:
 - [Pavlo Hilei](https://github.com/Pavlik1400)
 - [Yevhen Pankevych](https://github.com/yewhenp)
 - [Volodymyr Tsapiv](https://github.com/Tsapiv)
