@@ -35,6 +35,8 @@ This project is a semester project for two courses: Software architecture (SWA) 
 | TODO   | Request identification (authenticate each request and authenticate the request even after post-login. This will prevent any session hijack) |
 | TODO   | Role-Based access control for admin/regular | 
 | TODO   | The alert mechanism ensures that the customer remains informed of all the critical events that can have a financial impact |
+| TODO   | Captcha |
+
 
 ## Project structure
 ![structure](media/arch.png)
