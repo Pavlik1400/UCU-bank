@@ -4,6 +4,7 @@
 - [Introduction](#introduction)
 - [Features](#features)
 - [Project structure](#project-structure)
+- [Tools and frameworks](#tools-and-frameworks)
 - [Setup](#setup)
 - [Usage](#usage)
 - [Contributors](#contributors)
@@ -37,6 +38,37 @@ This project is a semester project for two courses: Software architecture (SWA) 
 
 ## Project structure
 !TODO
+
+## Tools and frameworks
+
+Base language - python 3.10. For front-end - ReactJS 17.0.2
+
+### Base frameworks:
+
+#### Backend:
+- Database - most likely - MongoDB
+	- Is Document-Oriented, which makes it easy to use - just like ordinary dictionary
+	- Supports distributed systems
+	- Has good documentation and convenient python binding
+- FastAPI
+	- Is quite fast and supports async code
+	- Easy to write code
+- Kafka
+	- Fast
+	- Makes it really easy to create distributed system and maintain dataflow
+	- Many examples of real usage
+	- Easily can become a message broker between microservices
+- Safety:
+	- bcrypt library - for password hashing
+	- pyotp - 2 - factor authentication
+
+#### Frontend:
+- MaterialUI
+	- Has many built-in UI elements that speeds up developing
+	- Quite well-looking
+- react-google-recaptcha
+	- Simple way to use captcha
+
 
 ## Setup
 !TODO
