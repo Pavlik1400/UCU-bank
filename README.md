@@ -37,7 +37,7 @@ This project is a semester project for two courses: Software architecture (SWA) 
 | TODO   | The alert mechanism ensures that the customer remains informed of all the critical events that can have a financial impact |
 
 ## Project structure
-!TODO
+![structure](media/arch.png)
 
 ## Tools and frameworks
 
