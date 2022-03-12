@@ -1,2 +1,6 @@
 .vscode
 .idea
+dependecies
+build
+bin
+cmake-build-debug/

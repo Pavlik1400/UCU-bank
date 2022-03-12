@@ -74,7 +74,15 @@ Base language - python 3.8. For front-end - ReactJS 17.0.2
 
 
 ## Setup
-!TODO
+0. Install dependencies.
+    - Archlinux:
+    ```bash
+    sudo pacman -S postgresql mysql hiredis util-linux-libs openssl zlib
+	```
+1. Install other dependencies (submodules): 
+```bash
+./configure.sh
+```
 
 ## Usage
 !TODO
