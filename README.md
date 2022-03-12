@@ -12,9 +12,10 @@
 ## Introduction
 UCU Bank - simple implementation of the online banking system.
 
-This project is a semester project for two courses: Software architecture (SWA) & Information security (IS), so it has to fit the following "general" requirements:
-- Flexible and reliable microservice architecture - SWA course
-- Secure architecture with modern security features - IS course
+This project is a semester project for three courses: Software architecture (SWA), Information security (IS) and Modern C++, so it has to fit the following "general" requirements:
+- Flexible and reliable microservice architecture 
+- Secure architecture with modern security features
+- Fast, modern & flexible code that uses most modern features of c++
 
 ### Implementation requirements
 - Simple web interface, where user can sign up/login using his passport data
