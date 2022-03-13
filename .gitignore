@@ -4,3 +4,4 @@ dependecies
 build
 bin
 cmake-build-debug/
+*__pycache__*
