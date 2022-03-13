@@ -6,7 +6,7 @@
             "displayName": "POSIX",
             "description": "TBD",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/bin/build/${presetName}",
+            "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/bin/install/${presetName}",
                 "CMAKE_TOOLCHAIN_FILE": "./vcpkg/scripts/buildsystems/vcpkg.cmake",
@@ -32,7 +32,8 @@
             "name": "build-dev-posix",
             "description": "",
             "displayName": "",
-            "configurePreset": "dev-posix"
+            "configurePreset": "dev-posix",
+            "jobs": 6
         }
     ]
 }
