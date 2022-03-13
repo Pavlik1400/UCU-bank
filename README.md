@@ -85,7 +85,13 @@ Base language - python 3.8. For front-end - ReactJS 17.0.2
 ```
 
 ## Usage
-!TODO
+> Devs Only :)
+```bash
+python3 setup.py
+cmake --preset dev-posix
+cmake --build --preset build-dev-posix
+bin/build/dev-posix/libs_examples/[drogon_basic|drogon_json|drogon_rest]
+```
 
 ## Contributors
 UCU bank - project of four [APPS UCU](https://apps.ucu.edu.ua/en/) students:
