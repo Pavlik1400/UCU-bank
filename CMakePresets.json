@@ -1,0 +1,38 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "posix",
+            "displayName": "POSIX",
+            "description": "TBD",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/bin/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/bin/install/${presetName}",
+                "CMAKE_TOOLCHAIN_FILE": "./vcpkg/scripts/buildsystems/vcpkg.cmake",
+
+                "CMAKE_CXX_STANDARD": "17",
+                
+                "PROJECT_NAME": "UCU_BANK",
+                "EXE_00": "drogon_basic",
+                "EXE_01": "drogon_json",
+                "EXE_02": "drogon_rest"
+            }
+        },
+        {
+            "name": "dev-posix",
+            "displayName": "DEV::POSIX",
+            "description": "TBD",
+            "inherits": "posix",
+            "cacheVariables": {}
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build-dev-posix",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "dev-posix"
+        }
+    ]
+}
