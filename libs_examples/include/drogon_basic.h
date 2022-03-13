@@ -1,19 +1,18 @@
 #ifndef UCU_BANK_DROGON_BASIC_H
 #define UCU_BANK_DROGON_BASIC_H
 
-#pragma once
-
 #include <drogon/HttpSimpleController.h>
 
-using namespace drogon;
+namespace drg = drogon;
+
 
 class TestCtrl : public drogon::HttpSimpleController<TestCtrl> {
 public:
-    void
-    asyncHandleHttpRequest(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) override;
+    void asyncHandleHttpRequest(const drg::HttpRequestPtr &req,
+                                std::function<void(const drg::HttpResponsePtr &)> &&callback) override;
 
     PATH_LIST_BEGIN
-        PATH_ADD("/test", Get);
+        PATH_ADD("/test", drg::Get);
     PATH_LIST_END
 };
 

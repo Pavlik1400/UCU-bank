@@ -1,11 +1,10 @@
-#include "drogon_basic.h"
+#include "drogon_json.h"
 
-void TestCtrl::asyncHandleHttpRequest(const drg::HttpRequestPtr &req,
+void JsonCtrl::asyncHandleHttpRequest(const drg::HttpRequestPtr &req,
                                       std::function<void(const drg::HttpResponsePtr &)> &&callback) {
-    //write your application logic here
-    auto resp = drg::HttpResponse::newHttpResponse();
-    resp->setBody("<p>Hello, world!</p>");
-    resp->setExpiredTime(0);
+    Json::Value ret;
+    ret["message"] = "Hello, World!";
+    auto resp = drg::HttpResponse::newHttpJsonResponse(ret);
     callback(resp);
 }
 
