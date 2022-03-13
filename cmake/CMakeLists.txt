@@ -1,1 +1,0 @@
-set(DROGON_SUBDIR_PATH dependecies/drogon)
