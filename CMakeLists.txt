@@ -3,4 +3,4 @@ project(${PROJECT_NAME} CXX)
 
 find_package(Drogon CONFIG REQUIRED)
 
-add_subdirectory(libs_examples)
+add_subdirectory(examples/drogon_examples)
