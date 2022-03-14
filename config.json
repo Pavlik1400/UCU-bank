@@ -1,6 +1,9 @@
 {
     "triplet": "x64",
     "dependencies": [
-        "drogon"
+        "drogon",
+        "cppkafka",
+        "mongo-cxx-driver",
+        "libpq"
     ]
 }
