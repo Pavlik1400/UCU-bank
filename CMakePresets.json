@@ -43,17 +43,17 @@
     ],
     "buildPresets": [
         {
-            "name": "build-dev-posix",
+            "name": "dev-posix",
             "description": "",
             "displayName": "",
             "configurePreset": "dev-posix",
             "jobs": 8
         },
         {
-            "name": "build-dev-win",
+            "name": "dev-win",
             "description": "",
             "displayName": "",
-            "inherits": "build-dev-posix",
+            "inherits": "dev-posix",
             "configurePreset": "dev-win"
         }
     ]
