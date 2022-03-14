@@ -1,31 +1,44 @@
 {
-    "version": 2,
+    "version": 3,
     "configurePresets": [
         {
-            "name": "posix",
-            "displayName": "POSIX",
+            "name": "dev-posix",
+            "displayName": "DEV::POSIX",
             "description": "TBD",
             "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/bin/install/${presetName}",
-                "CMAKE_TOOLCHAIN_FILE": "./vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
                 "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/bin",
-
                 "CMAKE_CXX_STANDARD": "17",
                 
                 "PROJECT_NAME": "UCU_BANK",
                 "EXE_00": "drogon_basic",
                 "EXE_01": "drogon_json",
                 "EXE_02": "drogon_rest"
+            },
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
             }
         },
         {
-            "name": "dev-posix",
-            "displayName": "DEV::POSIX",
+            "name": "dev-win",
+            "displayName": "DEV::WINDOWS",
             "description": "TBD",
-            "inherits": "posix",
-            "cacheVariables": {}
+            "generator": "Visual Studio 16 2019",
+            "inherits": "dev-posix",
+            "cacheVariables": {
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG": "${sourceDir}/bin",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE": "${sourceDir}/bin"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
         }
     ],
     "buildPresets": [
@@ -34,7 +47,14 @@
             "description": "",
             "displayName": "",
             "configurePreset": "dev-posix",
-            "jobs": 6
+            "jobs": 8
+        },
+        {
+            "name": "build-dev-win",
+            "description": "",
+            "displayName": "",
+            "inherits": "build-dev-posix",
+            "configurePreset": "dev-win"
         }
     ]
 }
