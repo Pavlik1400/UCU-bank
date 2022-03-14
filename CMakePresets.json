@@ -16,7 +16,9 @@
                 "PROJECT_NAME": "UCU_BANK",
                 "EXE_00": "drogon_basic",
                 "EXE_01": "drogon_json",
-                "EXE_02": "drogon_rest"
+                "EXE_02": "drogon_rest",
+
+                "EXE_03": "kafka_basic"
             },
             "condition": {
                 "type": "notEquals",
