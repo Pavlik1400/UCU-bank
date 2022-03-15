@@ -18,7 +18,8 @@
                 "EXE_01": "drogon_json",
                 "EXE_02": "drogon_rest",
                 "EXE_03": "kafka_basic",
-                "EXE_04": "mongodb_basic"
+                "EXE_04": "mongodb_basic",
+                "EXE_05": "mongodb_transactions"
             },
             "condition": {
                 "type": "notEquals",
