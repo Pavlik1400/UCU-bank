@@ -5,3 +5,4 @@ find_package(Drogon CONFIG REQUIRED)
 
 add_subdirectory(examples/drogon_examples)
 add_subdirectory(examples/kafka_examples)
+add_subdirectory(examples/mongodb_examples)
