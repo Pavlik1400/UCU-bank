@@ -6,7 +6,7 @@ $ rs.initiate()
 $ rs.conf()
 ```
 The last command should give similar output:
-```json lines
+```yaml
 {
   _id: 'rs0',
   version: 1,
