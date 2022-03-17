@@ -107,3 +107,5 @@ int main() {
 
     // End Transactions withTxn API Example 1
 }
+
+// If this code failed to run checkout `manual_setup/mongodb.md`
