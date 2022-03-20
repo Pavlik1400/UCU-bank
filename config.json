@@ -4,6 +4,6 @@
         "drogon",
         "cppkafka",
         "mongo-cxx-driver",
-        "libpq"
+        "libpqxx"
     ]
 }

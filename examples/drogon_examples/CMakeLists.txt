@@ -1,3 +1,5 @@
+find_package(Drogon CONFIG REQUIRED)
+
 add_executable(${EXE_00} src/drogon_basic.cpp include/drogon_basic.h)
 target_include_directories(${EXE_00} PRIVATE include)
 target_link_libraries(${EXE_00} PRIVATE Drogon::Drogon)
