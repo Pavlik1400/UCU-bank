@@ -29,6 +29,7 @@
 
 int main() {
     // 1. Connect to MongoDB instance running on localhost
+    std::cout << "Connect to test db, collection restaurant" << std::endl;
     mongocxx::instance instance{};
     mongocxx::client client{mongocxx::uri{}};
 
@@ -36,6 +37,7 @@ int main() {
     mongocxx::collection coll = db["restaurants"];
 
     // 2. Insert
+    std::cout << "Insert many documents" << std::endl;
     using bsoncxx::builder::basic::kvp;
     bsoncxx::builder::basic::document doc1;
     doc1.append(kvp("name", "Sun Bakery Trattoria"),
@@ -78,17 +80,20 @@ int main() {
     auto result = coll.insert_many(documents);
 
     // 3. Query
+    std::cout << "find({})" << std::endl;
     for (auto&& doc : coll.find({})) {
         std::cout << bsoncxx::to_json(doc) << std::endl;
     }
 
     // 4. Create Index
+    std::cout << "Crate index" << std::endl;
     bsoncxx::builder::basic::document index_specification;
     index_specification.append(kvp("name", 1));
 
     coll.create_index(index_specification.extract());
 
     // 5. Perform aggregation
+    std::cout << "Aggregation" << std::endl;
     mongocxx::pipeline stages;
 
     bsoncxx::builder::basic::document match_stage;
