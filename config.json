@@ -4,6 +4,8 @@
         "drogon",
         "cppkafka",
         "mongo-cxx-driver",
-        "libpqxx"
+        "libpqxx",
+        "serdepp",
+        "nlohmann-json"
     ]
 }

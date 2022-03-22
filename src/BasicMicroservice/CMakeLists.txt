@@ -1,0 +1,18 @@
+find_package(RdKafka REQUIRED)
+include(FindPackageHandleStandardArgs)
+include(SelectLibraryConfigurations)
+
+find_path(CPPKAFKA_INCLUDES NAMES cppkafka.h HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES cppkafka)
+
+find_library(CPPKAFKA_LIBRARY_DEBUG NAMES cppkafka PATH_SUFFIXES lib PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}" NO_DEFAULT_PATH REQUIRED)
+find_library(CPPKAFKA_LIBRARY_RELEASE NAMES cppkafka PATH_SUFFIXES lib PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug" NO_DEFAULT_PATH REQUIRED)
+
+select_library_configurations(CPPKAFKA)
+
+find_package(serdepp CONFIG)
+find_package(nlohmann_json CONFIG)
+
+add_executable(${EXE_07} src/BasicMicroservice.cpp include/BasicMicroservice.hpp src/main.cpp include/ConfigStruct.hpp src/ConfigStruct.cpp)
+target_include_directories(${EXE_07} PRIVATE ${CPPKAFKA_INCLUDES}/.. include)
+target_link_libraries(${EXE_07} PRIVATE ${CPPKAFKA_LIBRARY} RdKafka::rdkafka++ serdepp::serdepp nlohmann_json::nlohmann_json)
+
