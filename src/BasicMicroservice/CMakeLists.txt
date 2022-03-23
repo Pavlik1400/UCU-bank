@@ -12,7 +12,7 @@ select_library_configurations(CPPKAFKA)
 find_package(serdepp CONFIG)
 find_package(nlohmann_json CONFIG)
 
-add_executable(${EXE_07} src/BasicMicroservice.cpp include/BasicMicroservice.hpp src/main.cpp include/ConfigStruct.hpp src/ConfigStruct.cpp)
+add_executable(${EXE_07} include/BasicMicroservice.hpp include/ConfigSerializer.hpp src/main.cpp)
 target_include_directories(${EXE_07} PRIVATE ${CPPKAFKA_INCLUDES}/.. include)
 target_link_libraries(${EXE_07} PRIVATE ${CPPKAFKA_LIBRARY} RdKafka::rdkafka++ serdepp::serdepp nlohmann_json::nlohmann_json)
 

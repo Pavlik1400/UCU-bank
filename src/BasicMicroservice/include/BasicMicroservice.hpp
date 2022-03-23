@@ -2,36 +2,110 @@
 #define UCU_BANK_BASICMICROSERVICE_H
 
 #include <string>
+#include <csignal>
 #include <cppkafka/configuration.h>
 #include <cppkafka/consumer.h>
 #include <cppkafka/producer.h>
 #include <cppkafka/utils/consumer_dispatcher.h>
 
-#include "ConfigStruct.hpp"
+#include "ConfigSerializer.hpp"
 
-//static std::function<void()> on_signal;
-//void signal_handler(int) {
-//    on_signal();
-//}
-
+template <typename T>
 class BasicMicroservice {
 public:
-    BasicMicroservice(const std::string& broker_list_arg, const std::string& topic_name_arg, const ConfigStruct& config_struct_arg);
+    BasicMicroservice(const std::string& broker_list_arg, const std::string& topic_name_arg);
     void run();
-    void send(BasicConfig& config);
-    void receive_callback(BasicConfig& config);
+    void send(const T& config);
+    void receive_callback(const T& config);
+    void custom_run();
 
 private:
     std::string group_id = "microservice";
 
-    cppkafka::Configuration kafka_config;
+    cppkafka::Configuration kafka_config_producer;
+    cppkafka::Configuration kafka_config_consumer;
     cppkafka::Consumer kafka_consumer;
     cppkafka::Producer kafka_producer;
     cppkafka::MessageBuilder kafka_builder;
-    cppkafka::ConsumerDispatcher kafka_dispatcher;
 
-    ConfigStruct config_struct;
+    static bool finished;
+    static void set_finish([[maybe_unused]] int signum);
 };
+
+template<typename T>
+bool BasicMicroservice<T>::finished = false;
+
+template<typename T>
+BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_name_arg) :
+        kafka_config_producer({
+                             { "metadata.broker.list", broker_list_arg },
+                     }),
+        kafka_config_consumer({
+                              { "metadata.broker.list", broker_list_arg },
+                              { "group.id", group_id },
+                              { "enable.auto.commit", false },
+                          }),
+        kafka_producer(kafka_config_producer),
+        kafka_consumer(kafka_config_consumer),
+        kafka_builder(topic_name_arg)
+{
+
+    kafka_consumer.subscribe({ topic_name_arg });
+    signal(SIGINT, &BasicMicroservice<T>::set_finish);
+}
+
+template<typename T>
+void BasicMicroservice<T>::run() {
+    custom_run();
+
+    while (!BasicMicroservice<T>::finished) {
+        cppkafka::Message msg = kafka_consumer.poll();
+        if (msg) {
+            if (msg.get_error()) {
+                if (!msg.is_eof()) {
+                    std::cout << "[+] Received error notification: " << msg.get_error() << std::endl;
+                }
+            }
+            else {
+                std::string payload = msg.get_payload();
+                kafka_consumer.commit(msg);
+                try {
+                    auto deserialized = ConfigSerializer<T>::deserialize(payload);
+                    receive_callback(deserialized);
+                } catch (const std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                }
+            }
+        }
+    }
+}
+
+template<typename T>
+void BasicMicroservice<T>::send(const T &config) {
+    std::string line = ConfigSerializer<T>::serialize(config);
+    kafka_builder.payload(line);
+    kafka_producer.produce(kafka_builder);
+    kafka_producer.flush();
+}
+
+
+// TODO: Redefine it with your implementation
+template<typename T>
+void BasicMicroservice<T>::receive_callback(const T &config) {
+    std::cout << config.data << std::endl;
+}
+
+// TODO: Redefine it with your implementation
+template<typename T>
+void BasicMicroservice<T>::custom_run() {
+    std::cout << "Base microservice started" << std::endl;
+}
+
+template<typename T>
+void BasicMicroservice<T>::set_finish(int signum) {
+    BasicMicroservice<T>::finished = true;
+}
 
 
 #endif //UCU_BANK_BASICMICROSERVICE_H
