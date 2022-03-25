@@ -16,8 +16,9 @@ public:
     BasicMicroservice(const std::string& broker_list_arg, const std::string& topic_name_arg);
     void run();
     void send(const T& config);
-    void receive_callback(const T& config);
-    void custom_run();
+    virtual void receive_callback(const T& config);
+    virtual void custom_start();
+    virtual void custom_finish();
 
 private:
     std::string group_id = "microservice";
@@ -56,7 +57,7 @@ BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, cons
 
 template<typename T>
 void BasicMicroservice<T>::run() {
-    custom_run();
+    custom_start();
 
     while (!BasicMicroservice<T>::finished) {
         cppkafka::Message msg = kafka_consumer.poll();
@@ -79,6 +80,8 @@ void BasicMicroservice<T>::run() {
             }
         }
     }
+
+    custom_finish();
 }
 
 template<typename T>
@@ -89,23 +92,28 @@ void BasicMicroservice<T>::send(const T &config) {
     kafka_producer.flush();
 }
 
-
-// TODO: Redefine it with your implementation
-template<typename T>
-void BasicMicroservice<T>::receive_callback(const T &config) {
-    std::cout << config.data << std::endl;
-}
-
-// TODO: Redefine it with your implementation
-template<typename T>
-void BasicMicroservice<T>::custom_run() {
-    std::cout << "Base microservice started" << std::endl;
-}
-
 template<typename T>
 void BasicMicroservice<T>::set_finish(int signum) {
     BasicMicroservice<T>::finished = true;
 }
 
+
+// TODO: Override it with your implementation
+template<typename T>
+void BasicMicroservice<T>::receive_callback(const T &config) {
+    std::cout << "BasicMicroservice got message" << std::endl;
+}
+
+// TODO: Override it with your implementation
+template<typename T>
+void BasicMicroservice<T>::custom_start() {
+    std::cout << "Base microservice start" << std::endl;
+}
+
+// TODO: Override it with your implementation
+template<typename T>
+void BasicMicroservice<T>::custom_finish() {
+    std::cout << "Base microservice finish" << std::endl;
+}
 
 #endif //UCU_BANK_BASICMICROSERVICE_H
