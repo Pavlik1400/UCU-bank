@@ -3,15 +3,19 @@
 
 #include <iostream>
 #include <string>
+#include "UserType.h"
 
 class User {
     size_t id;
-    std::string number;
-    double interestRate;
-    std::string openingDate;
-    bool active;
-    std::string card;
-    double balance;
+    UserType type;
+    std::string name;
+    std::string password;
+    std::string dateOfBirth;
+    std::string phoneNo;
+    std::string emailId;
+    std::string address;
+    std::string gender;
+    std::string joiningDate;
 };
 
 

@@ -10,6 +10,7 @@
 
 #include "ConfigSerializer.hpp"
 
+// TODO: remove template
 template<typename T>
 class BasicMicroservice {
 public:
@@ -19,6 +20,10 @@ public:
     [[noreturn]] void run();
 
     void send(const T &config);
+
+    void send(const nlohmann::json &msg, const std::string &dst);
+
+    virtual void receive_callback(const nlohmann::json &msg);
 
     virtual void receive_callback(const T &config);
 
@@ -40,30 +45,23 @@ private:
     static void set_finish([[maybe_unused]] int signum);
 };
 
-template<typename T>
-bool BasicMicroservice<T>::finished = false;
+template<typename T> bool BasicMicroservice<T>::finished = false;
 
 template<typename T>
 BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_input_name_arg,
                                         const std::string &topic_output_name_arg) :
-        kafka_config_producer({
-                                      {"metadata.broker.list", broker_list_arg},
-                              }),
-        kafka_config_consumer({
-                                      {"metadata.broker.list", broker_list_arg},
-                                      {"group.id",             group_id},
-                                      {"enable.auto.commit",   false},
-                              }),
-        kafka_producer(kafka_config_producer),
-        kafka_consumer(kafka_config_consumer),
-        kafka_builder(topic_output_name_arg) {
+        kafka_config_producer({{"metadata.broker.list", broker_list_arg},}), kafka_config_consumer(
+        {{"metadata.broker.list", broker_list_arg},
+         {"group.id",             group_id},
+         {"enable.auto.commit",   false},}), kafka_producer(kafka_config_producer),
+        kafka_consumer(kafka_config_consumer), kafka_builder(topic_output_name_arg) {
 
     kafka_consumer.subscribe({topic_input_name_arg});
     signal(SIGINT, &BasicMicroservice<T>::set_finish);
 }
 
 template<typename T>
-[[noreturn]] void BasicMicroservice<T>::run() {
+void BasicMicroservice<T>::run() {
     custom_start();
 
     while (!BasicMicroservice<T>::finished) {
@@ -77,6 +75,7 @@ template<typename T>
                 std::string payload = msg.get_payload();
                 kafka_consumer.commit(msg);
                 try {
+                    // TODO: send to callback json
                     auto deserialized = ConfigSerializer<T>::deserialize(payload);
                     receive_callback(deserialized);
                 } catch (const std::exception &e) {
@@ -89,6 +88,7 @@ template<typename T>
     custom_finish();
 }
 
+// TODO: add arg dest + overload with auto generated uuid
 template<typename T>
 void BasicMicroservice<T>::send(const T &config) {
     std::string line = ConfigSerializer<T>::serialize(config);
@@ -104,6 +104,7 @@ void BasicMicroservice<T>::set_finish(int signum) {
 
 
 // TODO: Override it with your implementation
+// TODO: change type to json
 template<typename T>
 void BasicMicroservice<T>::receive_callback(const T &config) {
     std::cout << "BasicMicroservice got message" << std::endl;
