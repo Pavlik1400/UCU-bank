@@ -7,6 +7,7 @@
 
 class Account {
     size_t id;
+    size_t userId;
     std::string number;
     AccountType type;
     double interestRate;

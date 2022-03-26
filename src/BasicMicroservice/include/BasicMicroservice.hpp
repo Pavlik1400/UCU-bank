@@ -63,7 +63,7 @@ BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, cons
 }
 
 template<typename T>
-[[noreturn]] void BasicMicroservice<T>::run() {
+void BasicMicroservice<T>::run() {
     custom_start();
 
     while (!BasicMicroservice<T>::finished) {
