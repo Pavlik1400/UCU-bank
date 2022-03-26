@@ -10,6 +10,7 @@
 
 #include "ConfigSerializer.hpp"
 
+// TODO: remove template
 template<typename T>
 class BasicMicroservice {
 public:
@@ -77,6 +78,7 @@ void BasicMicroservice<T>::run() {
                 std::string payload = msg.get_payload();
                 kafka_consumer.commit(msg);
                 try {
+                    // TODO: send to callback json
                     auto deserialized = ConfigSerializer<T>::deserialize(payload);
                     receive_callback(deserialized);
                 } catch (const std::exception &e) {
@@ -89,6 +91,7 @@ void BasicMicroservice<T>::run() {
     custom_finish();
 }
 
+// TODO: add arg dest + overload with auto generated uuid
 template<typename T>
 void BasicMicroservice<T>::send(const T &config) {
     std::string line = ConfigSerializer<T>::serialize(config);
@@ -104,6 +107,7 @@ void BasicMicroservice<T>::set_finish(int signum) {
 
 
 // TODO: Override it with your implementation
+// TODO: change type to json
 template<typename T>
 void BasicMicroservice<T>::receive_callback(const T &config) {
     std::cout << "BasicMicroservice got message" << std::endl;
