@@ -15,7 +15,8 @@ class BasicMicroservice {
 public:
     BasicMicroservice(const std::string& broker_list_arg, const std::string& topic_input_name_arg,
                       const std::string& topic_output_name_arg);
-    void run();
+
+    [[noreturn]] void run();
     void send(const T& config);
     virtual void receive_callback(const T& config);
     virtual void custom_start();
@@ -58,7 +59,7 @@ BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, cons
 }
 
 template<typename T>
-void BasicMicroservice<T>::run() {
+[[noreturn]] void BasicMicroservice<T>::run() {
     custom_start();
 
     while (!BasicMicroservice<T>::finished) {
