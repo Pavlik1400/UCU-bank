@@ -21,6 +21,10 @@ public:
 
     void send(const T &config);
 
+    void send(const nlohmann::json &msg, const std::string &dst);
+
+    virtual void receive_callback(const nlohmann::json &msg);
+
     virtual void receive_callback(const T &config);
 
     virtual void custom_start();
@@ -41,23 +45,16 @@ private:
     static void set_finish([[maybe_unused]] int signum);
 };
 
-template<typename T>
-bool BasicMicroservice<T>::finished = false;
+template<typename T> bool BasicMicroservice<T>::finished = false;
 
 template<typename T>
 BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_input_name_arg,
                                         const std::string &topic_output_name_arg) :
-        kafka_config_producer({
-                                      {"metadata.broker.list", broker_list_arg},
-                              }),
-        kafka_config_consumer({
-                                      {"metadata.broker.list", broker_list_arg},
-                                      {"group.id",             group_id},
-                                      {"enable.auto.commit",   false},
-                              }),
-        kafka_producer(kafka_config_producer),
-        kafka_consumer(kafka_config_consumer),
-        kafka_builder(topic_output_name_arg) {
+        kafka_config_producer({{"metadata.broker.list", broker_list_arg},}), kafka_config_consumer(
+        {{"metadata.broker.list", broker_list_arg},
+         {"group.id",             group_id},
+         {"enable.auto.commit",   false},}), kafka_producer(kafka_config_producer),
+        kafka_consumer(kafka_config_consumer), kafka_builder(topic_output_name_arg) {
 
     kafka_consumer.subscribe({topic_input_name_arg});
     signal(SIGINT, &BasicMicroservice<T>::set_finish);
