@@ -8,10 +8,10 @@ namespace ucubank_api::v1 {
     class User : public drogon::HttpController<User> {
     public:
         METHOD_LIST_BEGIN
-        //use METHOD_ADD to add your custom processing function here;
-        METHOD_ADD(User::info, "/info/{login}", drg::Get);
-        METHOD_ADD(User::login, "/login/{login}", drg::Get);
-        METHOD_ADD(User::register_, "/register/{login}", drg::Post);
+            //use METHOD_ADD to add your custom processing function here;
+            METHOD_ADD(User::info, "/info/{login}", drg::Get);
+            METHOD_ADD(User::login, "/login/{login}", drg::Get);
+            METHOD_ADD(User::register_, "/register/{login}", drg::Post);
         METHOD_LIST_END
 
         //your declaration of processing function maybe like this:
