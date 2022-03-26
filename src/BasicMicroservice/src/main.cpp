@@ -19,6 +19,9 @@ public:
     void receive_callback(const MyCustomConfig &config) override;
     void custom_start() override;
     void custom_finish() override;
+
+private:
+
 };
 
 void MyCustomMicroservice::receive_callback(const MyCustomConfig &config) {
@@ -27,16 +30,25 @@ void MyCustomMicroservice::receive_callback(const MyCustomConfig &config) {
 
 void MyCustomMicroservice::custom_start() {
     std::cout << "MyCustomMicroservice start" << std::endl;
+
+    auto conf_to_send = MyCustomConfig{};
+    conf_to_send.data = "started-MyCustomMicroservice";
+    MyCustomMicroservice::send(conf_to_send);
 }
 
 void MyCustomMicroservice::custom_finish() {
     std::cout << "MyCustomMicroservice finish" << std::endl;
+
+    auto conf_to_send = MyCustomConfig{};
+    conf_to_send.data = "finished-MyCustomMicroservice";
+    MyCustomMicroservice::send(conf_to_send);
 }
 
 int main() {
     std::string broker_list_arg = "localhost:9092";
-    std::string topic_name_arg = "quickstart";
+    std::string topic_input_name_arg = "quickstart";
+    std::string topic_output_name_arg = "quickstart-out";
 
-    auto my_custom_microservice = MyCustomMicroservice{broker_list_arg, topic_name_arg};
+    auto my_custom_microservice = MyCustomMicroservice{broker_list_arg, topic_input_name_arg, topic_output_name_arg};
     my_custom_microservice.run();
 }

@@ -13,7 +13,8 @@
 template <typename T>
 class BasicMicroservice {
 public:
-    BasicMicroservice(const std::string& broker_list_arg, const std::string& topic_name_arg);
+    BasicMicroservice(const std::string& broker_list_arg, const std::string& topic_input_name_arg,
+                      const std::string& topic_output_name_arg);
     void run();
     void send(const T& config);
     virtual void receive_callback(const T& config);
@@ -37,7 +38,8 @@ template<typename T>
 bool BasicMicroservice<T>::finished = false;
 
 template<typename T>
-BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_name_arg) :
+BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, const std::string& topic_input_name_arg,
+                                        const std::string& topic_output_name_arg) :
         kafka_config_producer({
                              { "metadata.broker.list", broker_list_arg },
                      }),
@@ -48,10 +50,10 @@ BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, cons
                           }),
         kafka_producer(kafka_config_producer),
         kafka_consumer(kafka_config_consumer),
-        kafka_builder(topic_name_arg)
+        kafka_builder(topic_output_name_arg)
 {
 
-    kafka_consumer.subscribe({ topic_name_arg });
+    kafka_consumer.subscribe({ topic_input_name_arg });
     signal(SIGINT, &BasicMicroservice<T>::set_finish);
 }
 
