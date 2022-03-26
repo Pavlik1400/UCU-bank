@@ -23,7 +23,8 @@
                 "EXE_06": "postgres_basic",
                 "EXE_07": "microservice_basic",
                 "EXE_08": "account_microservice",
-                "EXE_09": "user_microservice"
+                "EXE_09": "user_microservice",
+                "EXE_10": "gateway"
             },
             "condition": {
                 "type": "notEquals",
