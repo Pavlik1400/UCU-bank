@@ -9,6 +9,7 @@ from shutil import rmtree
 def get_prs_by_name(prss: list, name: str) -> dict:
     return [prs for prs in prss if prs["name"] == name][0]
 
+
 def get_field(prs: dict, *field: str) -> Optional[str]:
     cur = prs
     for f in field:
@@ -17,15 +18,17 @@ def get_field(prs: dict, *field: str) -> Optional[str]:
         cur = cur[f]
     return cur
 
+
 def prs_filter(prss: dict, beg: dict, *field: str) -> dict:
     cur = beg
     while (get_field(cur, *field) is None):
         cur = prss[cur["inherits"]]
     return get_field(cur, *field)
 
+
 def main():
     parser = ArgumentParser()
-    parser.add_argument("build_name", type=str)
+    parser.add_argument("build_name", type=str, help="name of build - available are: dev-posix, dev-win")
     parser.add_argument("--clean", "-c", action="store_true")
     args = parser.parse_args()
 
@@ -33,14 +36,17 @@ def main():
     conf = CONFIG_PRESETS[conf_name]
 
     if args.clean:
-        binary_dir = Template(prs_filter(CONFIG_PRESETS, conf, "binaryDir")).substitute(sourceDir=".", presetName=conf_name)
-        output_dir = Template(prs_filter(CONFIG_PRESETS, conf, "cacheVariables", "CMAKE_RUNTIME_OUTPUT_DIRECTORY")).substitute(sourceDir=".")
+        binary_dir = Template(prs_filter(CONFIG_PRESETS, conf, "binaryDir")).substitute(sourceDir=".",
+                                                                                        presetName=conf_name)
+        output_dir = Template(
+            prs_filter(CONFIG_PRESETS, conf, "cacheVariables", "CMAKE_RUNTIME_OUTPUT_DIRECTORY")).substitute(
+            sourceDir=".")
         rmtree(output_dir, ignore_errors=True)
         rmtree(binary_dir, ignore_errors=True)
-    
+
     run(cmd_t_split(CMAKE_CONFIGURE_CMD_T, prs=conf_name))
     run(cmd_t_split(CMAKE_BUILD_CMD_T, prs=args.build_name))
-    
+
 
 if __name__ == "__main__":
     main()

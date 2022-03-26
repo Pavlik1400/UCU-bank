@@ -6,11 +6,12 @@
 #include <serdepp/serde.hpp>
 #include <serdepp/adaptor/nlohmann_json.hpp>
 
-template <typename T>
+template<typename T>
 class ConfigSerializer {
 public:
-    static std::string serialize(const T& serialize_data);
-    static T deserialize(const std::string& json_str);
+    static std::string serialize(const T &serialize_data);
+
+    static T deserialize(const std::string &json_str);
 };
 
 template<typename T>

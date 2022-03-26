@@ -4,20 +4,23 @@
 class MyCustomConfig {
 public:
     template<class Context>
-    constexpr static auto serde(Context& context, MyCustomConfig& value) {
+    constexpr static auto serde(Context &context, MyCustomConfig &value) {
         using Self = MyCustomConfig;
         serde::serde_struct(context, value)
                 .field(&Self::data, "data");
     }
+
     std::string data;
 };
 
-class MyCustomMicroservice: public BasicMicroservice<MyCustomConfig> {
+class MyCustomMicroservice : public BasicMicroservice<MyCustomConfig> {
     using BasicMicroservice<MyCustomConfig>::BasicMicroservice;
 
 public:
     void receive_callback(const MyCustomConfig &config) override;
+
     void custom_start() override;
+
     void custom_finish() override;
 
 private:

@@ -10,15 +10,20 @@
 
 #include "ConfigSerializer.hpp"
 
-template <typename T>
+template<typename T>
 class BasicMicroservice {
 public:
-    BasicMicroservice(const std::string& broker_list_arg, const std::string& topic_input_name_arg,
-                      const std::string& topic_output_name_arg);
+    BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_input_name_arg,
+                      const std::string &topic_output_name_arg);
+
     void run();
-    void send(const T& config);
-    virtual void receive_callback(const T& config);
+
+    void send(const T &config);
+
+    virtual void receive_callback(const T &config);
+
     virtual void custom_start();
+
     virtual void custom_finish();
 
 private:
@@ -31,6 +36,7 @@ private:
     cppkafka::MessageBuilder kafka_builder;
 
     static bool finished;
+
     static void set_finish([[maybe_unused]] int signum);
 };
 
@@ -38,22 +44,21 @@ template<typename T>
 bool BasicMicroservice<T>::finished = false;
 
 template<typename T>
-BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, const std::string& topic_input_name_arg,
-                                        const std::string& topic_output_name_arg) :
+BasicMicroservice<T>::BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_input_name_arg,
+                                        const std::string &topic_output_name_arg) :
         kafka_config_producer({
-                             { "metadata.broker.list", broker_list_arg },
-                     }),
+                                      {"metadata.broker.list", broker_list_arg},
+                              }),
         kafka_config_consumer({
-                              { "metadata.broker.list", broker_list_arg },
-                              { "group.id", group_id },
-                              { "enable.auto.commit", false },
-                          }),
+                                      {"metadata.broker.list", broker_list_arg},
+                                      {"group.id",             group_id},
+                                      {"enable.auto.commit",   false},
+                              }),
         kafka_producer(kafka_config_producer),
         kafka_consumer(kafka_config_consumer),
-        kafka_builder(topic_output_name_arg)
-{
+        kafka_builder(topic_output_name_arg) {
 
-    kafka_consumer.subscribe({ topic_input_name_arg });
+    kafka_consumer.subscribe({topic_input_name_arg});
     signal(SIGINT, &BasicMicroservice<T>::set_finish);
 }
 
@@ -68,15 +73,13 @@ void BasicMicroservice<T>::run() {
                 if (!msg.is_eof()) {
                     std::cout << "[+] Received error notification: " << msg.get_error() << std::endl;
                 }
-            }
-            else {
+            } else {
                 std::string payload = msg.get_payload();
                 kafka_consumer.commit(msg);
                 try {
                     auto deserialized = ConfigSerializer<T>::deserialize(payload);
                     receive_callback(deserialized);
-                } catch (const std::exception& e)
-                {
+                } catch (const std::exception &e) {
                     std::cout << e.what() << std::endl;
                 }
             }
