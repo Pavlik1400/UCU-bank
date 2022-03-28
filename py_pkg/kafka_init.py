@@ -12,5 +12,6 @@ def init_kafka():
     run(KAFKA_SYSTEMD_MODULE_ENABLE_CMD)
     run(cmd_t_split(KAFKA_CREATE_TOPICS_CMD_T, topic_name="quickstart", partition_num=3))
     run(cmd_t_split(KAFKA_CREATE_TOPICS_CMD_T, topic_name="quickstart-out", partition_num=3))
+    run(cmd_t_split(KAFKA_CREATE_TOPICS_CMD_T, topic_name="quickstart-out-1", partition_num=3))
     print("Kafka configured")
 
