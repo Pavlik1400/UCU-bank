@@ -8,6 +8,7 @@
         "serdepp",
         "nlohmann-json",
         "aws-sdk-cpp[email]",
-        "boost-uuid"
+        "boost-uuid",
+        "boost-log"
     ]
 }
