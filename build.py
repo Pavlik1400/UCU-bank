@@ -1,9 +1,14 @@
-from py_pkg import CONFIG_PRESETS, BUILD_PRESETS, CMAKE_BUILD_CMD_T, CMAKE_CONFIGURE_CMD_T, cmd_t_split
+from py_pkg import CONFIG_PRESETS, BUILD_PRESETS, CMAKE_BUILD_CMD_T, CMAKE_CONFIGURE_CMD_T, cmd_t_split, join_path
 from typing import Optional
 from argparse import ArgumentParser
 from subprocess import run
 from string import Template
-from shutil import rmtree
+from shutil import rmtree, move
+from os.path import exists
+from os import remove
+
+
+COMPILE_COMMANDS = "compile_commands.json"  
 
 
 def get_prs_by_name(prss: list, name: str) -> dict:
@@ -35,9 +40,9 @@ def main():
     conf_name = BUILD_PRESETS[args.build_name]["configurePreset"]
     conf = CONFIG_PRESETS[conf_name]
 
+    binary_dir = Template(prs_filter(CONFIG_PRESETS, conf, "binaryDir")).substitute(sourceDir=".",
+                                                                                    presetName=conf_name)
     if args.clean:
-        binary_dir = Template(prs_filter(CONFIG_PRESETS, conf, "binaryDir")).substitute(sourceDir=".",
-                                                                                        presetName=conf_name)
         output_dir = Template(
             prs_filter(CONFIG_PRESETS, conf, "cacheVariables", "CMAKE_RUNTIME_OUTPUT_DIRECTORY")).substitute(
             sourceDir=".")
@@ -47,6 +52,11 @@ def main():
     run(cmd_t_split(CMAKE_CONFIGURE_CMD_T, prs=conf_name))
     run(cmd_t_split(CMAKE_BUILD_CMD_T, prs=args.build_name))
 
+    compile_commands = join_path(binary_dir, COMPILE_COMMANDS)
+    if exists(compile_commands):
+        if exists(COMPILE_COMMANDS):
+            remove(COMPILE_COMMANDS)
+        move(compile_commands, ".", )
 
 if __name__ == "__main__":
     main()
