@@ -15,7 +15,7 @@ find_package(Boost REQUIRED)
 
 find_package(mongocxx CONFIG REQUIRED)
 find_package(bsoncxx CONFIG REQUIRED)
-set(SOURCES src/Account.cpp src/AccountMicroservice.cpp)
+set(SOURCES src/Account.cpp src/AccountMicroservice.cpp ../BasicMicroservice/src/BasicMicroservice.cpp ../BasicMicroservice/src/MessageSerializer.cpp)
 set(HEADERS include/Account.h include/AccountMicroservice.h ../BasicMicroservice/include/BasicMicroservice.hpp ../BasicMicroservice/include/constants.hpp include/constants.h)
 add_executable(${EXE_08} ${SOURCES} ${HEADERS})
 target_include_directories(${EXE_08} PRIVATE ${LIBMONGOCXX_INCLUDE_DIR})

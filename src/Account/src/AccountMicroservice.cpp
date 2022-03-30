@@ -37,7 +37,7 @@ void AccountMicroservice::create(const nlohmann::json &msg) {
     } else {
         response[response::STATUS] = response::type::EXISTS;
     }
-    BasicMicroservice::send_response(response);
+    send_response(response);
 }
 
 void AccountMicroservice::get(const nlohmann::json &msg) {
