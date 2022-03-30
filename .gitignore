@@ -5,5 +5,7 @@ build
 bin
 cmake-build-debug/
 *__pycache__*
+compile_commands.json
+.cache
 uploads
 logs
