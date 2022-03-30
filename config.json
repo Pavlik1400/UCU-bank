@@ -6,6 +6,8 @@
         "mongo-cxx-driver",
         "libpqxx",
         "serdepp",
-        "nlohmann-json"
+        "nlohmann-json",
+        "aws-sdk-cpp[email]",
+        "boost-uuid"
     ]
 }
