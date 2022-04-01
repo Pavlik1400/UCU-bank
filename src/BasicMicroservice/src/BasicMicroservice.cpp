@@ -3,12 +3,13 @@
 #include "constants.hpp"
 
 
-BasicMicroservice::BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_input_name_arg) :
+BasicMicroservice::BasicMicroservice(const std::string &broker_list_arg, const std::string &topic_input_name_arg, const std::string &redis_url) :
         kafka_config_producer({{"metadata.broker.list", broker_list_arg},}), kafka_config_consumer(
         {{"metadata.broker.list", broker_list_arg},
          {"group.id",             group_id},
          {"enable.auto.commit",   false},}), kafka_producer(kafka_config_producer),
-        kafka_consumer(kafka_config_consumer), kafka_builder(topic_input_name_arg), topic_input_name(topic_input_name_arg) {
+        kafka_consumer(kafka_config_consumer), kafka_builder(topic_input_name_arg), topic_input_name(topic_input_name_arg),
+        redis_client(redis_url) {
 
     kafka_consumer.subscribe({topic_input_name_arg});
     signal(SIGINT, &BasicMicroservice::set_finish);
@@ -43,11 +44,12 @@ void BasicMicroservice::run() {
     return;
 }
 
-void BasicMicroservice::send_request(const nlohmann::json &msg, const std::string &dst) {
+std::string BasicMicroservice::send_request(const nlohmann::json &msg, const std::string &dst) {
     auto copy_msg = msg;
 
     copy_msg[constants::MESSAGE_KEY_DST] = topic_input_name;
-    copy_msg[constants::MESSAGE_KEY_UUID] = boost::uuids::to_string(uuid_generator());
+    auto uuid = boost::uuids::to_string(uuid_generator());
+    copy_msg[constants::MESSAGE_KEY_UUID] = uuid;
     copy_msg[constants::MESSAGE_KEY_TYPE] = constants::message_types::REQUEST;
 
     auto t = std::time(nullptr);
@@ -58,6 +60,7 @@ void BasicMicroservice::send_request(const nlohmann::json &msg, const std::strin
 
     std::string line = MessageSerializer::serialize(copy_msg);
     basic_send(line, dst);
+    return uuid;
 }
 
 void BasicMicroservice::send_response(const nlohmann::json &msg) {
@@ -85,6 +88,9 @@ void BasicMicroservice::basic_send(const std::string &msg, const std::string &ds
 void BasicMicroservice::set_finish(int signum) {
     BasicMicroservice::finished = true;
 }
+
+BasicMicroservice::~BasicMicroservice() = default;
+
 
 // Override next methods to your implementation
 void BasicMicroservice::receive_callback(const nlohmann::json &config) {

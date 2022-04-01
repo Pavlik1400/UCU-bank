@@ -9,6 +9,7 @@
         "nlohmann-json",
         "aws-sdk-cpp[email]",
         "boost-uuid",
-        "boost-log"
+        "boost-log",
+        "redis-plus-plus"
     ]
 }

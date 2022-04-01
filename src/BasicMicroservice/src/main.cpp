@@ -11,6 +11,11 @@ public:
 
     void custom_finish() override;
 
+    ~MyCustomMicroservice() override;
+
+private:
+    std::string tmp_uuid;
+
 };
 
 void MyCustomMicroservice::receive_callback(const nlohmann::json &config) {
@@ -23,7 +28,9 @@ void MyCustomMicroservice::custom_start() {
     nlohmann::json json_to_send = nlohmann::json{};
     json_to_send["out-data"] = "started-MyCustomMicroservice";
     std::string dst = "quickstart-out";
-    BasicMicroservice::send_request(json_to_send, dst);
+    tmp_uuid = BasicMicroservice::send_request(json_to_send, dst);
+    std::cout << "tmp_uuid = " << tmp_uuid << std::endl;
+    redis_client.set(topic_input_name + "_" + tmp_uuid, "hello");
 }
 
 void MyCustomMicroservice::custom_finish() {
@@ -33,12 +40,18 @@ void MyCustomMicroservice::custom_finish() {
     json_to_send["out-data"] = "finished-MyCustomMicroservice";
     std::string dst = "quickstart-out-1";
     send_request(json_to_send, dst);
+
+    auto val = redis_client.get(topic_input_name + "_" + tmp_uuid);
+    if (val) std::cout << "value at tmp_uuid = " << val.value() << std::endl;
 }
+
+MyCustomMicroservice::~MyCustomMicroservice() = default;
 
 int main() {
     std::string broker_list_arg = "localhost:9092";
+    std::string redis_url = "tcp://localhost:6379";
     std::string topic_input_name_arg = "quickstart";
 
-    auto my_custom_microservice = MyCustomMicroservice{broker_list_arg, topic_input_name_arg};
+    auto my_custom_microservice = MyCustomMicroservice{broker_list_arg, topic_input_name_arg, redis_url};
     my_custom_microservice.run();
 }
