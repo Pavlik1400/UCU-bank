@@ -12,6 +12,7 @@ select_library_configurations(CPPKAFKA)
 find_package(serdepp CONFIG)
 find_package(nlohmann_json CONFIG)
 find_package(Boost REQUIRED)
+find_package(redis++ CONFIG REQUIRED)
 
 find_package(mongocxx CONFIG REQUIRED)
 find_package(bsoncxx CONFIG REQUIRED)
@@ -22,6 +23,6 @@ target_include_directories(${EXE_08} PRIVATE ${LIBMONGOCXX_INCLUDE_DIR})
 target_include_directories(${EXE_08} PRIVATE ${LIBBSONCXX_INCLUDE_DIR})
 target_include_directories(${EXE_08} PRIVATE ${CPPKAFKA_INCLUDES}/.. ${Boost_INCLUDE_DIR} include ../BasicMicroservice/include)
 target_link_libraries(${EXE_08} mongo::mongocxx_static mongo::bsoncxx_static ${CPPKAFKA_LIBRARY} RdKafka::rdkafka++ serdepp::serdepp
-        nlohmann_json::nlohmann_json)
+        nlohmann_json::nlohmann_json redis++::redis++_static)
 
 
