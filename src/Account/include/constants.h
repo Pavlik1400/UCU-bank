@@ -21,7 +21,9 @@ namespace response {
     const std::string STATUS = "status";
     enum type {
         OK,
+        FAILED,
         EXISTS,
+        NO_EXISTS,
         BAD_TYPE
     };
 }
@@ -32,7 +34,10 @@ namespace request {
         CREATE,
         GET,
         UPDATE,
-        REMOVE
+        REMOVE,
+        TRANSACTION,
+        EXISTS,
+        CREATE_WITHOUT_CHECK
     };
 }
 
