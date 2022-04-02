@@ -25,6 +25,7 @@ using bsoncxx::builder::basic::sub_array;
 
 //namespace n = nlohmann;
 class AccountMicroservice : public BasicMicroservice {
+    using BasicMicroservice::BasicMicroservice;
 
 private:
     const std::string SET      = "$set";
