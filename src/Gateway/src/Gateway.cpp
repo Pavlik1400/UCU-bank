@@ -1,4 +1,4 @@
-#include "Gateway.h"
+#include "Gateway.hpp"
 #include <drogon/HttpAppFramework.h>
 
 int main() {

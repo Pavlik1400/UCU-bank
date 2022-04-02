@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_FILTERS_H
-#define UCU_BANK_FILTERS_H
+#ifndef UCU_BANK_FILTERS_HPP
+#define UCU_BANK_FILTERS_HPP
 
 #include "drogon/HttpFilter.h"
 
@@ -10,4 +10,4 @@ public:
                   drogon::FilterChainCallback &&fccb) override;
 };
 
-#endif //UCU_BANK_FILTERS_H
+#endif //UCU_BANK_FILTERS_HPP

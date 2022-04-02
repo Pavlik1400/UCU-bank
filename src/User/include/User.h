@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_ACCOUNT_H
-#define UCU_BANK_ACCOUNT_H
+#ifndef UCU_BANK_USER_H
+#define UCU_BANK_USER_H
 
 #include <iostream>
 #include <string>
@@ -19,4 +19,4 @@ class User {
 };
 
 
-#endif //UCU_BANK_ACCOUNT_H
+#endif //UCU_BANK_USER_H

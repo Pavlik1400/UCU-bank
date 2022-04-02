@@ -1,7 +1,7 @@
 #ifndef UCU_BANK_USER_H
 #define UCU_BANK_USER_H
 
-#include "Gateway.h"
+#include "Gateway.hpp"
 
 namespace ucubank_api::v1 {
 
@@ -26,6 +26,7 @@ namespace ucubank_api::v1 {
 
     public:
         User() {
+            std::cout << "User constructor" << std::endl;
             LOG_DEBUG << "User constructor!";
         }
     };

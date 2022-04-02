@@ -1,4 +1,4 @@
-#include "Filters.h"
+#include "Filters.hpp"
 
 void LoginFilter::doFilter(const drogon::HttpRequestPtr &req, drogon::FilterCallback &&fcb,
                            drogon::FilterChainCallback &&fccb) {

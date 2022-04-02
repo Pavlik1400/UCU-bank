@@ -1,4 +1,4 @@
-#include "User.h"
+#include "User.hpp"
 
 void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
                                  std::function<void(const drg::HttpResponsePtr &)> &&callback,
