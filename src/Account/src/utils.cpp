@@ -5,12 +5,13 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 #include "utils.h"
 
 
 std::string generate_card_token() {
     std::array<char, 15> check_array{0};
-    std::array<char, 16> card_num{0};
+    std::array<char, 17> card_num{0};
 
     for (int d = 14; d >= 0; d--) {
         card_num[d] = rand() % 10;
@@ -18,15 +19,17 @@ std::string generate_card_token() {
     }
 
     card_num[15] = static_cast<char>((std::accumulate(check_array.begin(), check_array.end(), 0) * 9) % 10);
-
+    std::for_each(card_num.begin(), card_num.end(), [](char &x) { x += '0'; });
+    card_num[16] = 0;
     return std::string{card_num.data()};
 }
 
 std::string generate_cvv() {
-    std::array<char, 3> cvv{0};
+    std::array<char, 4> cvv{0};
     for (auto &number: cvv) {
-        number = rand() % 10;
+        number = rand() % 10 + '0';
     }
+    cvv[3] = 0;
     return std::string{cvv.data()};
 }
 

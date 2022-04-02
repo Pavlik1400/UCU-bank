@@ -1,6 +1,25 @@
 ### Enable transactions
 ```shell
+# Ubuntu edition
 $ mongod --replSet "rs0" --bind_ip localhost
+$ mongosh (or mongo if mongosh does not exist)
+$ rs.initiate()
+$ rs.conf()
+```
+
+
+```shell
+# Arch linux edition
+$ sudo vim /etc/mongodb.conf
+Make commented section 'replication' look like:
+
+replication:
+  replSetName: "rs0"
+
+Exit editing
+$ sudo chown -R mongodb:mongodb /var/lib/mongodb                                                                                                                                          ─╯
+$ sudo chown mongodb:mongodb /tmp/mongodb-27017.sock
+$ sudo systemctl restart mongodb
 $ mongosh (or mongo if mongosh does not exist)
 $ rs.initiate()
 $ rs.conf()
