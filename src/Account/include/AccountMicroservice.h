@@ -28,11 +28,12 @@ class AccountMicroservice : public BasicMicroservice {
     using BasicMicroservice::BasicMicroservice;
 
 private:
-    const std::string SET      = "$set";
-    const std::string PUSH     = "$push";
-    const std::string PULL     = "$pull";
-    const std::string IN       = "$in";
-    const std::string INC      = "$inc";
+    const std::string SET = "$set";
+    const std::string PUSH = "$push";
+    const std::string PULL = "$pull";
+    const std::string IN = "$in";
+    const std::string INC = "$inc";
+    const std::string OID = "$oid";
 
     mongocxx::instance instance{}; // This should be done only once.
     mongocxx::uri uri{"mongodb://localhost:27017/?replicaSet=rs0"};
@@ -46,28 +47,33 @@ private:
     mongocxx::read_preference rp_primary{};
     mongocxx::options::transaction sopts;
     mongocxx::client_session session = client.start_session();
-    std::map<int, void (AccountMicroservice::*)(const nlohmann::json &)> selector = {
-            {request::type::CREATE, &AccountMicroservice::create},
-            {request::type::GET, &AccountMicroservice::get},
-            {request::type::UPDATE, &AccountMicroservice::update},
-            {request::type::REMOVE, &AccountMicroservice::remove},
+    std::map<int, void (AccountMicroservice::*)(const nlohmann::json &)> on_request = {
+            {request::type::CREATE,      &AccountMicroservice::create},
+            {request::type::GET,         &AccountMicroservice::get},
+            {request::type::REMOVE,      &AccountMicroservice::remove},
             {request::type::TRANSACTION, &AccountMicroservice::transaction},
-            {request::type::EXISTS, &AccountMicroservice::exists}
+            {request::type::EXISTS,      &AccountMicroservice::exists}
     };
 
-    std::map<int, void (AccountMicroservice::*)(const nlohmann::json &)> callbacks = {
+    std::map<int, void (AccountMicroservice::*)(const nlohmann::json &)> on_response = {
             {request::type::CREATE_WITHOUT_CHECK, &AccountMicroservice::create_without_check}
     };
 
 public:
     void custom_start() override;
+
     void receive_callback(const nlohmann::json &msg) override;
+
     void create(const nlohmann::json &msg);
+
     void create_without_check(const nlohmann::json &msg);
+
     void get(const nlohmann::json &msg);
-    void update(const nlohmann::json &msg);
+
     void remove(const nlohmann::json &msg);
+
     void transaction(const nlohmann::json &msg);
+
     void exists(const nlohmann::json &msg);
 };
 

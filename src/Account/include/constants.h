@@ -26,6 +26,7 @@ namespace response {
         NO_EXISTS,
         BAD_TYPE
     };
+    const std::string INSTANCE = "instance";
 }
 
 namespace request {
