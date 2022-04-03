@@ -26,7 +26,8 @@
                 "EXE_08": "account_microservice",
                 "EXE_09": "user_microservice",
                 "EXE_10": "gateway",
-                "EXE_11": "auth"
+                "EXE_11": "auth",
+                "EXE_12": "rpc_basic"
             },
             "condition": {
                 "type": "notEquals",

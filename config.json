@@ -10,6 +10,7 @@
         "aws-sdk-cpp[email]",
         "boost-uuid",
         "boost-log",
-        "redis-plus-plus"
+        "redis-plus-plus",
+        "rpclib"
     ]
 }
