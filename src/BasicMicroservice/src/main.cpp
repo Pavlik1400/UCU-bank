@@ -48,23 +48,24 @@ void MyCustomMicroservice::custom_start() {
     rpc_server.bind("first_call", [&](const std::string &some_str) { return this->first_call(some_str); });
     rpc_server.bind("set_str", [&](const std::string &some_str) { return this->set_str(some_str); });
     rpc_server.bind("sub_call", [&]() { return this->sub_call(); });
-    MLOG_TRACE << "MyCustomMicroservice start trace";
-    MLOG_DEBUG << "MyCustomMicroservice start debug";
-    MLOG_INFO << "MyCustomMicroservice start info";
-    MLOG_WARNING << "MyCustomMicroservice start warning";
-    MLOG_ERROR << "MyCustomMicroservice start error";
-    MLOG_FATAL << "MyCustomMicroservice start fatal";
 
-    MLOG_TRACE << "MyCustomMicroservice start trace";
-    MLOG_DEBUG << "MyCustomMicroservice start debug";
-    MLOG_INFO << "MyCustomMicroservice start info";
-    MLOG_WARNING << "MyCustomMicroservice start warning";
-    MLOG_ERROR << "MyCustomMicroservice start error";
-    MLOG_FATAL << "MyCustomMicroservice start fatal";
+    CUSTOM_LOG(lg, trace) << "MyCustomMicroservice start trace";
+    CUSTOM_LOG(lg, debug) << "MyCustomMicroservice start debug";
+    CUSTOM_LOG(lg, info) << "MyCustomMicroservice start info";
+    CUSTOM_LOG(lg, warning) << "MyCustomMicroservice start warning";
+    CUSTOM_LOG(lg, error) << "MyCustomMicroservice start error";
+    CUSTOM_LOG(lg, fatal) << "MyCustomMicroservice start fatal";
+
+    CUSTOM_LOG(lg, trace) << "MyCustomMicroservice start trace";
+    CUSTOM_LOG(lg, debug) << "MyCustomMicroservice start debug";
+    CUSTOM_LOG(lg, info) << "MyCustomMicroservice start info";
+    CUSTOM_LOG(lg, warning) << "MyCustomMicroservice start warning";
+    CUSTOM_LOG(lg, error) << "MyCustomMicroservice start error";
+    CUSTOM_LOG(lg, fatal) << "MyCustomMicroservice start fatal";
 }
 
 void MyCustomMicroservice::custom_finish() {
-    LOG(debug) << "MyCustomMicroservice finish" << std::endl;
+//    LOG(debug) << "MyCustomMicroservice finish" << std::endl;
 }
 
 MyCustomMicroservice::~MyCustomMicroservice() = default;

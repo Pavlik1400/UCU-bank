@@ -29,7 +29,7 @@ protected:
     rpc::server rpc_server;
     std::unordered_map<std::string, rpc::client> rpc_clients{};
     sw::redis::Redis redis_client;
-
+    src::severity_logger< logging::trivial::severity_level > lg;
 };
 
 
