@@ -48,11 +48,23 @@ void MyCustomMicroservice::custom_start() {
     rpc_server.bind("first_call", [&](const std::string &some_str) { return this->first_call(some_str); });
     rpc_server.bind("set_str", [&](const std::string &some_str) { return this->set_str(some_str); });
     rpc_server.bind("sub_call", [&]() { return this->sub_call(); });
-    std::cout << "MyCustomMicroservice start" << std::endl;
+    MLOG_TRACE << "MyCustomMicroservice start trace";
+    MLOG_DEBUG << "MyCustomMicroservice start debug";
+    MLOG_INFO << "MyCustomMicroservice start info";
+    MLOG_WARNING << "MyCustomMicroservice start warning";
+    MLOG_ERROR << "MyCustomMicroservice start error";
+    MLOG_FATAL << "MyCustomMicroservice start fatal";
+
+    MLOG_TRACE << "MyCustomMicroservice start trace";
+    MLOG_DEBUG << "MyCustomMicroservice start debug";
+    MLOG_INFO << "MyCustomMicroservice start info";
+    MLOG_WARNING << "MyCustomMicroservice start warning";
+    MLOG_ERROR << "MyCustomMicroservice start error";
+    MLOG_FATAL << "MyCustomMicroservice start fatal";
 }
 
 void MyCustomMicroservice::custom_finish() {
-    std::cout << "MyCustomMicroservice finish" << std::endl;
+    LOG(debug) << "MyCustomMicroservice finish" << std::endl;
 }
 
 MyCustomMicroservice::~MyCustomMicroservice() = default;

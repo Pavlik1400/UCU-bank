@@ -10,6 +10,8 @@
 #include <rpc/server.h>
 #include <rpc/client.h>
 
+#include "logging.hpp"
+
 
 class BasicMicroservice {
 public:
@@ -27,6 +29,7 @@ protected:
     rpc::server rpc_server;
     std::unordered_map<std::string, rpc::client> rpc_clients{};
     sw::redis::Redis redis_client;
+
 };
 
 
