@@ -5,8 +5,6 @@ class MyCustomMicroservice : public BasicMicroservice {
     using BasicMicroservice::BasicMicroservice;
 
 public:
-    void receive_callback(const nlohmann::json &config) override;
-
     void custom_start() override;
 
     void custom_finish() override;
@@ -14,44 +12,65 @@ public:
     ~MyCustomMicroservice() override;
 
 private:
-    std::string tmp_uuid;
+    std::string first_call(const std::string &some_str);
 
+    void set_str(const std::string &some_str);
+
+    std::string sub_call();
+
+    std::string aaa_str = "qwert";
 };
 
-void MyCustomMicroservice::receive_callback(const nlohmann::json &config) {
-    std::cout << "MyCustomMicroservice got message, data = " << config.at("data") << std::endl;
+std::string MyCustomMicroservice::first_call(const std::string &some_str) {
+    std::cout << "Calling first_call" << std::endl << std::endl;
+    std::cout << rpc_clients.at("first-client").call("sub_call").as<std::string>() << std::endl;
+    rpc_clients.at("first-client").call("set_str", some_str);
+    std::cout << rpc_clients.at("first-client").call("sub_call").as<std::string>() << std::endl;
+
+    return "fully done";
 }
 
-void MyCustomMicroservice::custom_start() {
-    std::cout << "MyCustomMicroservice start" << std::endl;
+void MyCustomMicroservice::set_str(const std::string &some_str) {
+    std::cout << "Calling set_str" << std::endl << std::endl;
+    aaa_str = some_str;
+}
 
-    nlohmann::json json_to_send = nlohmann::json{};
-    json_to_send["out-data"] = "started-MyCustomMicroservice";
-    std::string dst = "quickstart-out";
-    tmp_uuid = BasicMicroservice::send_request(json_to_send, dst);
-    std::cout << "tmp_uuid = " << tmp_uuid << std::endl;
-    redis_client.set(topic_input_name + "_" + tmp_uuid, "hello");
+std::string MyCustomMicroservice::sub_call() {
+    std::cout << "Calling sub_call" << std::endl << std::endl;
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    std::string now_time_str = std::ctime(&now_time);
+    return now_time_str + aaa_str;
+}
+
+
+void MyCustomMicroservice::custom_start() {
+    rpc_server.bind("first_call", [&](const std::string &some_str) { return this->first_call(some_str); });
+    rpc_server.bind("set_str", [&](const std::string &some_str) { return this->set_str(some_str); });
+    rpc_server.bind("sub_call", [&]() { return this->sub_call(); });
+    std::cout << "MyCustomMicroservice start" << std::endl;
 }
 
 void MyCustomMicroservice::custom_finish() {
     std::cout << "MyCustomMicroservice finish" << std::endl;
-
-    nlohmann::json json_to_send = nlohmann::json{};
-    json_to_send["out-data"] = "finished-MyCustomMicroservice";
-    std::string dst = "quickstart-out-1";
-    send_request(json_to_send, dst);
-
-    auto val = redis_client.get(topic_input_name + "_" + tmp_uuid);
-    if (val) std::cout << "value at tmp_uuid = " << val.value() << std::endl;
 }
 
 MyCustomMicroservice::~MyCustomMicroservice() = default;
 
-int main() {
-    std::string broker_list_arg = "localhost:9092";
-    std::string redis_url = "tcp://localhost:6379";
-    std::string topic_input_name_arg = "quickstart";
+int main(int argc, char *argv[]) {
+    if (argc > 1) {
+        std::vector<std::pair<std::string, std::pair<std::string, unsigned short>>> clients = {{"first-client", {"127.0.0.1", 45035}}};
+        int port = 45034;
+        std::string redis_url = "tcp://localhost:6379";
 
-    auto my_custom_microservice = MyCustomMicroservice{broker_list_arg, topic_input_name_arg, redis_url};
-    my_custom_microservice.run();
+        auto my_custom_microservice = MyCustomMicroservice{clients, port, redis_url};
+        my_custom_microservice.run();
+    } else {
+        std::vector<std::pair<std::string, std::pair<std::string, unsigned short>>> clients = {};
+        int port = 45035;
+        std::string redis_url = "tcp://localhost:6379";
+
+        auto my_custom_microservice = MyCustomMicroservice{clients, port, redis_url};
+        my_custom_microservice.run();
+    }
 }
