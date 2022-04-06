@@ -2,7 +2,7 @@
 #include "constants.hpp"
 #include "utils.h"
 
-void AccountMicroservice::custom_start() {
+void AccountMicroservice::start() {
     db = client["users"];
     users = db["users"];
     users.create_index(session, document{} << Account::USER_ID << 1 << finalize);
@@ -15,18 +15,6 @@ void AccountMicroservice::custom_start() {
     sopts.read_preference(rp_primary);
 }
 
-void AccountMicroservice::receive_callback(const nlohmann::json &msg) {
-    auto callback_type = msg["type"].get<int>();
-    auto message_type = msg[constants::MESSAGE_KEY_TYPE];
-    if (message_type == constants::message_types::REQUEST) {
-        (this->*on_request[callback_type])(msg);
-    } else if (message_type == constants::message_types::RESPONSE) {
-        (this->*on_response[callback_type])(msg);
-    } else {
-        std::cerr << "Incorrect message type '" << message_type << "'" << std::endl;
-    }
-
-}
 
 /**
  * Inner method that will be called after verification of USER_ID
@@ -35,9 +23,7 @@ void AccountMicroservice::receive_callback(const nlohmann::json &msg) {
  * msg[USER_ID]: std::string
  * msg[TYPE]: int
  */
-void AccountMicroservice::create_without_check(const nlohmann::json &msg) {
-    auto user_id = msg[Account::USER_ID].get<std::string>();
-    auto account_type = msg[Account::TYPE].get<int>();
+status_t AccountMicroservice::create(const std::string &user_id, const std::string &account_type) {
     auto card = generate_card_token();
 
     // generate unique card number
@@ -50,16 +36,8 @@ void AccountMicroservice::create_without_check(const nlohmann::json &msg) {
                           << Account::TYPE << account_type << Account::OPENING_DATE << generate_current_datetime()
                           << Account::ACTIVE << true << Account::BALANCE << 0.0 << finalize;
     auto status = users.insert_one(session, doc.view());
-    nlohmann::json response;
-    response[constants::MESSAGE_KEY_DST] = msg[constants::MESSAGE_KEY_DST];
-    response[constants::MESSAGE_KEY_UUID] = msg[constants::MESSAGE_KEY_UUID];
-    response[response::STATUS] = status ? response::type::OK : response::type::EXISTS;
-    send_response(response);
-}
 
-void AccountMicroservice::create(const nlohmann::json &msg) {
-    std::cout << "Creating account with " << to_string(msg) << std::endl;
-    create_without_check(msg); // Temporary
+    return {(status ? response::type::OK : response::type::EXISTS)};
 }
 
 
@@ -68,20 +46,20 @@ void AccountMicroservice::create(const nlohmann::json &msg) {
  * Expects:
  * msg[NUMBER]: std::string
  */
-void AccountMicroservice::get(const nlohmann::json &msg) {
+account_t AccountMicroservice::get(const std::string &card) {
     bsoncxx::stdx::optional<bsoncxx::document::value> result = users.find_one(session,
-                                 document{} << Account::NUMBER << msg[Account::NUMBER].get<std::string>() << finalize);
-    nlohmann::json response;
-    response[constants::MESSAGE_KEY_DST] = msg[constants::MESSAGE_KEY_DST];
-    response[constants::MESSAGE_KEY_UUID] = msg[constants::MESSAGE_KEY_UUID];
-    if(result) {
-        response[response::INSTANCE] = nlohmann::json::parse(bsoncxx::to_json(*result));
-        response[response::STATUS] = response::type::EXISTS;
-    } else {
-        response[response::STATUS] = response::type::NO_EXISTS;
+                                                                              document{} << Account::NUMBER << card
+                                                                                         << finalize);
+    account_t account;
+    if (result) {
+//        account.user_id = (*result)[Account::ID].get;
     }
-
-    send_response(response);
+//    } else {
+//        response[response::STATUS] = response::type::NO_EXISTS;
+//    }
+//
+//    send_response(response);
+    return {};
 
 }
 
@@ -90,14 +68,9 @@ void AccountMicroservice::get(const nlohmann::json &msg) {
  * Expects:
  * msg[NUMBER]: std::string
  */
-void AccountMicroservice::remove(const nlohmann::json &msg) {
-    auto status = users.delete_one(session,
-                                 document{} << Account::NUMBER << msg[Account::NUMBER].get<std::string>() << finalize);
-    nlohmann::json response;
-    response[constants::MESSAGE_KEY_DST] = msg[constants::MESSAGE_KEY_DST];
-    response[constants::MESSAGE_KEY_UUID] = msg[constants::MESSAGE_KEY_UUID];
-    response[response::STATUS] = status ? response::type::OK : response::type::NO_EXISTS;
-    send_response(response);
+status_t AccountMicroservice::remove(const std::string &card) {
+    auto status = users.delete_one(session, document{} << Account::NUMBER << card << finalize);
+    return {(status ? response::type::OK : response::type::NO_EXISTS)};
 
 }
 
@@ -108,22 +81,15 @@ void AccountMicroservice::remove(const nlohmann::json &msg) {
  * msg[TO]: std::string
  * msg[AMOUNT]: double
  */
-void AccountMicroservice::transaction(const nlohmann::json &msg) {
-    auto from = msg["FROM"].get<std::string>();
-    auto to = msg["TO"].get<std::string>();
-    auto amount = msg["AMOUNT"].get<double>();
+status_t AccountMicroservice::transaction(const std::string &from, const std::string &to, double amount) {
+
     auto status1 = users.update_one(session, document{} << Account::NUMBER << from << finalize,
                                     document{} << INC << open_document << Account::BALANCE << -1 * amount
                                                << close_document << finalize);
     auto status2 = users.update_one(session, document{} << Account::NUMBER << to << finalize,
                                     document{} << INC << open_document << Account::BALANCE << amount << close_document
                                                << finalize);
-
-    nlohmann::json response;
-    response[constants::MESSAGE_KEY_DST] = msg[constants::MESSAGE_KEY_DST];
-    response[constants::MESSAGE_KEY_UUID] = msg[constants::MESSAGE_KEY_UUID];
-    response[response::STATUS] = (status1 && status2) ? response::type::OK : response::type::FAILED;
-    send_response(response);
+    return {((status1 && status2) ? response::type::OK : response::type::FAILED)};
 }
 
 /**
@@ -131,14 +97,9 @@ void AccountMicroservice::transaction(const nlohmann::json &msg) {
  * Expects:
  * msg[NUMBER]: std::string
  */
-void AccountMicroservice::exists(const nlohmann::json &msg) {
-    auto status = users.find_one(session,
-                                 document{} << Account::NUMBER << msg[Account::NUMBER].get<std::string>() << finalize);
-    nlohmann::json response;
-    response[constants::MESSAGE_KEY_DST] = msg[constants::MESSAGE_KEY_DST];
-    response[constants::MESSAGE_KEY_UUID] = msg[constants::MESSAGE_KEY_UUID];
-    response[response::STATUS] = status ? response::type::EXISTS : response::type::NO_EXISTS;
-    send_response(response);
+status_t AccountMicroservice::exists(const std::string &card) {
+    auto status = users.find_one(session, document{} << Account::NUMBER << card << finalize);
+    return {(status ? response::type::EXISTS : response::type::NO_EXISTS)};
 
 }
 

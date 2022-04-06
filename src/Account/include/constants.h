@@ -1,19 +1,6 @@
 #ifndef UCU_BANK_CONSTANTS_H
 #define UCU_BANK_CONSTANTS_H
-//namespace {
-//    enum AccountRequests {
-//        CREATE,
-//        GET,
-//        UPDATE,
-//        REMOVE
-//    };
-//
-//    enum AccountResponseStatus {
-//        OK,
-//        EXISTS,
-//        BAD_TYPE
-//    };
-//}
+
 
 #include <string>
 
@@ -41,6 +28,10 @@ namespace request {
         CREATE_WITHOUT_CHECK
     };
 }
+
+typedef struct {
+    int status;
+} status_t;
 
 
 #endif //UCU_BANK_CONSTANTS_H

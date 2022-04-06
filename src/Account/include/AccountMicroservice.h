@@ -25,7 +25,6 @@ using bsoncxx::builder::basic::sub_array;
 
 //namespace n = nlohmann;
 class AccountMicroservice : public BasicMicroservice {
-    using BasicMicroservice::BasicMicroservice;
 
 private:
     const std::string SET = "$set";
@@ -47,34 +46,20 @@ private:
     mongocxx::read_preference rp_primary{};
     mongocxx::options::transaction sopts;
     mongocxx::client_session session = client.start_session();
-    std::map<int, void (AccountMicroservice::*)(const nlohmann::json &)> on_request = {
-            {request::type::CREATE,      &AccountMicroservice::create},
-            {request::type::GET,         &AccountMicroservice::get},
-            {request::type::REMOVE,      &AccountMicroservice::remove},
-            {request::type::TRANSACTION, &AccountMicroservice::transaction},
-            {request::type::EXISTS,      &AccountMicroservice::exists}
-    };
-
-    std::map<int, void (AccountMicroservice::*)(const nlohmann::json &)> on_response = {
-            {request::type::CREATE_WITHOUT_CHECK, &AccountMicroservice::create_without_check}
-    };
 
 public:
-    void custom_start() override;
+    using BasicMicroservice::BasicMicroservice;
+    void start() override;
 
-    void receive_callback(const nlohmann::json &msg) override;
+    status_t create(const std::string &user_id, const std::string &account_type);
 
-    void create(const nlohmann::json &msg);
+    account_t get(const std::string &card);
 
-    void create_without_check(const nlohmann::json &msg);
+    status_t remove(const std::string &card);
 
-    void get(const nlohmann::json &msg);
+    status_t transaction(const std::string &from, const std::string &to, double amount);
 
-    void remove(const nlohmann::json &msg);
-
-    void transaction(const nlohmann::json &msg);
-
-    void exists(const nlohmann::json &msg);
+    status_t exists(const std::string &card);
 };
 
 

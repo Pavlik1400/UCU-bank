@@ -5,9 +5,9 @@ class MyCustomMicroservice : public BasicMicroservice {
     using BasicMicroservice::BasicMicroservice;
 
 public:
-    void custom_start() override;
+    void start() override;
 
-    void custom_finish() override;
+    void finish() override;
 
     ~MyCustomMicroservice() override;
 
@@ -44,7 +44,7 @@ std::string MyCustomMicroservice::sub_call() {
 }
 
 
-void MyCustomMicroservice::custom_start() {
+void MyCustomMicroservice::start() {
     rpc_server.bind("first_call", [&](const std::string &some_str) { return this->first_call(some_str); });
     rpc_server.bind("set_str", [&](const std::string &some_str) { return this->set_str(some_str); });
     rpc_server.bind("sub_call", [&]() { return this->sub_call(); });
@@ -64,7 +64,7 @@ void MyCustomMicroservice::custom_start() {
     CUSTOM_LOG(lg, fatal) << "MyCustomMicroservice start fatal";
 }
 
-void MyCustomMicroservice::custom_finish() {
+void MyCustomMicroservice::finish() {
 //    LOG(debug) << "MyCustomMicroservice finish" << std::endl;
 }
 

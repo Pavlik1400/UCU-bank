@@ -19,9 +19,9 @@ public:
 
     void run();
 
-    virtual void custom_start();
+    virtual void start();
 
-    virtual void custom_finish();
+    virtual void finish();
 
     virtual ~BasicMicroservice();
 

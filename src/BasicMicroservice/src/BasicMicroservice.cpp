@@ -13,9 +13,9 @@ BasicMicroservice::BasicMicroservice(const std::vector<std::pair<std::string, st
 }
 
 void BasicMicroservice::run() {
-    custom_start();
+    start();
     rpc_server.run();
-    custom_finish();
+    finish();
 }
 
 
@@ -23,10 +23,10 @@ BasicMicroservice::~BasicMicroservice() = default;
 
 
 // Override next methods to your implementation
-void BasicMicroservice::custom_start() {
+void BasicMicroservice::start() {
     std::cout << "Base microservice start" << std::endl;
 }
 
-void BasicMicroservice::custom_finish() {
+void BasicMicroservice::finish() {
     std::cout << "Base microservice finish" << std::endl;
 }
