@@ -1,0 +1,16 @@
+{
+    "triplet": "x64",
+    "dependencies": [
+        "drogon",
+        "cppkafka",
+        "mongo-cxx-driver",
+        "libpqxx",
+        "serdepp",
+        "nlohmann-json",
+        "aws-sdk-cpp[email]",
+        "boost-uuid",
+        "boost-log",
+        "redis-plus-plus",
+        "rpclib"
+    ]
+}
