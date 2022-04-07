@@ -10,3 +10,4 @@ compile_commands.json
 uploads
 logs
 *.log
+vcpkg/*

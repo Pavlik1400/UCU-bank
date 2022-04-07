@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  develop:
+    image: mak9su4roi/dev:full
+    working_dir: /home
+    volumes:
+      - "./src:/home/src:ro"
+
+  mongodb:
+    build: src/mongodb
+    entrypoint: bash -c "mongod --replSet 'rs0' --bind_ip localhost& sleep 10 && mongosh --host mongodb"
+    # --eval 'EJSON.stringify(rs.initiate())' --shell"
+    networks:
+      new:
+        aliases:
+          - mongodb
+    tty: true
+
+  develop-custom:
+    extends: develop
+    depends_on:
+      - mongodb
+    networks:
+      - new
+    environment:
+      - examples_mongodb_examples=1
+    tty: true
+    entrypoint: bash
+    ## -c "python3 src/build.py dev-posix && bash"
+    #&& bin/mongodb_transactions || bash"
+
+networks: 
+  new:
+    name: my-app-net
+
