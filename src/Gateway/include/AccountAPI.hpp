@@ -1,31 +1,37 @@
 #ifndef UCU_BANK_ACCOUNTAPI_HPP
 #define UCU_BANK_ACCOUNTAPI_HPP
 
-#include "Gateway.hpp"
-#include "Account/include/constants.h"
+#include "api_utlis.hpp"
+#include "Account/include/account_constants.h"
 #include "BasicMicroservice/include/BasicMicroservice.hpp"
+#include "rpc/client.h"
+
 
 
 namespace ucubank_api::v1 {
 
-    class Account : public drogon::HttpController<Account> {
+    class AccountAPI : public drogon::HttpController<AccountAPI, false> {
     public:
         METHOD_LIST_BEGIN
             //use METHOD_ADD to add your custom processing function here;
-            METHOD_ADD(Account::create, "/create/", drg::Get, "LoginFilter");
+            METHOD_ADD(AccountAPI::create, "/create/", drg::Post, "LoginFilter");
         METHOD_LIST_END
 
-        //your declaration of processing function maybe like this:
-        void create(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback) const;
+        void create(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
     public:
-        Account() {
-            std::cout << "Account constructor" << std::endl;
-            LOG_DEBUG << "Account constructor!";
+        AccountAPI(rpc_clients_vec &clients) {
+            logger::init();
+            for (auto &client_entry : clients) {
+                rpc_clients.try_emplace(client_entry.first, client_entry.second.first, client_entry.second.second);
+            }
+            CUSTOM_LOG(logger, debug) << "AccountAPI is created";
+
         }
 
     private:
-
+        src::severity_logger< logging::trivial::severity_level > logger;
+        rpc_clients_map rpc_clients;
     };
 } // namespace api::v1
 

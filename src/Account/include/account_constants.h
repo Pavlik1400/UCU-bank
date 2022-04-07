@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_CONSTANTS_H
-#define UCU_BANK_CONSTANTS_H
+#ifndef UCU_BANK_ACCOUNT_CONSTANTS_H
+#define UCU_BANK_ACCOUNT_CONSTANTS_H
 //namespace {
 //    enum AccountRequests {
 //        CREATE,
@@ -43,4 +43,4 @@ namespace request {
 }
 
 
-#endif //UCU_BANK_CONSTANTS_H
+#endif //UCU_BANK_ACCOUNT_CONSTANTS_H

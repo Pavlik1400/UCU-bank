@@ -1,6 +1,6 @@
-#include "User.hpp"
+#include "UserAPI.hpp"
 
-void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
+void ucubank_api::v1::UserAPI::info(const drogon::HttpRequestPtr &req,
                                  std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                  const std::string &login) const {
 
@@ -18,7 +18,7 @@ void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
 
 }
 
-void ucubank_api::v1::User::login(const drogon::HttpRequestPtr &req,
+void ucubank_api::v1::UserAPI::login(const drogon::HttpRequestPtr &req,
                                   std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                   const std::string &login) const {
     LOG_DEBUG << "GET /ucubank_api/v1/user/login/" << login;
@@ -48,7 +48,7 @@ void ucubank_api::v1::User::login(const drogon::HttpRequestPtr &req,
     callback(resp);
 }
 
-void ucubank_api::v1::User::register_(const drogon::HttpRequestPtr &req,
+void ucubank_api::v1::UserAPI::register_(const drogon::HttpRequestPtr &req,
                                       std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                       const std::string &login) {
     LOG_DEBUG << "GET /ucubank_api/v1/user/register/" << login;

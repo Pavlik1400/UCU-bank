@@ -13,23 +13,27 @@
 #include "logging.hpp"
 
 
+struct RpcServerAddress {
+    std::string address;
+    uint16_t port;
+};
+
 class BasicMicroservice {
 public:
-    BasicMicroservice(const std::vector<std::pair<std::string, std::pair<std::string, unsigned short>>>& clients, int port, const std::string &redis_url);
+    BasicMicroservice(uint16_t port, const std::string &redis_url);
 
     void run();
 
-    virtual void custom_start();
+    virtual void custom_start() = 0;
 
-    virtual void custom_finish();
+    virtual void custom_finish() = 0;
 
     virtual ~BasicMicroservice();
 
 protected:
     rpc::server rpc_server;
-    std::unordered_map<std::string, rpc::client> rpc_clients{};
     sw::redis::Redis redis_client;
-    src::severity_logger< logging::trivial::severity_level > lg;
+    src::severity_logger<logging::trivial::severity_level> lg;
 };
 
 

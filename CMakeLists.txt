@@ -9,6 +9,7 @@ add_subdirectory(examples/rpc_examples)
 
 add_subdirectory(src/BasicMicroservice)
 add_subdirectory(src/Account)
-add_subdirectory(src/User)
+#add_subdirectory(src/User)
 add_subdirectory(src/Gateway)
 add_subdirectory(src/Auth)
+add_subdirectory(src/Transaction)

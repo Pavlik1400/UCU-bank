@@ -1,11 +1,11 @@
 #ifndef UCU_BANK_USER_H
-#define UCU_BANK_USER_H
+#define UCU_BANK_USERAPI_H
 
 #include <iostream>
 #include <string>
 #include "UserType.h"
 
-class User {
+class UserAPI {
     size_t id;
     UserType type;
     std::string name;
