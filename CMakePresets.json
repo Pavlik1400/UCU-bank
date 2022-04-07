@@ -6,12 +6,12 @@
             "displayName": "DEV::POSIX",
             "description": "TBD",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/../build/${presetName}",
+            "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/../bin",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/bin",
                 "CMAKE_CXX_STANDARD": "17",
                 
                 "PROJECT_NAME": "UCU_BANK",

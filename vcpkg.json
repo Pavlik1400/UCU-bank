@@ -1,0 +1,20 @@
+{
+    "name": "bank",
+    "version-string": "1.0",
+    "dependencies": [
+        {
+            "name": "aws-sdk-cpp",
+            "features": [ "email" ]
+        },
+        "drogon",
+        "cppkafka",
+        "mongo-cxx-driver",
+        "libpqxx",
+        "serdepp",
+        "nlohmann-json",
+        "boost-uuid",
+        "boost-log",
+        "redis-plus-plus",
+        "rpclib"
+    ]
+}
