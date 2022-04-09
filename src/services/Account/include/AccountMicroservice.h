@@ -12,7 +12,6 @@
 #include <bsoncxx/builder/stream/array.hpp>
 #include "BasicMicroservice.hpp"
 #include "account_constants.h"
-#include "Account.h"
 
 using bsoncxx::builder::stream::close_array;
 using bsoncxx::builder::stream::close_document;
@@ -23,7 +22,6 @@ using bsoncxx::builder::stream::open_document;
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::sub_array;
 
-//namespace n = nlohmann;
 class AccountMicroservice : public BasicMicroservice {
 
 private:
@@ -47,19 +45,23 @@ private:
     mongocxx::options::transaction sopts;
     mongocxx::client_session session = client.start_session();
 
+    void register_methods();
+
 public:
     using BasicMicroservice::BasicMicroservice;
     void start() override;
 
-    status_t create(const std::string &user_id, const std::string &account_type);
+    void finish() override;
 
-    account_t get(const std::string &card);
+    account::status create(const std::string &user_id, const std::string &account_type);
 
-    status_t remove(const std::string &card);
+    std::pair<account::status, account_t> get(const std::string &card);
 
-    status_t transaction(const std::string &from, const std::string &to, double amount);
+    account::status remove(const std::string &card);
 
-    status_t exists(const std::string &card);
+    account::status transaction(const std::string &from, const std::string &to, double amount);
+
+    account::status exists(const std::string &card);
 };
 
 

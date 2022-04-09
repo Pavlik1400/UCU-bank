@@ -20,7 +20,7 @@ struct RpcServerAddress {
 
 class BasicMicroservice {
 public:
-    BasicMicroservice(uint16_t port, const std::string &redis_url);
+    BasicMicroservice(int port, const std::string &redis_url);
 
     void run();
 

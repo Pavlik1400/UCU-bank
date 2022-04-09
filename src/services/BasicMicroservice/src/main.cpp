@@ -23,9 +23,9 @@ private:
 
 std::string MyCustomMicroservice::first_call(const std::string &some_str) {
     std::cout << "Calling first_call" << std::endl << std::endl;
-    std::cout << rpc_clients.at("first-client").call("sub_call").as<std::string>() << std::endl;
-    rpc_clients.at("first-client").call("set_str", some_str);
-    std::cout << rpc_clients.at("first-client").call("sub_call").as<std::string>() << std::endl;
+//    std::cout << rpc_clients.at("first-client").call("sub_call").as<std::string>() << std::endl;
+//    rpc_clients.at("first-client").call("set_str", some_str);
+//    std::cout << rpc_clients.at("first-client").call("sub_call").as<std::string>() << std::endl;
 
     return "fully done";
 }
@@ -72,18 +72,18 @@ MyCustomMicroservice::~MyCustomMicroservice() = default;
 
 int main(int argc, char *argv[]) {
     if (argc > 1) {
-        std::vector<std::pair<std::string, std::pair<std::string, unsigned short>>> clients = {{"first-client", {"127.0.0.1", 45035}}};
+//        std::vector<std::pair<std::string, std::pair<std::string, unsigned short>>> clients = {{"first-client", {"127.0.0.1", 45035}}};
         int port = 45034;
         std::string redis_url = "tcp://localhost:6379";
 
-        auto my_custom_microservice = MyCustomMicroservice{clients, port, redis_url};
+        auto my_custom_microservice = MyCustomMicroservice{port, redis_url};
         my_custom_microservice.run();
     } else {
         std::vector<std::pair<std::string, std::pair<std::string, unsigned short>>> clients = {};
         int port = 45035;
         std::string redis_url = "tcp://localhost:6379";
 
-        auto my_custom_microservice = MyCustomMicroservice{clients, port, redis_url};
+        auto my_custom_microservice = MyCustomMicroservice{port, redis_url};
         my_custom_microservice.run();
     }
 }

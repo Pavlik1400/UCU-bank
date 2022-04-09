@@ -3,7 +3,7 @@
 #include "constants.hpp"
 
 
-BasicMicroservice::BasicMicroservice(const uint16_t port, const std::string &redis_url) : rpc_server(port),
+BasicMicroservice::BasicMicroservice(const int port, const std::string &redis_url) : rpc_server(port),
                                                                                           redis_client(redis_url) {
     logger::init();
 }

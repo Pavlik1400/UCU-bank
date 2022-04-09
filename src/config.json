@@ -11,6 +11,7 @@
         "boost-uuid",
         "boost-log",
         "redis-plus-plus",
-        "rpclib"
+        "rpclib",
+        "msgpack"
     ]
 }
