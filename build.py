@@ -1,6 +1,3 @@
-import os
-
-os.chdir("src")
 from py_pkg import CONFIG_PRESETS, BUILD_PRESETS, CMAKE_BUILD_CMD_T, CMAKE_CONFIGURE_CMD_T, cmd_t_split, join_path
 from typing import Optional
 from argparse import ArgumentParser
@@ -54,7 +51,6 @@ def main():
     run(cmd_t_split(CMAKE_CONFIGURE_CMD_T, prs=conf_name))
     run(cmd_t_split(CMAKE_BUILD_CMD_T, prs=args.build_name))
 
-    os.chdir("..")
     compile_commands = join_path(binary_dir, COMPILE_COMMANDS)
     if exists(compile_commands):
         if exists(COMPILE_COMMANDS):

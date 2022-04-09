@@ -1,7 +1,5 @@
-#ifndef UCU_BANK_CONSTANTS_H
-#define UCU_BANK_CONSTANTS_H
-
-
+#ifndef UCU_BANK_ACCOUNT_CONSTANTS_H
+#define UCU_BANK_ACCOUNT_CONSTANTS_H
 #include <string>
 
 namespace response {
@@ -34,4 +32,4 @@ typedef struct {
 } status_t;
 
 
-#endif //UCU_BANK_CONSTANTS_H
+#endif //UCU_BANK_ACCOUNT_CONSTANTS_H
