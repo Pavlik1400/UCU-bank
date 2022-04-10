@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_ACCOUNTMICROSERVICE_H
-#define UCU_BANK_ACCOUNTMICROSERVICE_H
+#ifndef UCU_BANK_USERMICROSERVICE_H
+#define UCU_BANK_USERMICROSERVICE_H
 
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
@@ -11,7 +11,7 @@
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/builder/stream/array.hpp>
 #include "BasicMicroservice.hpp"
-#include "account_constants.h"
+#include "user_constants.h"
 
 using bsoncxx::builder::stream::close_array;
 using bsoncxx::builder::stream::close_document;
@@ -22,7 +22,7 @@ using bsoncxx::builder::stream::open_document;
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::sub_array;
 
-class AccountMicroservice : public BasicMicroservice {
+class UserMicroservice : public BasicMicroservice {
 
 private:
     const std::string SET = "$set";
@@ -38,7 +38,7 @@ private:
     mongocxx::database db;
 
     // collections in DB
-    mongocxx::collection accounts;
+    mongocxx::collection users;
     mongocxx::write_concern wc_majority{};
     mongocxx::read_concern rc_local{};
     mongocxx::read_preference rp_primary{};
@@ -53,16 +53,16 @@ public:
 
     void finish() override;
 
-    account::status create(const std::string &user_id, const std::string &account_type);
+    user::status create(const user_t &user);
 
-    std::pair<account::status, account_t> get(const std::string &card);
+    std::pair<user::status, user_t> get(const std::string &name, const std::string &phoneNo);
 
-    account::status remove(const std::string &card);
+    user::status remove(const std::string &name, const std::string &phoneNo);
 
-    account::status transaction(const std::string &from, const std::string &to, double amount);
+    user::status exists(const std::string &name, const std::string &phoneNo);
 
-    account::status exists(const std::string &card);
+    user::status valid_id(const std::string &id);
 };
 
 
-#endif //UCU_BANK_ACCOUNTMICROSERVICE_H
+#endif //UCU_BANK_USERMICROSERVICE_H
