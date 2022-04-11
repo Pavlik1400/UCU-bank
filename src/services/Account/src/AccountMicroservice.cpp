@@ -3,10 +3,10 @@
 #include "utils.h"
 
 void AccountMicroservice::start() {
-    db = client["users"];
-    users = db["users"];
-    users.create_index(session, document{} << account::USER_ID << 1 << finalize);
-    users.create_index(session, document{} << account::NUMBER << 1 << finalize);
+    db = client["bank"];
+    accounts = db["accounts"];
+    accounts.create_index(session, document{} << account::USER_ID << 1 << finalize);
+    accounts.create_index(session, document{} << account::NUMBER << 1 << finalize);
     wc_majority.acknowledge_level(mongocxx::write_concern::level::k_majority);
     rc_local.acknowledge_level(mongocxx::read_concern::level::k_local);
     rp_primary.mode(mongocxx::read_preference::read_mode::k_primary);
@@ -28,14 +28,14 @@ account::status AccountMicroservice::create(const std::string &user_id, const st
     auto card = generate_card_token();
 
     // generate unique card number
-    while (users.find_one(session, document{} << account::NUMBER << card << finalize)) {
+    while (accounts.find_one(session, document{} << account::NUMBER << card << finalize)) {
         card = generate_card_token();
     }
 
     auto doc = document{} << account::USER_ID << user_id << account::NUMBER << card << account::CVV << generate_cvv()
                           << account::TYPE << account_type << account::OPENING_DATE << generate_current_datetime()
                           << account::ACTIVE << true << account::BALANCE << 0.0 << finalize;
-    auto status = users.insert_one(session, doc.view());
+    auto status = accounts.insert_one(session, doc.view());
 
     return status ? account::status::OK : account::status::CREATION_FAILED;
 }
@@ -43,7 +43,7 @@ account::status AccountMicroservice::create(const std::string &user_id, const st
 
 std::pair<account::status, account_t> AccountMicroservice::get(const std::string &card) {
     CUSTOM_LOG(lg, debug) << "Get call";
-    auto result = users.find_one(session, document{} << account::NUMBER << card << finalize);
+    auto result = accounts.find_one(session, document{} << account::NUMBER << card << finalize);
     account_t account;
 
     if (result) {
@@ -68,18 +68,18 @@ std::pair<account::status, account_t> AccountMicroservice::get(const std::string
 
 account::status AccountMicroservice::remove(const std::string &card) {
     CUSTOM_LOG(lg, debug) << "Remove call";
-    auto status = users.delete_one(session, document{} << account::NUMBER << card << finalize);
+    auto status = accounts.delete_one(session, document{} << account::NUMBER << card << finalize);
     return status ? account::status::OK : account::status::INVALID_CARD_NUMBER;
 
 }
 
 account::status AccountMicroservice::transaction(const std::string &from, const std::string &to, double amount) {
     CUSTOM_LOG(lg, debug) << "Transaction call";
-    auto status1 = users.update_one(session, document{} << account::NUMBER << from << finalize,
-                                    document{} << INC << open_document << account::BALANCE << -1 * amount
+    auto status1 = accounts.update_one(session, document{} << account::NUMBER << from << finalize,
+                                       document{} << INC << open_document << account::BALANCE << -1 * amount
                                                << close_document << finalize);
-    auto status2 = users.update_one(session, document{} << account::NUMBER << to << finalize,
-                                    document{} << INC << open_document << account::BALANCE << amount << close_document
+    auto status2 = accounts.update_one(session, document{} << account::NUMBER << to << finalize,
+                                       document{} << INC << open_document << account::BALANCE << amount << close_document
                                                << finalize);
     return status1 && status2 ? account::status::OK : account::status::TRANSACTION_FAILED;
 }
@@ -87,7 +87,7 @@ account::status AccountMicroservice::transaction(const std::string &from, const 
 
 account::status AccountMicroservice::exists(const std::string &card) {
     CUSTOM_LOG(lg, debug) << "Exists call";
-    auto status = users.find_one(session, document{} << account::NUMBER << card << finalize);
+    auto status = accounts.find_one(session, document{} << account::NUMBER << card << finalize);
     return status ? account::status::OK : account::status::INVALID_CARD_NUMBER;
 
 }

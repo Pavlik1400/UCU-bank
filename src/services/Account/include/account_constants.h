@@ -27,7 +27,7 @@ namespace account {
 
 MSGPACK_ADD_ENUM(account::status)
 
-typedef struct account_t {
+struct account_t {
     std::string id;
     std::string user_id;
     std::string cvv;
@@ -37,7 +37,7 @@ typedef struct account_t {
     bool active;
     double balance;
     MSGPACK_DEFINE (id, user_id, cvv, number, type, opening_date, active, balance);
-} account_t;
+};
 
 inline std::ostream &operator<<(std::ostream &os, const account_t &account) {
     os << "{\n" << account::USER_ID << " : " << account.user_id << '\n' << account::CVV << " : " << account.cvv << '\n'

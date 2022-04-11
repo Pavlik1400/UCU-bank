@@ -1,9 +1,0 @@
-#ifndef UCU_BANK_ACCOUNTTYPE_H
-#define UCU_BANK_ACCOUNTTYPE_H
-
-enum UserType {
-    CUSTOMER,
-    EMPLOYEE
-};
-
-#endif //UCU_BANK_ACCOUNTTYPE_H
