@@ -51,6 +51,7 @@ void TransactionMicroservice::finish() {
 }
 
 transaction::status TransactionMicroservice::make_transaction(const Transaction &tran) {
+    CUSTOM_LOG(lg, debug) << "create " << tran;
     auto[status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
     CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
     if (status != transaction::OK) return status;
@@ -121,13 +122,13 @@ add_transaction_res TransactionMicroservice::add_transaction_to_db(
                 work.esc(cur_time_str()) + "'," +
                 work.esc(std::to_string(status)) + ",'" +
                 work.esc(tran.description) + "'," +
-                work.esc(std::to_string(tran.category)) + "," +
+                work.esc(std::to_string(tran.category)) +
                 ") RETURNING id";
         pq::result insert_res(work.exec(sql));
         entry_id = insert_res.begin()[0].as<unsigned long long>();
         work.commit();
     } catch (const std::exception &exc) {
-        CUSTOM_LOG(lg, error) << "Error while inserting transaction: " << tran;
+        CUSTOM_LOG(lg, error) << "Error while inserting transaction: " << tran << ": \n" << exc.what();
         return {transaction::FAILED, -1};
     }
     return {transaction::OK, entry_id};
