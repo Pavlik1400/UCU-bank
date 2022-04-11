@@ -22,8 +22,8 @@ int main(int argc, char *argv[]) {
             std::cout << "Create table" << std::endl;
             auto sql = "CREATE TABLE IF NOT EXISTS ACCOUNT_MONEY_TRANSFER("
                        "ID SERIAL PRIMARY KEY               NOT NULL,"
-                       "FROM_UID       BIGINT            NOT NULL,"
-                       "TO_UID         BIGINT            NOT NULL,"
+                       "to_acc_number       BIGINT            NOT NULL,"
+                       "to_acc_number         BIGINT            NOT NULL,"
                        "AMOUNT         NUMERIC(12,2)     NOT NULL,"
                        "DATE           TIMESTAMP         NOT NULL,"
                        "STATUS         INT               NOT NULL,"
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
 
             std::cout << "Insert Data" << std::endl;
-            sql = "INSERT INTO account_money_transfer (from_uid, to_uid, amount, date, status, description, category) values"
+            sql = "INSERT INTO account_money_transfer (from_acc_number, to_acc_number, amount, date, status, description, category) values"
                   "(0,1,12.55,'2001-09-28 01:00:00',0,'pizza',1),"
                   "(1,2,4.7,'2001-09-29 03:00:00',0,'coffee',2)";
             std::cout << "Executing \n" << sql << std::endl;
@@ -63,8 +63,8 @@ int main(int argc, char *argv[]) {
             for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
                 std::cout << "=============================================" << std::endl;
                 std::cout << "ID = " << c[0].as<int>() << std::endl;
-                std::cout << "FROM_UID = " << c[1].as<long long>() << std::endl;
-                std::cout << "TO_UID = " << c[2].as<long long>() << std::endl;
+                std::cout << "to_acc_number = " << c[1].as<long long>() << std::endl;
+                std::cout << "to_acc_number = " << c[2].as<long long>() << std::endl;
                 std::cout << "AMOUNT = " << c[3].as<double>() << std::endl;
                 std::cout << "DATE = " << c[4].as<str>() << std::endl;
                 std::cout << "DESCRIPTION = " << c[6].as<str>() << std::endl;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
             std::cout << "Query finished successfully\n\n" << std::endl;
 
             std::cout << "Update query" << std::endl;
-            sql = "update account_money_transfer set description = 'burger' where (from_uid=0 and to_uid=1) and date='2001-09-28 01:00:00';";
+            sql = "update account_money_transfer set description = 'burger' where (to_acc_number=0 and to_acc_number=1) and date='2001-09-28 01:00:00';";
             std::cout << "Executing \n" << sql << std::endl;
 
             N.exec(sql);
@@ -81,8 +81,8 @@ int main(int argc, char *argv[]) {
             for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
                 std::cout << "=============================================" << std::endl;
                 std::cout << "ID = " << c[0].as<int>() << std::endl;
-                std::cout << "FROM_UID = " << c[1].as<long long>() << std::endl;
-                std::cout << "TO_UID = " << c[2].as<long long>() << std::endl;
+                std::cout << "from_acc_number = " << c[1].as<long long>() << std::endl;
+                std::cout << "to_acc_number = " << c[2].as<long long>() << std::endl;
                 std::cout << "AMOUNT = " << c[3].as<double>() << std::endl;
                 std::cout << "DATE = " << c[4].as<str>() << std::endl;
                 std::cout << "DESCRIPTION = " << c[6].as<str>() << std::endl;
@@ -91,12 +91,12 @@ int main(int argc, char *argv[]) {
             std::cout << "Update successfull" << std::endl;
 
             std::cout << "Alternative update" << std::endl;
-            std::cout << "select from_uid, to_uid, amount FROM account_money_transfer" << std::endl;
-            pqxx::result r{N.exec("select from_uid, to_uid, amount FROM account_money_transfer")};
+            std::cout << "select from_acc_number, to_acc_number, amount FROM account_money_transfer" << std::endl;
+            pqxx::result r{N.exec("select from_acc_number, to_acc_number, amount FROM account_money_transfer")};
             for (auto row: r)
-                std::cout << row["from_uid"].as<long long>() << " -- "
+                std::cout << row["to_acc_number"].as<long long>() << " -- "
                           << row["amount"].as<double>() << "$ --> 2"
-                          << row["to_uid"].as<long long>() << std::endl;
+                          << row["to_acc_number"].as<long long>() << std::endl;
         }
         {
             work W1{C};

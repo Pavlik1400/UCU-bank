@@ -6,9 +6,10 @@ find_package(bsoncxx CONFIG REQUIRED)
 find_package(Boost REQUIRED log)
 
 set(EXTERNAL_SOURCES ../BasicMicroservice/src/BasicMicroservice.cpp ../BasicMicroservice/src/MessageSerializer.cpp
-        ../BasicMicroservice/src/logging.cpp)
+        ../BasicMicroservice/src/logging.cpp ../Account/src/AccountClient.cpp)
 set(EXTERNAL_HEADERS ../BasicMicroservice/include/BasicMicroservice.hpp ../BasicMicroservice/include/constants.hpp
-        ../BasicMicroservice/include/MessageSerializer.hpp ../BasicMicroservice/include/logging.hpp)
+        ../BasicMicroservice/include/MessageSerializer.hpp ../BasicMicroservice/include/logging.hpp
+        ../Account/include/AccountClient.h)
 
 set(SOURCES start.cpp src/AccountMicroservice.cpp src/AccountClient.cpp src/utils.cpp)
 set(HEADERS include/AccountMicroservice.h include/AccountClient.h include/account_constants.h include/utils.h)

@@ -1,0 +1,22 @@
+{
+  "transaction": {
+    "db": {
+      "dbname": "transactions",
+      "user": "postgres",
+      "password": "postgres",
+      "hostaddr": "127.0.0.1",
+      "port": "5432"
+    },
+    "reddis_address": "localhost",
+    "reddis_port": 6380,
+    "rpc_address": "localhost",
+    "rpc_port": 45640
+  },
+
+  "account": {
+    "reddis_address": "localhost",
+    "reddis_port": 6379,
+    "rpc_address": "localhost",
+    "rpc_port": 45639
+  }
+}
