@@ -9,10 +9,18 @@ import Badge from '@mui/material/Badge';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import { useSelector } from 'react-redux'
+
+import Login from '../../components/Auth/Login';
+import Account from '../../components/Auth/Account';
 
 const Header = () => {
+  const logined = useSelector((state) => state.auth.logined)
+
 
   const menuId = 'primary-search-account-menu';
+  const openLoginFunc = React.useRef(null)
+  const openAccountFunc = React.useRef(null)
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -53,7 +61,10 @@ const Header = () => {
               aria-label="account of current user"
               aria-controls={menuId}
               aria-haspopup="true"
-              // onClick={handleProfileMenuOpen}
+              onClick={() => {
+                !logined && openLoginFunc.current();
+                logined && openAccountFunc.current();
+              }}
               color="inherit"
             >
               <AccountCircle />
@@ -71,6 +82,9 @@ const Header = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      <Login openLoginFunc={openLoginFunc} />
+      <Account openAccountFunc={openAccountFunc} />
     </Box>
   );
 }

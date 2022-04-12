@@ -10,8 +10,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import PeopleIcon from '@mui/icons-material/People';
+import {useNavigate} from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
@@ -46,6 +45,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 const LeftPanel = () => {
+    const navigate = useNavigate();
+    const navigateTransactions = React.useCallback(() => navigate('/transactions', {replace: true}), [navigate]);
+    const navigateHome = React.useCallback(() => navigate('/', {replace: true}), [navigate]);
+  
+
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
       setOpen(!open);
@@ -68,25 +72,13 @@ const LeftPanel = () => {
                 </Toolbar>
                 <Divider />
                 <List component="nav">
-                    <ListItemButton>
+                    <ListItemButton onClick={navigateHome}>
                     <ListItemIcon>
                         <DashboardIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Account" />
+                    <ListItemText primary="Home" />
                     </ListItemButton>
-                    <ListItemButton>
-                    <ListItemIcon>
-                        <ShoppingCartIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Credits" />
-                    </ListItemButton>
-                    <ListItemButton>
-                    <ListItemIcon>
-                        <PeopleIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Deposits" />
-                    </ListItemButton>
-                    <ListItemButton>
+                    <ListItemButton onClick={navigateTransactions}>
                     <ListItemIcon>
                         <BarChartIcon />
                     </ListItemIcon>

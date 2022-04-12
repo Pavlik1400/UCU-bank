@@ -7,12 +7,14 @@ import {
   Routes,
   Route
 } from "react-router-dom";
-
 import { green, lime } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
 import CssBaseline from '@mui/material/CssBaseline'
+import { Provider } from 'react-redux'
+
+import store from './store/redux'
 import MainPageView from './views/MainPage'
+import TransactionView from './views/TransactionPage'
 
 const mainTheme = createTheme({
   palette: {
@@ -43,14 +45,17 @@ const mainTheme = createTheme({
 
 ReactDOM.render(
   <React.StrictMode>
+    <Provider store={store}>
     <CssBaseline />
     <ThemeProvider theme={mainTheme}>
       <Router>
         <Routes>
           <Route path='/' element={<MainPageView/>} />
+          <Route path='/transactions' element={<TransactionView/>} />
         </Routes>
       </Router>
     </ThemeProvider>
+    </Provider>
   </React.StrictMode>,
 
   document.getElementById('root'),
