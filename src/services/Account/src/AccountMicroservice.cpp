@@ -56,7 +56,8 @@ std::pair<account::status, account_t> AccountMicroservice::get(const std::string
             account.opening_date = content[account::OPENING_DATE].get_utf8().value.to_string();
             account.active = content[account::ACTIVE].get_bool();
             account.balance = content[account::BALANCE].get_double();
-        } catch (...) {
+        } catch (const std::exception &exc) {
+            CUSTOM_LOG(lg, error) << "get failed: \n" << exc.what();
             return {account::status::GET_FAILED, {}};
         }
 
