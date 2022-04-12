@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-underscore-dangle */
 import React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from "react-dom/client";
 import {
   BrowserRouter as Router,
   Routes,
@@ -43,7 +43,8 @@ const mainTheme = createTheme({
 });
 
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
   <React.StrictMode>
     <Provider store={store}>
     <CssBaseline />
@@ -56,7 +57,5 @@ ReactDOM.render(
       </Router>
     </ThemeProvider>
     </Provider>
-  </React.StrictMode>,
-
-  document.getElementById('root'),
+  </React.StrictMode>
 )
