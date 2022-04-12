@@ -15,5 +15,8 @@ project(${PROJECT_NAME} CXX)
 #add_subdirectory(src/Auth)
 #add_subdirectory(src/Transaction)
 #=======
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    add_compile_definitions(DEBUG=1)
+endif ()
 add_subdirectory(src)
 #>>>>>>> 41d53292cb950dcbec18ee67811b133c000c4311

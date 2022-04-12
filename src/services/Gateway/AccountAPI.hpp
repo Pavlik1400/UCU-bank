@@ -2,10 +2,9 @@
 #define UCU_BANK_ACCOUNTAPI_HPP
 
 #include "api_utils.hpp"
-#include "Account/include/account_constants.h"
-#include "Account/include/AccountClient.h"
+#include "account_constants.h"
+#include "AccountClient.h"
 #include "BasicMicroservice/include/BasicMicroservice.hpp"
-#include "rpc/client.h"
 
 
 namespace ucubank_api::v1 {
@@ -30,7 +29,7 @@ namespace ucubank_api::v1 {
 
 
     public:
-        explicit AccountAPI(nlohmann::json &cnf);
+        explicit AccountAPI(const nlohmann::json &cnf);
 
     private:
 //        src::severity_logger<logging::trivial::severity_level> logger;

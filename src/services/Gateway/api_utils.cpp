@@ -13,6 +13,33 @@ std::pair<std::shared_ptr<Json::Value>, bool> getJsonObjectSafe(const drg::HttpR
     return {req_json_ptr, true};
 }
 
+bool verify_fields_present(Json::Value &req_json, Json::Value &resp_json, const std::vector<std::string> &fields) {
+    for (const auto &field: fields) {
+        if (req_json[field].empty()) {
+            resp_json["status"] = 400;
+            resp_json["message"] = "'" + field + "' field is is not present";
+            return false;
+        }
+    }
+    return true;
+}
+
+//std::pair<bool, std::pair<Json::Value, Json::Value>> prepare_json(const drogon::HttpRequestPtr &req) {
+//    auto[json, success] = getJsonObjectSafe(req);
+//    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
+//    auto req_json = *json;
+//
+//    auto resp_json = Json::Value{};
+//    resp_json["status"] = 200;
+//}
+
+void fail_response(const std::string &msg, std::function<void(const drg::HttpResponsePtr &)> &callback,
+                   Json::Value &resp_json, int status) {
+    resp_json["status"] = status;
+    resp_json["message"] = msg;
+    return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+}
+
 void GateWayLogger::debug(const std::string &str) {
     std::cout << GateWayLogger::dbg_clr << GateWayLogger::bold << "[DBG] " << str << GateWayLogger::reset << std::endl;
 }

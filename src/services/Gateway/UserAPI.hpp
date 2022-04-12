@@ -2,10 +2,14 @@
 #define UCU_BANK_USERAPI_H
 
 #include "api_utils.hpp"
+#include "UserClient.h"
+#include "user_constants.h"
+#include "BasicMicroservice/include/BasicMicroservice.hpp"
+
 
 namespace ucubank_api::v1 {
 
-    class UserAPI : public drogon::HttpController<UserAPI> {
+    class UserAPI : public drogon::HttpController<UserAPI, false> {
     public:
         METHOD_LIST_BEGIN
             //use METHOD_ADD to add your custom processing function here;
@@ -17,10 +21,10 @@ namespace ucubank_api::v1 {
 
         //your declaration of processing function maybe like this:
         void info(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                  const std::string &login) const;
+                  const std::string &login);
 
         void login(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                   const std::string &login) const;
+                   const std::string &login);
 
         void register_(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
                        const std::string &login);
@@ -29,9 +33,24 @@ namespace ucubank_api::v1 {
 //                       const std::string &login);
 
     public:
-        UserAPI() {
-//            LOG_DEBUG << "User constructor!";
-        }
+        explicit UserAPI(const nlohmann::json &cnf);
+
+    private:
+        GateWayLogger logger;
+        UserClient userClient;
+
+//        const std::vector<std::string> login_fields{"name", "phone_num", "hashed_password"};
+        const std::vector<std::string> info_fields{"name", "phone_num", "hashed_password"};
+        const std::vector<std::string> register_fields{
+                "type",
+                "name",
+                "password",
+                "date_of_birth",
+                "phoneNo",
+                "email",
+                "address",
+                "gende",
+        };
     };
 } // namespace api::v1
 
