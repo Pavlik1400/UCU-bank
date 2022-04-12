@@ -1,0 +1,10 @@
+#ifndef UCU_BANK_TRANSACTIONAPI_HPP
+#define UCU_BANK_TRANSACTIONAPI_HPP
+
+
+class TransactionAPI {
+
+};
+
+
+#endif //UCU_BANK_TRANSACTIONAPI_HPP

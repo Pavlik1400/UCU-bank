@@ -1,7 +1,7 @@
 #ifndef UCU_BANK_USERAPI_H
-#define UCU_BANK_USER_H
+#define UCU_BANK_USERAPI_H
 
-#include "Gateway.hpp"
+#include "api_utils.hpp"
 
 namespace ucubank_api::v1 {
 
@@ -12,6 +12,7 @@ namespace ucubank_api::v1 {
             METHOD_ADD(UserAPI::info, "/info/{login}", drg::Get);
             METHOD_ADD(UserAPI::login, "/login/{login}", drg::Get);
             METHOD_ADD(UserAPI::register_, "/register/{login}", drg::Post);
+//            METHOD_ADD(UserAPI::remove, "/register/{login}", drg::Delete);
         METHOD_LIST_END
 
         //your declaration of processing function maybe like this:
@@ -24,10 +25,12 @@ namespace ucubank_api::v1 {
         void register_(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
                        const std::string &login);
 
+//        void remove(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
+//                       const std::string &login);
+
     public:
         UserAPI() {
-            std::cout << "User constructor" << std::endl;
-            LOG_DEBUG << "User constructor!";
+//            LOG_DEBUG << "User constructor!";
         }
     };
 } // namespace api::v1
