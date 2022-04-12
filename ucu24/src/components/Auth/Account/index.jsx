@@ -7,21 +7,16 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { exit } from '../../../store/slices/AuthSlice'
 import { Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
-const account_data = {
-    "name": "Yevnen",
-    "surname": "Pankevych",
-    "phone": "+380123456789",
-    "address": "Lviv, Antonovycha 256",
-}
-
 
 const Account = ({ openAccountFunc }) => {
     const dispatch = useDispatch()
+
+    const account_data = useSelector((state) => state.auth.account)
 
     const [open, setOpen] = React.useState(false);
 

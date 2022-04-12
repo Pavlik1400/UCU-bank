@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux'
 import { login } from '../../../store/slices/AuthSlice'
 import { Container } from '@mui/material';
 
+import Register from '../Register'
+
 
 const Login = ({ openLoginFunc }) => {
     const dispatch = useDispatch()
@@ -22,6 +24,8 @@ const Login = ({ openLoginFunc }) => {
     const handleClose = () => {
       setOpen(false);
     };
+
+    const openRegisterFunc = React.useRef(null)
 
     React.useEffect(() => { openLoginFunc.current = handleClickOpen }, [])
 
@@ -58,7 +62,12 @@ const Login = ({ openLoginFunc }) => {
               dispatch(login());
               handleClose();
           }}>Login</Button>
+          <Button onClick={() => {
+              openRegisterFunc.current();
+          }}>Register</Button>
         </DialogActions>
+
+        <Register openRegisterFunc={openRegisterFunc} closeParent={handleClose} />
       </Dialog>
     );
 }

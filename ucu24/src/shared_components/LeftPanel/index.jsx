@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import {useNavigate} from 'react-router-dom';
@@ -48,6 +49,7 @@ const LeftPanel = () => {
     const navigate = useNavigate();
     const navigateTransactions = React.useCallback(() => navigate('/transactions', {replace: true}), [navigate]);
     const navigateHome = React.useCallback(() => navigate('/', {replace: true}), [navigate]);
+    const navigateAccounts = React.useCallback(() => navigate('/accounts', {replace: true}), [navigate]);
   
 
     const [open, setOpen] = React.useState(true);
@@ -83,6 +85,12 @@ const LeftPanel = () => {
                         <BarChartIcon />
                     </ListItemIcon>
                     <ListItemText primary="Transactions" />
+                    </ListItemButton>
+                    <ListItemButton onClick={navigateAccounts}>
+                    <ListItemIcon>
+                        <AccountBalanceWalletIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Accounts" />
                     </ListItemButton>
                 </List>
             </Drawer>

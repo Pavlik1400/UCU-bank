@@ -1,5 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+function makeid(length) {
+    var result           = '';
+    var characters       = '0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
 export const accountSlice = createSlice({
   name: 'account',
   initialState: {
@@ -15,6 +26,14 @@ export const accountSlice = createSlice({
     ],
   },
   reducers: {
+    addAccount: (state, action) => {
+        const newAcc = makeid(16);
+        state.accounts.push({
+            "number": newAcc,
+            "amount": 0
+        })
+    },
+
     makeAccoutTransaction: (state, action) => {
         let flag_from = false;
         let elem_from = 0;
@@ -41,6 +60,6 @@ export const accountSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { makeAccoutTransaction } = accountSlice.actions
+export const { makeAccoutTransaction, addAccount } = accountSlice.actions
 
 export default accountSlice.reducer

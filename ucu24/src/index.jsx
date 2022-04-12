@@ -15,6 +15,7 @@ import { Provider } from 'react-redux'
 import store from './store/redux'
 import MainPageView from './views/MainPage'
 import TransactionView from './views/TransactionPage'
+import AccountView from './views/AccountPage'
 
 const mainTheme = createTheme({
   palette: {
@@ -53,6 +54,7 @@ root.render(
         <Routes>
           <Route path='/' element={<MainPageView/>} />
           <Route path='/transactions' element={<TransactionView/>} />
+          <Route path='/accounts' element={<AccountView/>} />
         </Routes>
       </Router>
     </ThemeProvider>
