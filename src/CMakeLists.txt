@@ -12,7 +12,7 @@ set(DIRECTORIES "config/"
 
                 "services/BasicMicroservice"
                 "services/Account"
-                "services/User"
+                "services/user"
                 "services/Gateway"
                 "services/Transaction"
                 "services/auth"

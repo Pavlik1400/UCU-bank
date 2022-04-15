@@ -6,6 +6,8 @@ find_package(redis++ CONFIG REQUIRED)
 find_package(libpqxx CONFIG REQUIRED)
 find_package(serdepp CONFIG)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(mongocxx CONFIG REQUIRED)
+find_package(bsoncxx CONFIG REQUIRED)
 
 
 set(AUTH_ENTRY_POINT main.cpp)

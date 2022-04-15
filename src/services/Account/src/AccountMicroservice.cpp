@@ -21,8 +21,7 @@ void AccountMicroservice::start() {
 account::status AccountMicroservice::create(const std::string &user_id, const std::string &account_type) {
     CUSTOM_LOG(lg, debug) << "Create call";
     // TODO: add user_id validation
-    bool valid_user_id = true;
-    if (!valid_user_id) {
+    if (userClient.valid_id(user_id) == user::status::USER_DOESNT_EXIST) {
         return account::status::INVALID_USER_ID;
     }
     auto card = generate_card_token();
@@ -78,10 +77,10 @@ account::status AccountMicroservice::transaction(const std::string &from, const 
     CUSTOM_LOG(lg, debug) << "Transaction call";
     auto status1 = accounts.update_one(session, document{} << account::NUMBER << from << finalize,
                                        document{} << INC << open_document << account::BALANCE << -1 * amount
-                                               << close_document << finalize);
+                                                  << close_document << finalize);
     auto status2 = accounts.update_one(session, document{} << account::NUMBER << to << finalize,
-                                       document{} << INC << open_document << account::BALANCE << amount << close_document
-                                               << finalize);
+                                       document{} << INC << open_document << account::BALANCE << amount
+                                                  << close_document << finalize);
     return status1 && status2 ? account::status::OK : account::status::TRANSACTION_FAILED;
 }
 
@@ -108,5 +107,14 @@ void AccountMicroservice::register_methods() {
 
 void AccountMicroservice::finish() {
     CUSTOM_LOG(lg, info) << "Service has finished";
+}
+
+AccountMicroservice::AccountMicroservice(const nlohmann::json &cnf) :
+
+        BasicMicroservice(cnf["transaction"]["rpc_port"].get<int>(),
+                          "tcp://" + cnf["transaction"]["reddis_address"].get<std::string>() + ":" +
+                          std::to_string(cnf["transaction"]["reddis_port"].get<int>())),
+        userClient(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()), cnf(cnf) {
+    CUSTOM_LOG(lg, debug) << "User service initialized";
 }
 

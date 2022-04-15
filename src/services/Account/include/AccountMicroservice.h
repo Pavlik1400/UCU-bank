@@ -11,6 +11,7 @@
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/builder/stream/array.hpp>
 #include "BasicMicroservice.hpp"
+#include "UserClient.h"
 #include "account_constants.h"
 
 using bsoncxx::builder::stream::close_array;
@@ -46,9 +47,12 @@ private:
     mongocxx::client_session session = client.start_session();
 
     void register_methods();
+    const nlohmann::json cnf;
+    UserClient userClient;
 
 public:
-    using BasicMicroservice::BasicMicroservice;
+    explicit AccountMicroservice(const nlohmann::json &cnf);
+
     void start() override;
 
     void finish() override;

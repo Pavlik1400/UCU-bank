@@ -66,28 +66,31 @@ set(ACCOUNT_HEADERS #${ACCOUNT_ROOT}/include/AccountMicroservice.h
     ${ACCOUNT_ROOT}/include/account_constants.h
     PARENT_SCOPE
 )
-set(ACCOUNT_INCLUDE_DEP_LIBRARIES ""
+set(ACCOUNT_INCLUDE_DEP_LIBRARIES
+    mongo::mongocxx_static
+    mongo::bsoncxx_static
     PARENT_SCOPE
 )
 
 #=========================================#
 # --------- USER MICROSERVICE ----------- #
 #=========================================#
-set(USER_ROOT "${ROOT_}/User")
-set(USER_INCLUDE_DIRECTORIES "${USER_ROOT}/include"
+set(USER_ROOT "${ROOT_}/user")
+set(USER_INCLUDE_DIRECTORIES "${USER_ROOT}"
     PARENT_SCOPE
 )
-set(USER_SOURCES #${ACCOUNT_ROOT}/src/AccountMicroservice.cpp
-    ${USER_ROOT}/src/UserClient.cpp
-   # ${USER_ROOT}/src/utils.cpp
+set(USER_SOURCES
+    ${USER_ROOT}/client.cpp
     PARENT_SCOPE
 )
-set(USER_HEADERS #${ACCOUNT_ROOT}/include/AccountMicroservice.h
-    ${USER_ROOT}/include/UserClient.h
-    ${USER_ROOT}/include/user_constants.h
+set(USER_HEADERS
+    ${USER_ROOT}/client.h
+    ${USER_ROOT}/constants.h
     PARENT_SCOPE
 )
-set(USER_INCLUDE_DEP_LIBRARIES ""
+set(USER_INCLUDE_DEP_LIBRARIES
+    mongo::mongocxx_static
+    mongo::bsoncxx_static
     PARENT_SCOPE
 )
 
