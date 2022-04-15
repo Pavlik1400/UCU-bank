@@ -15,7 +15,7 @@ set(DIRECTORIES "config/"
                 "services/user"
                 "services/gateway"
                 "services/transaction"
-#                "services/auth"
+                "services/auth"
 )
 
 foreach(DIR IN LISTS DIRECTORIES)

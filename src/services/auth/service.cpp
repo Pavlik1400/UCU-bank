@@ -1,8 +1,8 @@
 #include "auth/service.hpp"
 #include "auth/constants.hpp"
 #include "service_tools/utils.hpp"
-#include "UserClient.h"
-#include "user_constants.h"
+#include "user/client.h"
+#include "user/constants.h"
 #include <boost/log/trivial.hpp>
 #include <optional>
 #include <rpc/config.h>
@@ -100,7 +100,7 @@ namespace auth {
         ")";
 
         user::status status;
-        user_t table;
+        user::user_t table;
 
         try {
             auto [status_, table_] = user.get(name, phoneNo);

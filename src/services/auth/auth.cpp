@@ -1,6 +1,6 @@
 #include <iostream>
 #include "AccountClient.h"
-#include "UserClient.h"
+#include "user/client.h"
 #include "auth/service.hpp"
 #include "auth/constants.hpp"
 #include "service_tools/utils.hpp"

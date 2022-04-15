@@ -9,7 +9,7 @@ set(OTHER_SOURCES
         ../basic/MessageSerializer.cpp
         ../service_tools/utils.cpp
         ../account/AccountClient.cpp
-        ../user/UserClient.cpp
+        ../user/client.cpp
         #        ../BasicMicroservice/src/logging.cpp
         )
 set(OTHER_HEADERS
@@ -17,8 +17,8 @@ set(OTHER_HEADERS
         ../service_tools/utils.hpp
         ../account/AccountClient.h
         ../account/account_constants.h
-        ../user/UserClient.h
-        ../user/user_constants.h
+        ../user/client.h
+        ../user/constants.h
         #        ../BasicMicroservice/include/logging.hpp
         )
 set(SOURCES

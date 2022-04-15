@@ -1,10 +1,10 @@
 #ifndef UCU_BANK_AUTH_SERVICE_HPP
 #define UCU_BANK_AUTH_SERVICE_HPP
 
-#include "BasicMicroservice.hpp"
+#include "basic/BasicMicroservice.hpp"
 #include "auth/constants.hpp"
 #include "email/MailSender.h"
-#include "UserClient.h"
+#include "user/client.h"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -37,7 +37,7 @@ private:
                      const boost::uuids::uuid & secret);
 
 private:
-    UserClient user;
+    user::Client user;
     email::MailSender msender;
     boost::uuids::random_generator uuid_gen;
 }; 

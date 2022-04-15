@@ -2,8 +2,8 @@
 #define UCU_BANK_USERAPI_H
 
 #include "api_utils.hpp"
-#include "user/UserClient.h"
-#include "user/user_constants.h"
+#include "user/client.h"
+#include "user/constants.h"
 #include "basic/BasicMicroservice.hpp"
 
 
@@ -34,7 +34,7 @@ namespace ucubank_api::v1 {
 
     private:
         GateWayLogger logger;
-        UserClient userClient;
+        user::Client userClient;
 
 //        const std::vector<std::string> login_fields{"name", "phone_num", "hashed_password"};
         const std::vector<std::string> info_fields{"name", "phone_num", "hashed_password"};

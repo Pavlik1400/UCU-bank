@@ -4,37 +4,28 @@ find_package(rpclib CONFIG REQUIRED)
 find_package(mongocxx CONFIG REQUIRED)
 find_package(bsoncxx CONFIG REQUIRED)
 find_package(Boost REQUIRED log)
+find_package(nlohmann_json CONFIG REQUIRED)
 
-set(EXTERNAL_SOURCES
-        ../basic/BasicMicroservice.cpp
-        ../basic/MessageSerializer.cpp
-        ../basic/logging.cpp)
-set(EXTERNAL_HEADERS
-        ../basic/BasicMicroservice.hpp
-        ../basic/constants.hpp
-        ../basic/MessageSerializer.hpp
-        ../basic/logging.hpp)
+set(SOURCES service.cpp utils.cpp)
+set(HEADERS service.h utils.h)
 
-set(SOURCES start.cpp UserMicroservice.cpp UserClient.cpp utils.cpp)
-set(HEADERS UserMicroservice.h UserClient.h user_constants.h utils.h)
-add_executable(${EXE_09} ${SOURCES} ${HEADERS} ${EXTERNAL_SOURCES} ${EXTERNAL_HEADERS})
-target_include_directories(${EXE_09} PRIVATE ..)
-target_link_libraries(${EXE_09} mongo::mongocxx_static
-                                mongo::bsoncxx_static
-                                serdepp::serdepp
-                                redis++::redis++_static
-                                rpclib::rpc
-                                Boost::boost
-                                Boost::log)
-set(CLIENT user_client)
-add_executable(${CLIENT} client.cpp UserClient.cpp UserClient.h user_constants.h)
-target_include_directories(${CLIENT} PRIVATE ..)
-target_link_libraries(${CLIENT} mongo::mongocxx_static
-        mongo::bsoncxx_static
-        serdepp::serdepp
-        redis++::redis++_static
-        rpclib::rpc
-        Boost::boost
-        Boost::log)
+add_executable(${EXE_09} user.cpp
+        ${BASIC_SOURCES} ${BASIC_HEADERS}
+        ${USER_SOURCES} ${USER_HEADERS}
+        ${TOOLS_SOURCES} ${TOOLS_HEADERS}
+        ${SOURCES} ${HEADERS}
+        )
+
+target_include_directories(${EXE_09} PRIVATE
+        ${BASIC_INCLUDE_DIRECTORIES}
+        ${USER_INCLUDE_DIRECTORIES}
+        ${ROOT_INCLUDE_DIRECTORIES}
+        )
+
+
+target_link_libraries(${EXE_09} PRIVATE
+        ${BASIC_INCLUDE_DEP_LIBRARIES}
+        ${USER_INCLUDE_DEP_LIBRARIES}
+        )
 
 

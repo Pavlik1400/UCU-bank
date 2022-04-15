@@ -9,18 +9,20 @@ set(EXTERNAL_SOURCES
         ../basic/BasicMicroservice.cpp
         ../basic/MessageSerializer.cpp
         ../basic/logging.cpp
-        AccountClient.cpp
+        ../service_tools/utils.cpp
+        ../user/client.cpp
         )
 set(EXTERNAL_HEADERS
         ../basic/BasicMicroservice.hpp
         ../basic/constants.hpp
         ../basic/MessageSerializer.hpp
         ../basic/logging.hpp
-        AccountClient.h
+        ../service_tools/utils.hpp
+        ../user/client.h
         )
 
-set(SOURCES start.cpp AccountMicroservice.cpp AccountClient.cpp utils.cpp)
-set(HEADERS AccountMicroservice.h AccountClient.h account_constants.h utils.h)
+set(SOURCES start.cpp AccountMicroservice.cpp AccountClient.cpp utils.cpp AccountClient.cpp)
+set(HEADERS AccountMicroservice.h AccountClient.h account_constants.h utils.h AccountClient.h)
 
 add_executable(${EXE_08} ${SOURCES} ${HEADERS} ${EXTERNAL_SOURCES} ${EXTERNAL_HEADERS})
 
