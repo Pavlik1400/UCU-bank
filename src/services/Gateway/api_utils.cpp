@@ -6,7 +6,7 @@ std::pair<std::shared_ptr<Json::Value>, bool> getJsonObjectSafe(const drg::HttpR
     if (!req_json_ptr) {
         auto resp_json = new Json::Value;
         (*resp_json)["status"] = err_status;
-        (*resp_json)["msg"] = "Error while parsing json: " + req->getJsonError();
+        (*resp_json)["message"] = "Error while parsing json: " + req->getJsonError();
         return {std::make_shared<Json::Value>(resp_json), false};
     }
     (*req_json_ptr)["status"] = ok_status;
@@ -24,14 +24,14 @@ bool verify_fields_present(Json::Value &req_json, Json::Value &resp_json, const 
     return true;
 }
 
-//std::pair<bool, std::pair<Json::Value, Json::Value>> prepare_json(const drogon::HttpRequestPtr &req) {
-//    auto[json, success] = getJsonObjectSafe(req);
-//    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
-//    auto req_json = *json;
-//
-//    auto resp_json = Json::Value{};
-//    resp_json["status"] = 200;
-//}
+std::tuple<bool, Json::Value, Json::Value> prepare_json(const drogon::HttpRequestPtr &req) {
+    auto resp_json = Json::Value{};
+    auto[req_json_ptr, success] = getJsonObjectSafe(req);
+//    std::cout << (*req_json_ptr).toStyledString() << std::endl;
+    if (!success) return {false, *req_json_ptr, {}};
+    resp_json["status"] = 200;
+    return {true, std::move(*req_json_ptr), std::move(resp_json)};
+}
 
 void fail_response(const std::string &msg, std::function<void(const drg::HttpResponsePtr &)> &callback,
                    Json::Value &resp_json, int status) {

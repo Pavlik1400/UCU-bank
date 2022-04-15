@@ -13,21 +13,18 @@ namespace ucubank_api::v1 {
     public:
         METHOD_LIST_BEGIN
             //use METHOD_ADD to add your custom processing function here;
-            METHOD_ADD(UserAPI::info, "/info/{login}", drg::Get);
-            METHOD_ADD(UserAPI::login, "/login/{login}", drg::Get);
-            METHOD_ADD(UserAPI::register_, "/register/{login}", drg::Post);
+            METHOD_ADD(UserAPI::info, "/info/", drg::Get);
+            METHOD_ADD(UserAPI::login, "/login/", drg::Get);
+            METHOD_ADD(UserAPI::register_, "/register/", drg::Post);
 //            METHOD_ADD(UserAPI::remove, "/register/{login}", drg::Delete);
         METHOD_LIST_END
 
         //your declaration of processing function maybe like this:
-        void info(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                  const std::string &login);
+        void info(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
-        void login(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                   const std::string &login);
+        void login(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
-        void register_(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                       const std::string &login);
+        void register_(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
 //        void remove(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
 //                       const std::string &login);

@@ -7,8 +7,7 @@ ucubank_api::v1::UserAPI::UserAPI(const nlohmann::json &cnf) :
 }
 
 void ucubank_api::v1::UserAPI::info(const drogon::HttpRequestPtr &req,
-                                    std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                                    const std::string &login) {
+                                    std::function<void(const drg::HttpResponsePtr &)> &&callback) {
 
     logger.debug("GET /ucubank_api/v1/user/info/");
     auto[json, success] = getJsonObjectSafe(req);
@@ -18,13 +17,8 @@ void ucubank_api::v1::UserAPI::info(const drogon::HttpRequestPtr &req,
     resp_json["status"] = 200;
 
     DEBUG_TRY
-
-        if (req_json["name"].empty() || req_json["phone_num"].empty()) {
-            resp_json["status"] = 400;
-            resp_json["message"] = req_json["name"].empty() ? "'name' field is is not present"
-                                                            : "'phone_num' field is is not present";
+        if (!verify_fields_present(req_json, resp_json, {"name", "phone_num"}))
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
-        }
         // TODO: verify if user is allowed to get all info
 
 
@@ -38,14 +32,18 @@ void ucubank_api::v1::UserAPI::info(const drogon::HttpRequestPtr &req,
 }
 
 void ucubank_api::v1::UserAPI::login(const drogon::HttpRequestPtr &req,
-                                     std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                                     const std::string &login) {
-    logger.debug("GET /ucubank_api/v1/user/info/");
-    auto[json, success] = getJsonObjectSafe(req);
-    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
-    auto req_json = *json;
-    auto resp_json = Json::Value{};
-    resp_json["status"] = 200;
+                                     std::function<void(const drg::HttpResponsePtr &)> &&callback) {
+    logger.debug("GET /ucubank_api/v1/userapi/login/");
+    auto [success, req_json, resp_json] = prepare_json(req);
+//    std::cout << "req_json: " << req_json.toStyledString()  << std::endl;
+//    std::cout << "resp_json: " << resp_json.toStyledString()  << std::endl;
+
+    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
+//    auto[json, success] = getJsonObjectSafe(req);
+//    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
+//    auto req_json = *json;
+//    auto resp_json = Json::Value{};
+//    resp_json["status"] = 200;
 
     DEBUG_TRY
         if (!verify_fields_present(req_json, resp_json, {"name", "phone_num", "hashed_password"}))
@@ -53,11 +51,11 @@ void ucubank_api::v1::UserAPI::login(const drogon::HttpRequestPtr &req,
 
         auto name = req_json["name"].as<std::string>();
         auto phone_num = req_json["phone_num"].as<std::string>();
-        if (userClient.exists(name, phone_num) == user::USER_DOESNT_EXIST) {
-            resp_json["status"] = 400;
-            resp_json["message"] = "User doesn't exists";
-            return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
-        }
+        auto hashed_password = req_json["hashed_password"].as<std::string>();
+        auto [status, user_info] = userClient.get(name, phone_num);
+        if (status == user::USER_DOESNT_EXIST) return fail_response("User doesn't exists", callback, resp_json);
+        if (status == user::GET_FAILED) return fail_response("db error", callback, resp_json, 500);
+        if (user_info.password != hashed_password) return fail_response("Incorrect password", callback, resp_json, 403);
 
         // TODO: verify hashed password
         resp_json["allowed"] = true;
@@ -67,8 +65,7 @@ void ucubank_api::v1::UserAPI::login(const drogon::HttpRequestPtr &req,
 }
 
 void ucubank_api::v1::UserAPI::register_(const drogon::HttpRequestPtr &req,
-                                         std::function<void(const drg::HttpResponsePtr &)> &&callback,
-                                         const std::string &login) {
+                                         std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("GET /ucubank_api/v1/user/register/");
     auto[json, success] = getJsonObjectSafe(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));

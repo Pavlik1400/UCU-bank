@@ -12,15 +12,11 @@ void ucubank_api::v1::AccountAPI::create(
         const drg::HttpRequestPtr &req,
         std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("POST /ucubank_api/v1/accountapi/create/");
-    auto[json, success] = getJsonObjectSafe(req);
-    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
-    auto req_json = *json;
-
-    auto resp_json = Json::Value{};
-    resp_json["status"] = 200;
+    auto [success, req_json, resp_json] = prepare_json(req);
+    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
     DEBUG_TRY
-        if (!verify_fields_present(req_json, resp_json, {"name", "account_type"}))
+        if (!verify_fields_present(req_json, resp_json, {"user_id", "account_type"}))
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
         auto user_id = req_json["user_id"].as<std::string>();
@@ -29,14 +25,7 @@ void ucubank_api::v1::AccountAPI::create(
         auto create_status = accountClient.create(user_id, acc_type);
 
         // TODO: probably there will be more statuses
-        if (create_status != account::OK) {
-            logger.debug("status 400 (could not create account)");
-            resp_json["status"] = 400;
-            resp_json["message"] = "Error while creating account";
-            return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
-        }
-
-        logger.debug("status 200");
+        if (create_status != account::OK) return fail_response("db error", callback, resp_json, 500);
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 }
@@ -46,13 +35,8 @@ void ucubank_api::v1::AccountAPI::info(const drogon::HttpRequestPtr &req,
                                        const std::string &account_number) {
 
     logger.debug("GET /ucubank_api/v1/accountapi/info/");
-    auto[json, success] = getJsonObjectSafe(req);
-    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
-    auto req_json = *json;
-
-    auto resp_json = Json::Value{};
-    resp_json["status"] = 200;
-
+    auto [success, req_json, resp_json] = prepare_json(req);
+    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
     // TODO: check if user is allowed to get full information
     // if user is owner & resp[detailed] == true -> detailed=true, else false
@@ -79,7 +63,6 @@ void ucubank_api::v1::AccountAPI::info(const drogon::HttpRequestPtr &req,
         resp_json["info"]["user_id"] = acc_info.user_id;
         resp_json["info"]["number"] = acc_info.number;
         resp_json["info"]["active"] = acc_info.active;
-        logger.debug("status 200");
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 }
@@ -88,19 +71,14 @@ void ucubank_api::v1::AccountAPI::remove(const drogon::HttpRequestPtr &req,
                                          std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                          const std::string &account_number) {
     logger.debug("DELETE /ucubank_api/v1/accountapi/remove/");
-    auto[json, success] = getJsonObjectSafe(req);
-    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
-    auto resp_json = *json;
+    auto [success, req_json, resp_json] = prepare_json(req);
+    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
     DEBUG_TRY
         auto status = accountClient.remove(account_number);
         if (status == account::INVALID_CARD_NUMBER) {
-            logger.debug("status 400 (invalid card number)");
-            resp_json["status"] = 400;
-            resp_json["message"] = "Invalid card number";
-            return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+            return fail_response("Invalid card number", callback, resp_json, 400);
         }
-        logger.debug("status 200");
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 }

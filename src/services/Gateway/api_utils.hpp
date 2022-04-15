@@ -2,6 +2,7 @@
 #define UCU_BANK_API_UTLIS_HPP
 
 #include <drogon/HttpController.h>
+#include <tuple>
 
 using str = std::string;
 
@@ -15,7 +16,7 @@ bool verify_fields_present(Json::Value &req_json, Json::Value &resp_json, const 
 void fail_response(const std::string &msg, std::function<void(const drg::HttpResponsePtr &)> &callback,
                    Json::Value &resp_json, int status = 400);
 
-std::pair<bool, std::pair<Json::Value, Json::Value>> prepare_json(const drogon::HttpRequestPtr &req);
+std::tuple<bool, Json::Value, Json::Value> prepare_json(const drogon::HttpRequestPtr &req);
 
 class GateWayLogger {
 public:

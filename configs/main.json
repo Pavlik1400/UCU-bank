@@ -24,6 +24,6 @@
     "reddis_address": "localhost",
     "redddis_port": 6381,
     "rpc_address": "localhost",
-    "rpc_port": 45647
+    "rpc_port": 45646
   }
 }
