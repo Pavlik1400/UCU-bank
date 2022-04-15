@@ -10,18 +10,20 @@ set(DIRECTORIES "config/"
                 "examples/postgresql_examples"
                 "examples/rpc_examples"
 
-                "services/BasicMicroservice"
-                "services/Account"
-                "services/User"
-                "services/Gateway"
-                "services/Transaction"
-                "services/auth"
+                "services/basic"
+                "services/account"
+                "services/user"
+                "services/gateway"
+                "services/transaction"
+#                "services/auth"
 )
 
 foreach(DIR IN LISTS DIRECTORIES)
     string(REPLACE "/" "_" GUARD "${DIR}")
-    if (NOT DEFINED ENV{DOCKER_ENV} OR DEFINED ENV{${GUARD}})
-        message("<:> ADD_SUBDIRECTORY: ${DIR}")
-        add_subdirectory("${DIR}")
-    endif()
+    add_subdirectory("${DIR}")
+
+#    if (NOT DEFINED ENV{DOCKER_ENV} OR DEFINED ENV{${GUARD}})
+#        message("<:> ADD_SUBDIRECTORY: ${DIR}")
+#        add_subdirectory("${DIR}")
+#    endif()
 endforeach()

@@ -22,7 +22,7 @@
                 "EXE_04": "mongodb_basic",
                 "EXE_05": "mongodb_transactions",
                 "EXE_06": "postgres_basic",
-                "EXE_07": "microservice_basic",
+                "BASIC": "microservice_basic",
                 "EXE_08": "account_microservice",
                 "EXE_09": "user_microservice",
                 "EXE_10": "gateway",
