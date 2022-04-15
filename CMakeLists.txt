@@ -1,22 +1,12 @@
 cmake_minimum_required(VERSION 3.21)
 project(${PROJECT_NAME} CXX)
-#<<<<<<< HEAD
-#
-#add_subdirectory(examples/drogon_examples)
-#add_subdirectory(examples/kafka_examples)
-#add_subdirectory(examples/mongodb_examples)
-#add_subdirectory(examples/postgresql_examples)
-#add_subdirectory(examples/rpc_examples)
-#
-#add_subdirectory(src/BasicMicroservice)
-#add_subdirectory(src/Account)
-##add_subdirectory(src/User)
-#add_subdirectory(src/Gateway)
-#add_subdirectory(src/Auth)
-#add_subdirectory(src/Transaction)
-#=======
+
+
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     add_compile_definitions(DEBUG=1)
 endif ()
 add_subdirectory(src)
-#>>>>>>> 41d53292cb950dcbec18ee67811b133c000c4311
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}
+    ERROR_QUIET
+)

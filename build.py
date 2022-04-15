@@ -5,6 +5,7 @@ from subprocess import run
 from string import Template
 from shutil import rmtree, move
 from os.path import exists
+from os import remove
 
 
 COMPILE_COMMANDS = "compile_commands.json"  
@@ -54,7 +55,7 @@ def main():
     compile_commands = join_path(binary_dir, COMPILE_COMMANDS)
     if exists(compile_commands):
         if exists(COMPILE_COMMANDS):
-            os.remove(COMPILE_COMMANDS)
+            remove(COMPILE_COMMANDS)
         move(compile_commands, ".", )
 
 if __name__ == "__main__":
