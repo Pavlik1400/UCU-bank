@@ -1,3 +1,5 @@
+#pragma once
+
 #include <aws/core/Aws.h>
 #include <aws/email/SESClient.h>
 #include <aws/email/model/SendEmailRequest.h>

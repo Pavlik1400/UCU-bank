@@ -3,7 +3,8 @@ if (DEFINED ENV{DOCKER_ENV})
     project(${PROJECT_NAME} CXX)
 endif ()
 
-set(DIRECTORIES "examples/drogon_examples"
+set(DIRECTORIES "config/" 
+                "examples/drogon_examples"
                 "examples/kafka_examples"
                 "examples/mongodb_examples"
                 "examples/postgresql_examples"
@@ -13,8 +14,8 @@ set(DIRECTORIES "examples/drogon_examples"
                 "services/Account"
                 "services/User"
                 "services/Gateway"
-                "services/Auth"
                 "services/Transaction"
+                "services/auth"
 )
 
 foreach(DIR IN LISTS DIRECTORIES)

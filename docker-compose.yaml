@@ -7,20 +7,18 @@ services:
     volumes:
       - "./src:/home/src:ro"
 
-  mongodb:
-    build: src/mongodb
-    entrypoint: bash -c "mongod --replSet 'rs0' --bind_ip localhost& sleep 10 && mongosh --host mongodb"
+  # mongodb:
+    # build: src/mongodb
+    # entrypoint: bash -c "mongod --replSet 'rs0' --bind_ip localhost& sleep 10 && mongosh --host mongodb"
     # --eval 'EJSON.stringify(rs.initiate())' --shell"
-    networks:
-      new:
-        aliases:
-          - mongodb
-    tty: true
+    # networks:
+      # new:
+        # aliases:
+          # - mongodb
+    # tty: true
 
   develop-custom:
     extends: develop
-    depends_on:
-      - mongodb
     networks:
       - new
     environment:
@@ -29,8 +27,35 @@ services:
     entrypoint: bash
     ## -c "python3 src/build.py dev-posix && bash"
     #&& bin/mongodb_transactions || bash"
+  
+  db:
+    image: mongo
+    # entrypoint: bash
+    ports:
+      - 27017:27017
+    entrypoint: bash
+    command: [-c, 'docker-entrypoint.sh mongod -f /etc/mongo-conf.yaml >/dev/null& mongosh --file /etc/mongo-conf.js& while true; do sleep 1 && echo 1; done;']
+    volumes:
+      - $PWD/mongo-conf.yaml:/etc/mongo-conf.yaml:ro
+      - $PWD/mongo-conf.js:/etc/mongo-conf.js
+    profiles:
+      - auth
+  
+  hash:
+    image: redis
+    ports:
+      - 6382:6379
+    profiles:
+      - auth
+
+  dbsh: 
+    image: mongo:latest
+    entrypoint: mongosh
+    depends_on:
+      - db
+    command: [-c, "while true; do sleep 1 && echo 1; done;"]
+  
 
 networks: 
   new:
     name: my-app-net
-
