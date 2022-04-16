@@ -18,7 +18,7 @@ This project is a semester project for three courses: Software architecture (SWA
 - Fast, modern & flexible code that uses most modern features of c++
 
 ### Implementation requirements
-- Simple web interface, where user can sign up/login using his passport data
+- Simple web interface, where user can sign up/login1 using his passport data
 - Users can create many cards
 - Users can make money transactions to other users
 - Users can make a deposit or take credit with a fixed percentage
@@ -33,7 +33,7 @@ This project is a semester project for three courses: Software architecture (SWA
 | TODO   | Salted password hashing (BCrypt Password Encoder) |
 | TODO   | 2 - factor authentication with password + email |
 | TODO   | Use SSL  |
-| TODO   | Request identification (authenticate each request and authenticate the request even after post-login. This will prevent any session hijack) |
+| TODO   | Request identification (authenticate each request and authenticate the request even after post-login1. This will prevent any session hijack) |
 | TODO   | Role-Based access control for admin/regular | 
 | TODO   | The alert mechanism ensures that the customer remains informed of all the critical events that can have a financial impact |
 | TODO   | Captcha |

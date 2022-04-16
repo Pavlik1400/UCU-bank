@@ -28,8 +28,7 @@ namespace ucubank_api::v1 {
     std::tuple<bool, Json::Value, Json::Value> prepare_json(const drogon::HttpRequestPtr &req) {
         auto resp_json = Json::Value{};
         auto [req_json_ptr, success] = getJsonObjectSafe(req);
-//    std::cout << (*req_json_ptr).toStyledString() << std::endl;
-        if (!success) return {false, *req_json_ptr, {}};
+        if (!success) return {false, *req_json_ptr, {*req_json_ptr}};
         resp_json["status"] = 200;
         return {true, std::move(*req_json_ptr), std::move(resp_json)};
     }

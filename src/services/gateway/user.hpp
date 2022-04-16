@@ -1,10 +1,11 @@
 #ifndef UCU_BANK_USERAPI_H
 #define UCU_BANK_USERAPI_H
 
-#include "api_utils.hpp"
+#include "gateway/api_utils.hpp"
 #include "user/client.h"
 #include "user/constants.h"
 #include "basic/BasicMicroservice.hpp"
+#include "auth/client.hpp"
 
 
 namespace ucubank_api::v1 {
@@ -14,7 +15,8 @@ namespace ucubank_api::v1 {
         METHOD_LIST_BEGIN
             //use METHOD_ADD to add your custom processing function here;
             METHOD_ADD(User::info, "/info/", drg::Get);
-            METHOD_ADD(User::login, "/login/", drg::Get);
+            METHOD_ADD(User::login1, "/login1/", drg::Get);
+            METHOD_ADD(User::login2, "/login2/", drg::Get);
             METHOD_ADD(User::register_, "/register/", drg::Post);
 //            METHOD_ADD(UserAPI::remove, "/register/{login}", drg::Delete);
         METHOD_LIST_END
@@ -22,7 +24,9 @@ namespace ucubank_api::v1 {
         //your declaration of processing function maybe like this:
         void info(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
-        void login(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
+        void login1(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
+
+        void login2(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
         void register_(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
@@ -34,7 +38,8 @@ namespace ucubank_api::v1 {
 
     private:
         GateWayLogger logger;
-        user::Client userClient;
+        user::Client user_client;
+        auth::Client auth_client;
 
 //        const std::vector<std::string> login_fields{"name", "phone_num", "hashed_password"};
         const std::vector<std::string> info_fields{"name", "phone_num", "hashed_password"};

@@ -75,7 +75,7 @@ namespace auth {
         << '\t' << secret << "\n"
         << ")";
 
-        auto login_id{"login-ids"+boost::uuids::to_string(id)};
+        auto login_id{"login1-ids"+boost::uuids::to_string(id)};
         if (!redis_client.set(login_id, boost::uuids::to_string(secret)) ) {
             CUSTOM_LOG(lg, error) << "auth::Service::hash_store failed to store secret in redis";
             return false;

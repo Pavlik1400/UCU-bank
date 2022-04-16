@@ -20,6 +20,23 @@ namespace auth {
         HASH_FAILED = 9,
         MAIL_FAILED = 10
     };
+
+    inline std::string status_to_str(status) {
+        switch (status) {
+            case OK: return "OK";
+            case INVALID_NAME_OR_PHONE: return "INVALID_NAME_OR_PHONE";
+            case INVALID_DB_RESPONSE: return "INVALID_DB_RESPONSE";
+            case INVALID_USER_PASSWORD: return "INVALID_USER_PASSWORD";
+            case CREATION_FAILED: return "CREATION_FAILED";
+            case INVALID_CARD_NUMBER: return "INVALID_CARD_NUMBER";
+            case GET_FAILED: return "GET_FAILED";
+            case TRANSACTION_FAILED: return "TRANSACTION_FAILED";
+            case RPC_FAILED: return "RPC_FAILED";
+            case HASH_FAILED: return "HASH_FAILED";
+            case MAIL_FAILED: return "MAIL_FAILED";
+            default: return "UMKNOWN ERROR";
+        }
+    }
 }
 
 MSGPACK_ADD_ENUM(auth::status)

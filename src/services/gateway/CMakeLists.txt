@@ -10,6 +10,7 @@ set(OTHER_SOURCES
         ../service_tools/utils.cpp
         ../account/AccountClient.cpp
         ../user/client.cpp
+        ../auth/client.cpp
         #        ../BasicMicroservice/src/logging.cpp
         )
 set(OTHER_HEADERS
@@ -19,6 +20,8 @@ set(OTHER_HEADERS
         ../account/account_constants.h
         ../user/client.h
         ../user/constants.h
+        ../auth/client.hpp
+        ../auth/constants.hpp
         #        ../BasicMicroservice/include/logging.hpp
         )
 set(SOURCES

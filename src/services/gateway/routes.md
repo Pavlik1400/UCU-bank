@@ -1,5 +1,5 @@
 # API Routes
-## Users API
+## Account API
 - `POST http://localhost:2020/ucubank_api/v1/account/create/` 
 ```json
 {
@@ -81,5 +81,45 @@ else something like that (**doesn't work yet**):
 {
   "message": "INVALID_CARD_NUMBER",
   "status": 400
+}
+```
+## User API
+`GET http://localhost:2020/ucubank_api/v1/user/info/`
+```json
+{
+    "name": "Pasha",
+    "phone_num": "+390961234567"
+}
+```
+if OK, response: 
+```json
+{
+    "info": {
+        "address": "toilet",
+        "date_of_birth": "2945-05-08",
+        "email": "m.halilei@ucu.edu.ua",
+        "gender": "tractor",
+        "id": "6255cbdb2890ea6b33749a53",
+        "joining_date ": "12-04-2022 21-58-35",
+        "name": "Masha",
+        "phoneNo": "+390961234567",
+        "type": "alpha female"
+    },
+    "status": 200
+}
+```
+
+if not OK:
+```json
+{
+    "message": "'name' field is is not present",
+    "status": 400
+}
+```
+or:
+```json
+{
+    "message": "USER_DOESNT_EXIST",
+    "status": 400
 }
 ```
