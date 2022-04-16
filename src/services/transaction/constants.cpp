@@ -1,4 +1,4 @@
-#include "transaction/transaction_constants.hpp"
+#include "transaction/constants.hpp"
 
 Transaction Transaction::from_row(const pqxx::row &row) {
     return Transaction{

@@ -46,9 +46,9 @@ namespace transaction {
     };
 }
 
-MSGPACK_ADD_ENUM(transaction::status);
-MSGPACK_ADD_ENUM(transaction::db_entry_status);
-MSGPACK_ADD_ENUM(transaction::categories);
+MSGPACK_ADD_ENUM(transaction::status)
+MSGPACK_ADD_ENUM(transaction::db_entry_status)
+MSGPACK_ADD_ENUM(transaction::categories)
 
 struct Transaction {
     // those fields are required when adding transaction
@@ -82,8 +82,9 @@ public:
            << "$)>> Account(num=" << tran.to_acc_number << ")";
         return os;
     }
+
 public:
-    static Transaction from_row(const pqxx::row& row);
+    static Transaction from_row(const pqxx::row &row);
 };
 
 struct TransactionFilter {

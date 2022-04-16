@@ -23,6 +23,18 @@ namespace account {
         GET_FAILED = 4,
         TRANSACTION_FAILED = 5,
     };
+
+    inline std::string status_to_str(status s) {
+        switch(s) {
+            case OK: return "OK";
+            case INVALID_USER_ID: return "INVALID_USER_ID";
+            case CREATION_FAILED: return "CREATION_FAILED";
+            case INVALID_CARD_NUMBER: return "INVALID_CARD_NUMBER";
+            case GET_FAILED: return "GET_FAILED";
+            case TRANSACTION_FAILED: return "TRANSACTION_FAILED";
+            default: return "DB ERROR";
+        }
+    }
 }
 
 MSGPACK_ADD_ENUM(account::status)

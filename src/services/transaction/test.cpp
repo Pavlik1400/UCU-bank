@@ -1,11 +1,11 @@
-#include "transaction/TransactionClient.hpp"
+#include "transaction/client.hpp"
 #include "service_tools/utils.hpp"
 #include <iostream>
 
 
 int main() {
     auto cnf = load_json_config("./configs/main.json");
-    TransactionClient tclient{cnf};
+    transaction::Client tclient{cnf};
 
     // get transaction
     TransactionFilter filter{

@@ -1,12 +1,12 @@
-#include "gateway/UserAPI.hpp"
+#include "gateway/user.hpp"
 
-ucubank_api::v1::UserAPI::UserAPI(const nlohmann::json &cnf) :
+ucubank_api::v1::User::User(const nlohmann::json &cnf) :
         userClient(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()) {
     logger.info("User API initialized");
 
 }
 
-void ucubank_api::v1::UserAPI::info(const drogon::HttpRequestPtr &req,
+void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
                                     std::function<void(const drg::HttpResponsePtr &)> &&callback) {
 
     logger.debug("GET /ucubank_api/v1/user/info/");
@@ -31,9 +31,9 @@ void ucubank_api::v1::UserAPI::info(const drogon::HttpRequestPtr &req,
 
 }
 
-void ucubank_api::v1::UserAPI::login(const drogon::HttpRequestPtr &req,
+void ucubank_api::v1::User::login(const drogon::HttpRequestPtr &req,
                                      std::function<void(const drg::HttpResponsePtr &)> &&callback) {
-    logger.debug("GET /ucubank_api/v1/userapi/login/");
+    logger.debug("GET /ucubank_api/v1/user/login/");
     auto [success, req_json, resp_json] = prepare_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
@@ -56,7 +56,7 @@ void ucubank_api::v1::UserAPI::login(const drogon::HttpRequestPtr &req,
     DEBUG_CATCH
 }
 
-void ucubank_api::v1::UserAPI::register_(const drogon::HttpRequestPtr &req,
+void ucubank_api::v1::User::register_(const drogon::HttpRequestPtr &req,
                                          std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("GET /ucubank_api/v1/user/register/");
     auto[json, success] = getJsonObjectSafe(req);

@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_ACCOUNTAPI_HPP
-#define UCU_BANK_ACCOUNTAPI_HPP
+#ifndef UCU_BANK_ACCOUNT_HPP
+#define UCU_BANK_ACCOUNT_HPP
 
 #include "api_utils.hpp"
 #include "account/account_constants.h"
@@ -9,13 +9,13 @@
 
 namespace ucubank_api::v1 {
 
-    class AccountAPI : public drogon::HttpController<AccountAPI, false> {
+    class Account : public drogon::HttpController<Account, false> {
     public:
         METHOD_LIST_BEGIN
             //use METHOD_ADD to add your custom processing function here;
-            METHOD_ADD(AccountAPI::create, "/create/", drg::Post);
-            METHOD_ADD(AccountAPI::info, "/info/{account_number}", drg::Get);
-            METHOD_ADD(AccountAPI::remove, "/remove/{account_number}", drg::Delete);
+            METHOD_ADD(Account::create, "/create/", drg::Post);
+            METHOD_ADD(Account::info, "/info/{account_number}", drg::Get);
+            METHOD_ADD(Account::remove, "/remove/{account_number}", drg::Delete);
 
         METHOD_LIST_END
 
@@ -29,7 +29,7 @@ namespace ucubank_api::v1 {
 
 
     public:
-        explicit AccountAPI(const nlohmann::json &cnf);
+        explicit Account(const nlohmann::json &cnf);
 
     private:
 //        src::severity_logger<logging::trivial::severity_level> logger;
@@ -38,4 +38,4 @@ namespace ucubank_api::v1 {
     };
 } // namespace api::v1
 
-#endif //UCU_BANK_ACCOUNTAPI_HPP
+#endif //UCU_BANK_ACCOUNT_HPP

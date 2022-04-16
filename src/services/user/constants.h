@@ -41,6 +41,19 @@ namespace user {
         std::string joining_date;
         MSGPACK_DEFINE (id, type, name, password, date_of_birth, phoneNo, email, address, gender, joining_date);
     };
+
+    inline std::string status_to_str(status s) {
+        switch (s) {
+            case OK: return "OK";
+            case INCOMPLETE_USER_IDENTITY: return "INCOMPLETE_USER_IDENTITY";
+            case CREATION_FAILED: return "CREATION_FAILED";
+            case MISSING_PASSWORD: return "MISSING_PASSWORD";
+            case GET_FAILED: return "GET_FAILED";
+            case USER_EXISTS: return "USER_EXISTS";
+            case USER_DOESNT_EXIST: return "USER_DOESNT_EXIST";
+            default: return "DB ERROR";
+        }
+    }
 }
 
 MSGPACK_ADD_ENUM(user::status)

@@ -23,17 +23,15 @@ set(OTHER_HEADERS
         )
 set(SOURCES
         main.cpp
-        UserAPI.cpp
-        AccountAPI.cpp
-        TransactionAPI.cpp
+        user.cpp
+        account.cpp
         Filters.cpp
         api_utils.cpp
         ${OTHER_SOURCES}
         )
 set(HEADERS
-        UserAPI.hpp
-        AccountAPI.hpp
-        TransactionAPI.hpp
+        user.hpp
+        account.hpp
         Filters.hpp
         api_utils.hpp
         ${OTHER_HEADERS}

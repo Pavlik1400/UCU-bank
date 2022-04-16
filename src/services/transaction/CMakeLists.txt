@@ -17,9 +17,9 @@ set(BASIC_HEADERS
         )
 set(SOURCES
         ${BASIC_SOURCES}
-        TransactionMicroservice.cpp
-        transaction_constants.cpp
-        TransactionClient.cpp
+        service.cpp
+        constants.cpp
+        client.cpp
 
         ../service_tools/utils.hpp
         ../service_tools/utils.cpp
@@ -27,9 +27,9 @@ set(SOURCES
         )
 set(HEADERS
         ${BASIC_HEADERS}
-        TransactionMicroservice.hpp
-        transaction_constants.hpp
-        TransactionClient.hpp
+        service.hpp
+        constants.hpp
+        client.hpp
 
         ../account/AccountClient.h
         )

@@ -111,9 +111,9 @@ void AccountMicroservice::finish() {
 
 AccountMicroservice::AccountMicroservice(const nlohmann::json &cnf) :
 
-        BasicMicroservice(cnf["transaction"]["rpc_port"].get<int>(),
-                          "tcp://" + cnf["transaction"]["reddis_address"].get<std::string>() + ":" +
-                          std::to_string(cnf["transaction"]["reddis_port"].get<int>())),
+        BasicMicroservice(cnf["account"]["rpc_port"].get<int>(),
+                          "tcp://" + cnf["account"]["reddis_address"].get<std::string>() + ":" +
+                          std::to_string(cnf["account"]["reddis_port"].get<int>())),
         userClient(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()), cnf(cnf) {
     CUSTOM_LOG(lg, debug) << "User service initialized";
 }

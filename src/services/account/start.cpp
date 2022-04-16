@@ -3,7 +3,7 @@
 
 
 int main() {
-    auto cnf = load_json_config("./config/main.json");
+    auto cnf = load_json_config("./configs/main.json");
     auto account_microservice = AccountMicroservice{cnf};
     account_microservice.run();
 }

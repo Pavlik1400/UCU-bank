@@ -9,13 +9,13 @@
 
 namespace ucubank_api::v1 {
 
-    class UserAPI : public drogon::HttpController<UserAPI, false> {
+    class User : public drogon::HttpController<User, false> {
     public:
         METHOD_LIST_BEGIN
             //use METHOD_ADD to add your custom processing function here;
-            METHOD_ADD(UserAPI::info, "/info/", drg::Get);
-            METHOD_ADD(UserAPI::login, "/login/", drg::Get);
-            METHOD_ADD(UserAPI::register_, "/register/", drg::Post);
+            METHOD_ADD(User::info, "/info/", drg::Get);
+            METHOD_ADD(User::login, "/login/", drg::Get);
+            METHOD_ADD(User::register_, "/register/", drg::Post);
 //            METHOD_ADD(UserAPI::remove, "/register/{login}", drg::Delete);
         METHOD_LIST_END
 
@@ -30,7 +30,7 @@ namespace ucubank_api::v1 {
 //                       const std::string &login);
 
     public:
-        explicit UserAPI(const nlohmann::json &cnf);
+        explicit User(const nlohmann::json &cnf);
 
     private:
         GateWayLogger logger;

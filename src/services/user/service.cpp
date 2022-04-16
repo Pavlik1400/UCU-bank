@@ -4,11 +4,11 @@
 
 namespace user {
 
-    Service::Service(const nlohmann::json &cnf) : BasicMicroservice(cnf["transaction"]["rpc_port"].get<int>(),
+    Service::Service(const nlohmann::json &cnf) : BasicMicroservice(cnf["user"]["rpc_port"].get<int>(),
                                                                     "tcp://" +
-                                                                    cnf["transaction"]["reddis_address"].get<std::string>() +
+                                                                    cnf["user"]["reddis_address"].get<std::string>() +
                                                                     ":" + std::to_string(
-                                                                            cnf["transaction"]["reddis_port"].get<int>())),
+                                                                            cnf["user"]["reddis_port"].get<int>())),
                                                   cnf(cnf) {
         db = client["bank"];
         users = db["users"];
