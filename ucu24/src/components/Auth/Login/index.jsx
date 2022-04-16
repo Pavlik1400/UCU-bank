@@ -5,8 +5,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useDispatch } from 'react-redux'
-import { login } from '../../../store/slices/AuthSlice'
 import { Container } from '@mui/material';
 
 import Register from '../Register'
@@ -14,7 +12,6 @@ import DuoFactor from '../DuoFactor'
 
 
 const Login = ({ openLoginFunc }) => {
-    const dispatch = useDispatch()
 
     const [open, setOpen] = React.useState(false);
 
