@@ -15,13 +15,12 @@ void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
     DEBUG_TRY
-        if (!verify_fields_present(req_json, resp_json, {"name", "phone_num"}))
+        if (!verify_fields_present(req_json, resp_json, {"phone_num"}))
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
         // TODO: verify if user is allowed to get all info
 
-        auto name = req_json["name"].as<std::string>();
         auto phone_number = req_json["phone_num"].as<std::string>();
-        auto [status, user_info] = user_client.get(name, phone_number);
+        auto [status, user_info] = user_client.get(phone_number);
         if (status != user::OK) {
             if (status == user::GET_FAILED) return fail_response("db error", callback, resp_json, 500);
             return fail_response(user::status_to_str(status), callback, resp_json);

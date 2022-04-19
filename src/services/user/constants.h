@@ -26,6 +26,7 @@ namespace user {
         GET_FAILED = 4,
         USER_EXISTS = 5,
         USER_DOESNT_EXIST = 6,
+        INVALID_USER_ID = 7
     };
 
     inline std::string status_to_str(status s) {

@@ -1,6 +1,7 @@
 #include "user/service.h"
 #include "user/constants.h"
 #include "service_tools/utils.hpp"
+#include <bsoncxx/exception/exception.hpp>
 
 namespace user {
 
@@ -57,10 +58,10 @@ namespace user {
     }
 
 
-    std::pair<user::status, user_t> Service::get(const std::string &name, const std::string &phoneNo) {
+    std::pair<user::status, user_t> Service::get(const std::string &phoneNo) {
         CUSTOM_LOG(lg, debug) << "Get call";
         auto result = users.find_one(session,
-                                     document{} << user::NAME << name << user::PHONE_NO << phoneNo << finalize);
+                                     document{} << user::PHONE_NO << phoneNo << finalize);
         user_t user;
 
         if (result) {
@@ -86,38 +87,43 @@ namespace user {
 
     }
 
-    user::status Service::remove(const std::string &name, const std::string &phoneNo) {
+    user::status Service::remove(const std::string &phoneNo) {
         CUSTOM_LOG(lg, debug) << "Remove call";
         auto status = users.delete_one(session,
-                                       document{} << user::NAME << name << user::PHONE_NO << phoneNo << finalize);
+                                       document{} << user::PHONE_NO << phoneNo << finalize);
         return status ? user::status::OK : user::status::USER_DOESNT_EXIST;
 
     }
 
 
-    user::status Service::exists(const std::string &name, const std::string &phoneNo) {
+    user::status Service::exists(const std::string &phoneNo) {
         CUSTOM_LOG(lg, debug) << "Exists call";
         auto status = users.find_one(session,
-                                     document{} << user::NAME << name << user::PHONE_NO << phoneNo << finalize);
+                                     document{} << user::PHONE_NO << phoneNo << finalize);
         return status ? user::status::OK : user::status::USER_DOESNT_EXIST;
     }
 
     user::status Service::valid_id(const std::string &id) {
         CUSTOM_LOG(lg, debug) << "Exists call";
-        auto status = users.find_one(session, document{} << user::ID << bsoncxx::oid{bsoncxx::stdx::string_view{id}}
-                                                         << finalize);
-        return status ? user::status::OK : user::status::USER_DOESNT_EXIST;
+        try {
+            auto status = users.find_one(session, document{} << user::ID << bsoncxx::oid{bsoncxx::stdx::string_view{id}}
+                                                             << finalize);
+            return status ? user::status::OK : user::status::USER_DOESNT_EXIST;
+        } catch (const bsoncxx::exception &e) {
+            CUSTOM_LOG(lg, error) << "User validation error: " << e.what();
+            return user::status::INVALID_USER_ID;
+        }
     }
 
     void Service::register_methods() {
         rpc_server.bind("create", [&](const user_t &user) {
             return create(user);
         });
-        rpc_server.bind("get", [&](const std::string &name, const std::string &phoneNo) { return get(name, phoneNo); });
+        rpc_server.bind("get", [&](const std::string &phoneNo) { return get(phoneNo); });
         rpc_server.bind("remove",
-                        [&](const std::string &name, const std::string &phoneNo) { return remove(name, phoneNo); });
+                        [&](const std::string &phoneNo) { return remove(phoneNo); });
         rpc_server.bind("exists",
-                        [&](const std::string &name, const std::string &phoneNo) { return exists(name, phoneNo); });
+                        [&](const std::string &phoneNo) { return exists(phoneNo); });
         rpc_server.bind("valid_id", [&](const std::string &id) {
             return valid_id(id);
         });

@@ -59,11 +59,11 @@ namespace user {
 
         user::status create(const user_t &user);
 
-        std::pair<user::status, user_t> get(const std::string &name, const std::string &phoneNo);
+        std::pair<user::status, user_t> get(const std::string &phoneNo);
 
-        user::status remove(const std::string &name, const std::string &phoneNo);
+        user::status remove(const std::string &phoneNo);
 
-        user::status exists(const std::string &name, const std::string &phoneNo);
+        user::status exists(const std::string &phoneNo);
 
         user::status valid_id(const std::string &id);
     };

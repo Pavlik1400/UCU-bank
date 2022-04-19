@@ -15,11 +15,11 @@ namespace user {
 
         status create(const user_t &user);
 
-        std::pair<status, user_t> get(const std::string &name, const std::string &phoneNo);
+        std::pair<status, user_t> get(const std::string &phoneNo);
 
-        status remove(const std::string &name, const std::string &phoneNo);
+        status remove(const std::string &phoneNo);
 
-        status exists(const std::string &name, const std::string &phoneNo);
+        status exists(const std::string &phoneNo);
 
         status valid_id(const std::string &id);
     };
