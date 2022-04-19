@@ -21,8 +21,8 @@ namespace auth {
         MAIL_FAILED = 10
     };
 
-    inline std::string status_to_str(status) {
-        switch (status) {
+    inline std::string status_to_str(status s) {
+        switch (s) {
             case OK: return "OK";
             case INVALID_NAME_OR_PHONE: return "INVALID_NAME_OR_PHONE";
             case INVALID_DB_RESPONSE: return "INVALID_DB_RESPONSE";

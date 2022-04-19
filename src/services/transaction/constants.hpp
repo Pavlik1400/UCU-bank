@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_STATUC_HPP
-#define UCU_BANK_STATUC_HPP
+#ifndef UCU_BANK_TRANSACTION_CONSTANTS_HPP
+#define UCU_BANK_TRANSACTION_CONSTANTS_HPP
 
 #include <optional>
 #include <pqxx/pqxx>
@@ -102,4 +102,4 @@ struct TransactionFilter {
 
 };
 
-#endif //UCU_BANK_STATUC_HPP
+#endif //UCU_BANK_TRANSACTION_CONSTANTS_HPP

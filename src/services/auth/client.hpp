@@ -3,7 +3,7 @@
 #ifndef UCU_BANK_AUTH_CLIENT_HPP
 #define UCU_BANK_AUTH_CLIENT_HPP
 
-#include "BasicMicroservice.hpp"
+#include "basic/BasicMicroservice.hpp"
 #include "constants.hpp"
 #include <rpc/client.h>
 #include <nlohmann/json.hpp>
@@ -14,7 +14,7 @@ class Client {
 private:
     rpc::client client;
 public:
-    Client(const nlohmann::json &cnf);
+    explicit Client(const nlohmann::json &cnf);
     std::pair<auth::status, std::string>
     log1(   const std::string & name, 
             const std::string & phoneNo,

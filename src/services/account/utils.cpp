@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <numeric>
 #include <ctime>
-#include <sstream>
 #include <iomanip>
 #include <algorithm>
 #include "account/utils.h"
@@ -31,13 +30,4 @@ std::string generate_cvv() {
     }
     cvv[3] = 0;
     return std::string{cvv.data()};
-}
-
-std::string generate_current_datetime() {
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
-
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
-    return oss.str();
 }

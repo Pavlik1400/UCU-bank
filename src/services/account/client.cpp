@@ -1,18 +1,23 @@
-#include "AccountClient.h"
+#include "account/client.h"
 
+namespace account {
+    account::status Client::create(const std::string &user_id, const std::string &account_type) {
+        return client.call("create", user_id, account_type).as<account::status>();
+    }
 
-int main() {
-    std::string addr = "127.0.0.1";
-    int port = 45639;
+    std::pair<account::status, account_t> Client::get(const std::string &card) {
+        return client.call("get", card).as<std::pair<account::status, account_t>>();
+    }
 
-    auto client = AccountClient{addr, port};
-    client.create("0", "male");
-    client.create("1", "female");
+    account::status Client::remove(const std::string &card) {
+        return client.call("remove", card).as<account::status>();
+    }
 
-//    auto[status, responce] = client.get("6390721926535760");
-//
-//    std::cout << status << std::endl;
-//    std::cout << responce << std::endl;
-//
-//    std::cout << client.transaction("9573202978162608", "6390721926535760", -323.122) << std::endl;
+    account::status Client::transaction(const std::string &from, const std::string &to, double amount) {
+        return client.call("transaction", from, to, amount).as<account::status>();
+    }
+
+    account::status Client::exists(const std::string &card) {
+        return client.call("exists", card).as<account::status>();
+    }
 }

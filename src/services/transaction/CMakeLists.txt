@@ -23,7 +23,7 @@ set(SOURCES
 
         ../service_tools/utils.hpp
         ../service_tools/utils.cpp
-        ../account/AccountClient.cpp
+        ../account/client.cpp
         )
 set(HEADERS
         ${BASIC_HEADERS}
@@ -31,7 +31,7 @@ set(HEADERS
         constants.hpp
         client.hpp
 
-        ../account/AccountClient.h
+        ../account/client.h
         )
 
 add_executable(${EXE_13} main.cpp ${SOURCES} ${HEADERS})

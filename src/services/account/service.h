@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_USER_SERVICE_H
-#define UCU_BANK_USER_SERVICE_H
+#ifndef UCU_BANK_ACCOUNT_SERVICE_H
+#define UCU_BANK_ACCOUNT_SERVICE_H
 
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
@@ -11,18 +11,19 @@
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/builder/stream/array.hpp>
 #include "basic/BasicMicroservice.hpp"
-#include "user/constants.h"
+#include "account/constants.h"
+#include "user/client.h"
 
-namespace user {
-    using bsoncxx::builder::stream::close_array;
-    using bsoncxx::builder::stream::close_document;
-    using bsoncxx::builder::stream::document;
-    using bsoncxx::builder::stream::finalize;
-    using bsoncxx::builder::stream::open_array;
-    using bsoncxx::builder::stream::open_document;
-    using bsoncxx::builder::basic::kvp;
-    using bsoncxx::builder::basic::sub_array;
+using bsoncxx::builder::stream::close_array;
+using bsoncxx::builder::stream::close_document;
+using bsoncxx::builder::stream::document;
+using bsoncxx::builder::stream::finalize;
+using bsoncxx::builder::stream::open_array;
+using bsoncxx::builder::stream::open_document;
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::sub_array;
 
+namespace account {
     class Service : public BasicMicroservice {
 
     private:
@@ -39,16 +40,16 @@ namespace user {
         mongocxx::database db;
 
         // collections in DB
-        mongocxx::collection users;
+        mongocxx::collection accounts;
         mongocxx::write_concern wc_majority{};
         mongocxx::read_concern rc_local{};
         mongocxx::read_preference rp_primary{};
         mongocxx::options::transaction sopts;
         mongocxx::client_session session = client.start_session();
 
-        const nlohmann::json cnf;
-
         void register_methods();
+        const nlohmann::json cnf;
+        user::Client userClient;
 
     public:
         explicit Service(const nlohmann::json &cnf);
@@ -57,18 +58,19 @@ namespace user {
 
         void finish() override;
 
-        user::status create(const user_t &user);
+        account::status create(const std::string &user_id, const std::string &account_type);
 
-        std::pair<user::status, user_t> get(const std::string &name, const std::string &phoneNo);
+        std::pair<account::status, account_t> get(const std::string &card);
 
-        user::status remove(const std::string &name, const std::string &phoneNo);
+        account::status remove(const std::string &card);
 
-        user::status exists(const std::string &name, const std::string &phoneNo);
+        account::status transaction(const std::string &from, const std::string &to, double amount);
 
-        user::status valid_id(const std::string &id);
+        account::status exists(const std::string &card);
     };
 }
 
 
 
-#endif //UCU_BANK_USER_SERVICE_H
+
+#endif //UCU_BANK_ACCOUNT_SERVICE_H

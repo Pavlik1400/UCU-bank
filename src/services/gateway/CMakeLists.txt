@@ -8,7 +8,7 @@ find_package(serdepp CONFIG)
 set(OTHER_SOURCES
         ../basic/MessageSerializer.cpp
         ../service_tools/utils.cpp
-        ../account/AccountClient.cpp
+        ../account/client.cpp
         ../user/client.cpp
         ../auth/client.cpp
         #        ../BasicMicroservice/src/logging.cpp
@@ -16,8 +16,8 @@ set(OTHER_SOURCES
 set(OTHER_HEADERS
         ../basic/MessageSerializer.hpp
         ../service_tools/utils.hpp
-        ../account/AccountClient.h
-        ../account/account_constants.h
+        ../account/client.h
+        ../account/constants.h
         ../user/client.h
         ../user/constants.h
         ../auth/client.hpp

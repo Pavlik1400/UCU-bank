@@ -1,4 +1,4 @@
-#include "client.hpp"
+#include "auth/client.hpp"
 #include <nlohmann/json.hpp>
 
 namespace auth {

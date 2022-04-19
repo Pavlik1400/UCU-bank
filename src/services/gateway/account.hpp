@@ -1,9 +1,9 @@
-#ifndef UCU_BANK_ACCOUNT_HPP
-#define UCU_BANK_ACCOUNT_HPP
+#ifndef UCU_BANK_ACCOUNT_API_HPP
+#define UCU_BANK_ACCOUNT_API_HPP
 
 #include "api_utils.hpp"
-#include "account/account_constants.h"
-#include "account/AccountClient.h"
+#include "account/constants.h"
+#include "account/client.h"
 #include "basic/BasicMicroservice.hpp"
 
 
@@ -34,8 +34,8 @@ namespace ucubank_api::v1 {
     private:
 //        src::severity_logger<logging::trivial::severity_level> logger;
         GateWayLogger logger;
-        AccountClient account_client;
+        account::Client account_client;
     };
 } // namespace api::v1
 
-#endif //UCU_BANK_ACCOUNT_HPP
+#endif //UCU_BANK_ACCOUNT_API_HPP
