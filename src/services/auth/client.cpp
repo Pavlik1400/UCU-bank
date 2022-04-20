@@ -1,4 +1,4 @@
-#include "client.hpp"
+#include "auth/client.hpp"
 #include <nlohmann/json.hpp>
 
 namespace auth {
@@ -8,11 +8,9 @@ Client::Client(const nlohmann::json &cnf)
     {}
 
 std::pair<auth::status, std::string>
-Client::log1(const std::string & name, 
-    const std::string & phoneNo,
-    const std::string & pswd)
+Client::log1(const std::string & phoneNo, const std::string & pswd)
 {
-    return client.call("log1", name, phoneNo, pswd).as<std::pair<auth::status, std::string>>();
+    return client.call("log1", phoneNo, pswd).as<std::pair<auth::status, std::string>>();
 }
 
 std::pair<auth::status, std::string>

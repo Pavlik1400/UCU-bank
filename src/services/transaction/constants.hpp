@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_STATUC_HPP
-#define UCU_BANK_STATUC_HPP
+#ifndef UCU_BANK_TRANSACTION_CONSTANTS_HPP
+#define UCU_BANK_TRANSACTION_CONSTANTS_HPP
 
 #include <optional>
 #include <pqxx/pqxx>
@@ -119,5 +119,4 @@ struct TransactionFilter {
 using add_transaction_res = std::pair<transaction::status, unsigned long long>;
 using tran_query_res = std::pair<transaction::status, std::vector<Transfer>>;
 
-
-#endif //UCU_BANK_STATUC_HPP
+#endif //UCU_BANK_TRANSACTION_CONSTANTS_HPP

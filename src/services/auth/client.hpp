@@ -14,11 +14,9 @@ class Client {
 private:
     rpc::client client;
 public:
-    Client(const nlohmann::json &cnf);
+    explicit Client(const nlohmann::json &cnf);
     std::pair<auth::status, std::string>
-    log1(   const std::string & name, 
-            const std::string & phoneNo,
-            const std::string & pswd  );
+    log1(const std::string & phoneNo, const std::string & pswd  );
     
     std::pair<auth::status, std::string>
     log2(   const std::string & auth_id, 

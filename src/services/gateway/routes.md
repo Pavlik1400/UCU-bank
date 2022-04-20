@@ -111,7 +111,6 @@ else something like that (**doesn't work yet**):
 
 ```json
 {
-  "name": "Pasha",
   "phone_num": "+390961234567"
 }
 ```

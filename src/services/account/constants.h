@@ -35,6 +35,7 @@ namespace account {
             default: return "DB ERROR";
         }
     }
+
 }
 
 MSGPACK_ADD_ENUM(account::status)

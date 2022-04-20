@@ -1,9 +1,9 @@
-#ifndef UCU_BANK_SERVICE_HPP
-#define UCU_BANK_SERVICE_HPP
+#ifndef UCU_BANK_TRANSACTION_SERVICE_HPP
+#define UCU_BANK_TRANSACTION_SERVICE_HPP
 
 #include "basic/BasicMicroservice.hpp"
 #include "constants.hpp"
-#include "account/AccountClient.h"
+#include "account/client.h"
 #include <ostream>
 #include <pqxx/pqxx>
 
@@ -12,13 +12,13 @@ namespace pq = pqxx;
 namespace transaction {
     class Service : public BasicMicroservice {
     public:
-        Service(const nlohmann::json &cnf);
+        explicit Service(const nlohmann::json &cnf);
 
         void start() override;
 
         void finish() override;
 
-        virtual ~Service();
+        ~Service() override;
 
     public:
         transaction::status make_transaction(const Transfer &tran);
@@ -37,10 +37,10 @@ namespace transaction {
         void register_methods();
 
     private:
-        AccountClient accountClient;
+        account::Client accountClient;
         std::optional<pq::connection> pq_connection;
         const nlohmann::json &cnf;
     };
 }
 
-#endif //UCU_BANK_SERVICE_HPP
+#endif //UCU_BANK_TRANSACTION_SERVICE_HPP

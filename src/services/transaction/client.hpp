@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_CLIENT_HPP
-#define UCU_BANK_CLIENT_HPP
+#ifndef UCU_BANK_TRANSACTION_CLIENT_HPP
+#define UCU_BANK_TRANSACTION_CLIENT_HPP
 
 #include "transaction/constants.hpp"
 #include "basic/BasicMicroservice.hpp"
@@ -16,4 +16,4 @@ namespace transaction {
     };
 }
 
-#endif //UCU_BANK_CLIENT_HPP
+#endif //UCU_BANK_TRANSACTION_CLIENT_HPP

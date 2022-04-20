@@ -56,14 +56,14 @@ set(ACCOUNT_ROOT "${ROOT_}/account")
 set(ACCOUNT_INCLUDE_DIRECTORIES "${ACCOUNT_ROOT}"
     PARENT_SCOPE
 )
-set(ACCOUNT_SOURCES #${ACCOUNT_ROOT}/src/AccountMicroservice.cpp
-    ${ACCOUNT_ROOT}/AccountClient.cpp
+set(ACCOUNT_SOURCES
+    ${ACCOUNT_ROOT}/client.cpp
     ${ACCOUNT_ROOT}/utils.cpp
     PARENT_SCOPE
 )
-set(ACCOUNT_HEADERS #${ACCOUNT_ROOT}/include/AccountMicroservice.h
-    ${ACCOUNT_ROOT}/AccountClient.h
-    ${ACCOUNT_ROOT}/account_constants.h
+set(ACCOUNT_HEADERS
+    ${ACCOUNT_ROOT}/client.h
+    ${ACCOUNT_ROOT}/constants.h
     PARENT_SCOPE
 )
 set(ACCOUNT_INCLUDE_DEP_LIBRARIES

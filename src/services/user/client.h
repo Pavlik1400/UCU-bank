@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_CLIENT_H
-#define UCU_BANK_CLIENT_H
+#ifndef UCU_BANK_USER_CLIENT_H
+#define UCU_BANK_USER_CLIENT_H
 
 #include <rpc/client.h>
 #include "user/constants.h"
@@ -11,21 +11,19 @@ namespace user {
     public:
         Client(const std::string &addr, int port) : client(addr, port) {};
 
-        Client(const std::string &addr) : client(addr, rpc::constants::DEFAULT_PORT) {};
+        explicit Client(const std::string &addr) : client(addr, rpc::constants::DEFAULT_PORT) {};
 
         status create(const user_t &user);
 
-        std::pair<status, user_t> get(const std::string &name, const std::string &phoneNo);
+        std::pair<status, user_t> get(const std::string &phoneNo);
 
-        status remove(const std::string &name, const std::string &phoneNo);
+        status remove(const std::string &phoneNo);
 
-        status exists(const std::string &name, const std::string &phoneNo);
+        status exists(const std::string &phoneNo);
 
         status valid_id(const std::string &id);
-
-
     };
 }
 
 
-#endif //UCU_BANK_CLIENT_H
+#endif //UCU_BANK_USER_CLIENT_H

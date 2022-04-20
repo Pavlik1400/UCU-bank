@@ -1,5 +1,5 @@
-#ifndef UCU_BANK_CONSTANTS_H
-#define UCU_BANK_CONSTANTS_H
+#ifndef UCU_BANK_USER_CONSTANTS_H
+#define UCU_BANK_USER_CONSTANTS_H
 
 #include <iostream>
 #include <string>
@@ -26,20 +26,7 @@ namespace user {
         GET_FAILED = 4,
         USER_EXISTS = 5,
         USER_DOESNT_EXIST = 6,
-    };
-
-    struct user_t {
-        std::string id;
-        std::string type;
-        std::string name;
-        std::string password;
-        std::string date_of_birth;
-        std::string phoneNo;
-        std::string email;
-        std::string address;
-        std::string gender;
-        std::string joining_date;
-        MSGPACK_DEFINE (id, type, name, password, date_of_birth, phoneNo, email, address, gender, joining_date);
+        INVALID_USER_ID = 7
     };
 
     inline std::string status_to_str(status s) {
@@ -58,9 +45,23 @@ namespace user {
 
 MSGPACK_ADD_ENUM(user::status)
 
-inline std::ostream &operator<<(std::ostream &os, const user::user_t &account) {
+struct user_t {
+    std::string id;
+    std::string type;
+    std::string name;
+    std::string password;
+    std::string date_of_birth;
+    std::string phoneNo;
+    std::string email;
+    std::string address;
+    std::string gender;
+    std::string joining_date;
+    MSGPACK_DEFINE (id, type, name, password, date_of_birth, phoneNo, email, address, gender, joining_date);
+};
+
+inline std::ostream &operator<<(std::ostream &os, const user_t &account) {
     os << "{\n" << "}\n";
     return os;
 }
 
-#endif //UCU_BANK_CONSTANTS_H
+#endif //UCU_BANK_USER_CONSTANTS_H

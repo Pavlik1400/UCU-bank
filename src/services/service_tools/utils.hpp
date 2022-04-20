@@ -11,6 +11,8 @@ nlohmann::json load_json_config(const std::string &path);
 
 std::string cur_time_str();
 
+std::string generate_current_datetime();
+
 template<typename T>
 struct ucu_optional {
 public:

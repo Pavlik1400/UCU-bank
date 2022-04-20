@@ -43,7 +43,7 @@ namespace auth {
         << "auth::Service::strart()";
         register_methods();
     }
-    
+
     std::optional<boost::uuids::uuid>
     Service::send_secret(const boost::uuids::uuid & secret,
         const std::string & email)
@@ -70,7 +70,7 @@ namespace auth {
         const boost::uuids::uuid & secret)
     {
         CUSTOM_LOG(lg, info) << "\n"
-        << "auth::Service::hash_store(\n" 
+        << "auth::Service::hash_store(\n"
         << '\t' << id << ",\n"
         << '\t' << secret << "\n"
         << ")";
@@ -84,26 +84,25 @@ namespace auth {
             CUSTOM_LOG(lg, error) << "auth::Service::hash_store failed to make secret expirable";
             return false;
         }
-        return true; 
+        return true;
     }
 
     std::pair<auth::status, std::string>
-    Service::log1(const std::string &name, 
+    Service::log1(
         const std::string &phoneNo,
         const std::string &pswd)
     {
         CUSTOM_LOG(lg, info) << '\n'
         << "auth::Service::log1(\n"
-        << '\t' << name << ",\n"
         << '\t' << phoneNo << ",\n"
         << '\t' << pswd << "\n"
         ")";
 
         user::status status;
-        user::user_t table;
+        user_t table;
 
         try {
-            auto [status_, table_] = user.get(name, phoneNo);
+            auto [status_, table_] = user.get(phoneNo);
             status=status_, table=table_;
         } catch (rpc::rpc_error & e) {
             CUSTOM_LOG(lg, info) << "auth::Service::log1: RPC_FAILED";
@@ -141,9 +140,9 @@ namespace auth {
         }
         return { auth::status::OK, boost::uuids::to_string(*auth_id)};
     }
-    
+
     std::pair<auth::status, std::string>
-    Service::log2(const std::string & login_id, 
+    Service::log2(const std::string & login_id,
         const std::string & secret)
     {
         CUSTOM_LOG(lg, info) << '\n'
@@ -157,10 +156,10 @@ namespace auth {
     void Service::register_methods() {
         CUSTOM_LOG(lg, info) << '\n'
         << "auth::Service::register_methods()";
-        rpc_server.bind("log1", [&](const std::string &name, 
+        rpc_server.bind("log1", [&](
             const std::string &phoneNo,
-            const std::string &pswd){return log1(name, phoneNo, pswd);}); 
-        rpc_server.bind("log2", [&](const std::string & login_id, 
+            const std::string &pswd){return log1(phoneNo, pswd);});
+        rpc_server.bind("log2", [&](const std::string & login_id,
             const std::string & secret){return log2(login_id, secret);});
     }
 

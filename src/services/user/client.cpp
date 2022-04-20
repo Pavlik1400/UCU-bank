@@ -5,16 +5,16 @@ namespace user {
         return client.call("create", user).as<status>();
     }
 
-    std::pair<status, user_t> Client::get(const std::string &name, const std::string &phoneNo) {
-        return client.call("get", name, phoneNo).as<std::pair<status, user_t>>();
+    std::pair<status, user_t> Client::get(const std::string &phoneNo) {
+        return client.call("get", phoneNo).as<std::pair<status, user_t>>();
     }
 
-    status Client::remove(const std::string &name, const std::string &phoneNo) {
-        return client.call("remove", name, phoneNo).as<status>();
+    status Client::remove(const std::string &phoneNo) {
+        return client.call("remove", phoneNo).as<status>();
     }
 
-    status Client::exists(const std::string &name, const std::string &phoneNo) {
-        return client.call("exists", name, phoneNo).as<status>();
+    status Client::exists(const std::string &phoneNo) {
+        return client.call("exists", phoneNo).as<status>();
     }
 
     status Client::valid_id(const std::string &id) {
