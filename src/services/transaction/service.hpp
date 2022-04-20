@@ -8,8 +8,6 @@
 #include <pqxx/pqxx>
 
 namespace pq = pqxx;
-using add_transaction_res = std::pair<transaction::status, unsigned long long>;
-using tran_query_res = std::pair<transaction::status, std::vector<Transaction>>;
 
 namespace transaction {
     class Service : public BasicMicroservice {
@@ -23,14 +21,14 @@ namespace transaction {
         virtual ~Service();
 
     public:
-        transaction::status make_transaction(const Transaction &tran);
+        transaction::status make_transaction(const Transfer &tran);
 
         tran_query_res get_transaction(const TransactionFilter &filter);
 
     private:
-        transaction::status verify_transaction(const Transaction &tran);
+        transaction::status verify_transaction(const Transfer &tran);
 
-        add_transaction_res add_transaction_to_db(const Transaction &tran, transaction::db_entry_status status);
+        add_transaction_res add_transaction_to_db(const Transfer &tran, transaction::db_entry_status status);
 
         transaction::status update_transaction_status(unsigned long long entry_id, transaction::db_entry_status status);
 

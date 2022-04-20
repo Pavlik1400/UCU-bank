@@ -21,7 +21,6 @@ set(SOURCES
         constants.cpp
         client.cpp
 
-        ../service_tools/utils.hpp
         ../service_tools/utils.cpp
         ../account/AccountClient.cpp
         )
@@ -30,6 +29,8 @@ set(HEADERS
         service.hpp
         constants.hpp
         client.hpp
+
+        ../service_tools/utils.hpp
 
         ../account/AccountClient.h
         )

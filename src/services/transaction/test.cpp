@@ -28,7 +28,7 @@ int main() {
     }
 
     // add transaction
-    Transaction tran{
+    Transfer tran{
             "0",
             "6390721926535760",
             "9822957320297810",

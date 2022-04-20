@@ -3,30 +3,44 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Boost REQUIRED log)
 find_package(rpclib CONFIG REQUIRED)
 find_package(serdepp CONFIG)
+find_package(libpqxx CONFIG REQUIRED)
 
 
 set(OTHER_SOURCES
         ../basic/MessageSerializer.cpp
         ../service_tools/utils.cpp
+
         ../account/AccountClient.cpp
+
         ../user/client.cpp
+
         ../auth/client.cpp
+
+        ../transaction/constants.cpp
+        ../transaction/client.cpp
         #        ../BasicMicroservice/src/logging.cpp
         )
 set(OTHER_HEADERS
         ../basic/MessageSerializer.hpp
         ../service_tools/utils.hpp
+
         ../account/AccountClient.h
         ../account/account_constants.h
+
         ../user/client.h
         ../user/constants.h
+
         ../auth/client.hpp
         ../auth/constants.hpp
+
+        ../transaction/constants.hpp
+        ../transaction/client.hpp
         #        ../BasicMicroservice/include/logging.hpp
         )
 set(SOURCES
         main.cpp
         user.cpp
+        transaction.cpp
         account.cpp
         Filters.cpp
         api_utils.cpp
@@ -35,6 +49,7 @@ set(SOURCES
 set(HEADERS
         user.hpp
         account.hpp
+        transaction.hpp
         Filters.hpp
         api_utils.hpp
         ${OTHER_HEADERS}
@@ -47,4 +62,5 @@ target_link_libraries(${EXE_10} PRIVATE
         serdepp::serdepp
         nlohmann_json::nlohmann_json
         Boost::boost Boost::log
+        libpqxx::pqxx
         )

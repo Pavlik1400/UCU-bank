@@ -4,7 +4,7 @@
 
 int main() {
     auto cnf = load_json_config("configs/main.json");
-    Service service{cnf};
+    transaction::Service service{cnf};
     service.run();
     return 0;
 }

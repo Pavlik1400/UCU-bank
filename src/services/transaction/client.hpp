@@ -1,7 +1,6 @@
 #ifndef UCU_BANK_CLIENT_HPP
 #define UCU_BANK_CLIENT_HPP
 
-#include "transaction/service.hpp"
 #include "transaction/constants.hpp"
 #include "basic/BasicMicroservice.hpp"
 #include <nlohmann/json.hpp>
@@ -11,8 +10,8 @@ namespace transaction {
     private:
         rpc::client client;
     public:
-        Client(const nlohmann::json &cnf);
-        transaction::status create(const Transaction &tran);
+        explicit Client(const nlohmann::json &cnf);
+        transaction::status create(const Transfer &tran);
         tran_query_res get(const TransactionFilter &filter);
     };
 }

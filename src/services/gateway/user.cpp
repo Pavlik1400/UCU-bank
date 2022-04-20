@@ -2,9 +2,9 @@
 #include "auth/constants.hpp"
 
 ucubank_api::v1::User::User(const nlohmann::json &cnf) :
-        user_client(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()) {
+        user_client(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()),
+        auth_client(cnf) {
     logger.info("User API initialized");
-
 }
 
 void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
@@ -61,14 +61,14 @@ void ucubank_api::v1::User::login1(const drogon::HttpRequestPtr &req,
         if (status != auth::OK) return fail_response(auth::status_to_str(status), callback, resp_json);
 
         // TODO: verify hashed password
-        resp_json["key"] = key;
+        resp_json["auth_id"] = key;
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 }
 
 void ucubank_api::v1::User::login2(const drogon::HttpRequestPtr &req,
                                    std::function<void(const drg::HttpResponsePtr &)> &&callback) {
-    logger.debug("GET /ucubank_api/v1/user/login1/");
+    logger.debug("GET /ucubank_api/v1/user/login2/");
     auto [success, req_json, resp_json] = prepare_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
@@ -91,20 +91,35 @@ void ucubank_api::v1::User::login2(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::User::register_(const drogon::HttpRequestPtr &req,
                                       std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("GET /ucubank_api/v1/user/register/");
-    auto [json, success] = getJsonObjectSafe(req);
-    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(*json));
-    auto req_json = *json;
-    auto resp_json = Json::Value{};
+    auto [success, req_json, resp_json] = prepare_json(req);
+    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
-    auto req_json_ptr = req->getJsonObject();
-    if (!req_json_ptr) {
-        resp_json["status"] = 400;
-        resp_json["msg"] = "Error while parsing json: " + req->getJsonError();
-        return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+    DEBUG_TRY
+        if (!verify_fields_present(
+                req_json, resp_json,
+                {
+                        "type", "name", "password", "date_of_birth", "phoneNo", "email", "address", "gender"
+                }
+        ))
+            return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
-    }
+        // TODO: find more clever way to deserealize
+        auto status = user_client.create({
+            "",
+            req_json["type"].as<std::string>(),
+            req_json["name"].as<std::string>(),
+            req_json["password"].as<std::string>(),
+            req_json["date_of_birth"].as<std::string>(),
+            req_json["phoneNo"].as<std::string>(),
+            req_json["email"].as<std::string>(),
+            req_json["address"].as<std::string>(),
+            req_json["gender"].as<std::string>(),
+        });
+
+        if (status != user::OK) return fail_response(user::status_to_str(status), callback, resp_json);
+        callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+    DEBUG_CATCH
     // TODO: add register logic
 //    auto req_json = *req_json_ptr;
 //    LOG_DEBUG << req_json.toStyledString();
-    callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 }

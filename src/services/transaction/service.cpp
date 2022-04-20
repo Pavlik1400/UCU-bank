@@ -51,7 +51,7 @@ namespace transaction {
         CUSTOM_LOG(lg, info) << "Transcation service finished";
     }
 
-    transaction::status Service::make_transaction(const Transaction &tran) {
+    transaction::status Service::make_transaction(const Transfer &tran) {
         CUSTOM_LOG(lg, debug) << "create " << tran;
         auto [status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
@@ -79,7 +79,7 @@ namespace transaction {
         return transaction::status::OK;
     }
 
-    transaction::status Service::verify_transaction(const Transaction &tran) {
+    transaction::status Service::verify_transaction(const Transfer &tran) {
         // TODO: check if user is loggined - Auth serice
 //    if (!auth_rpc.is_logined(tran.user_id)) {
 //        return TransactionStatus::IS_NOT_LOGINED;
@@ -107,7 +107,7 @@ namespace transaction {
     }
 
     add_transaction_res Service::add_transaction_to_db(
-            const Transaction &tran,
+            const Transfer &tran,
             transaction::db_entry_status status
     ) {
         unsigned long long entry_id;
@@ -176,7 +176,7 @@ namespace transaction {
             status = transaction::status::FILTER_LIMIT_EXCEEDED;
             limit = transaction::select_query_max_limit;
         }
-        std::vector<Transaction> query_result;
+        std::vector<Transfer> query_result;
         query_result.reserve(limit);
         try {
             pq::nontransaction non_tran_work(pq_connection.value());
@@ -196,7 +196,7 @@ namespace transaction {
 
             pq::result select_res = non_tran_work.exec(sql);
             for (pq::result::const_iterator c = select_res.begin(); c != select_res.end(); ++c) {
-                query_result.push_back(Transaction::from_row(c));
+                query_result.push_back(Transfer::from_row(c));
             }
 
         } catch (const std::exception &exc) {
@@ -208,7 +208,7 @@ namespace transaction {
 
     void Service::register_methods() {
         rpc_server.bind("get", [&](const TransactionFilter &filter) { return get_transaction(filter); });
-        rpc_server.bind("create", [&](const Transaction &tran) { return make_transaction(tran); });
+        rpc_server.bind("create", [&](const Transfer &tran) { return make_transaction(tran); });
     }
 
     Service::~Service() = default;

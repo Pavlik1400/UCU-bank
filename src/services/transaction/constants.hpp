@@ -32,7 +32,7 @@ namespace transaction {
         FINISHED = 2,
     };
 
-    enum categories {
+    enum category {
         CAFE_AND_RESTAURANTS,
         SALARY,
         TECH_EQUIPMENT,
@@ -44,20 +44,34 @@ namespace transaction {
         ENTERTAINMENT,
         CARD_TRANSFER,
     };
+
+
+    inline std::string status_to_str(status s) {
+        switch(s) {
+            case OK: return "OK";
+            case FORBIDEN: return "FORBIDEN";
+            case ACCOUNT_DOESNT_EXISTS: return "ACCOUNT_DOESNT_EXISTS";
+            case FAILED: return "FAILED";
+            case IS_NOT_LOGINED: return "IS_NOT_LOGINED";
+            case NOT_ENOUGH_MONEY: return "NOT_ENOUGH_MONEY";
+            case FILTER_LIMIT_EXCEEDED: return "FILTER_LIMIT_EXCEEDED";
+            default: return "UNKNOWN_ERROR";
+        }
+    }
 }
 
 MSGPACK_ADD_ENUM(transaction::status)
 MSGPACK_ADD_ENUM(transaction::db_entry_status)
-MSGPACK_ADD_ENUM(transaction::categories)
+MSGPACK_ADD_ENUM(transaction::category)
 
-struct Transaction {
+struct Transfer {
     // those fields are required when adding transaction
     str user_id;
     str from_acc_number;
     str to_acc_number;
     str description;
     double amount{};
-    transaction::categories category;
+    transaction::category category;
 
     // those are filled only in select query
     ucu_optional<std::string> date;
@@ -67,24 +81,24 @@ struct Transaction {
 
 
 public:
-    Transaction(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
-                transaction::categories category);
+    Transfer(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
+             transaction::category category);
 
-    Transaction();
+    Transfer();
 
 private:
-    Transaction(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
-                transaction::categories category, str date, transaction::db_entry_status status);
+    Transfer(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
+             transaction::category category, str date, transaction::db_entry_status status);
 
 public:
-    inline friend std::ostream &operator<<(std::ostream &os, const Transaction &tran) {
+    inline friend std::ostream &operator<<(std::ostream &os, const Transfer &tran) {
         os << "Account(num=" << tran.from_acc_number << ") --(" << tran.amount
            << "$)>> Account(num=" << tran.to_acc_number << ")";
         return os;
     }
 
 public:
-    static Transaction from_row(const pqxx::row &row);
+    static Transfer from_row(const pqxx::row &row);
 };
 
 struct TransactionFilter {
@@ -95,11 +109,15 @@ struct TransactionFilter {
     ucu_optional<std::string> to_date;
     ucu_optional<double> min_amount;
     ucu_optional<double> max_amount;
-    ucu_optional<transaction::categories> category;
+    ucu_optional<transaction::category> category;
     ucu_optional<std::string> description;
     MSGPACK_DEFINE (from_acc_number, limit, to_acc_number, from_date, to_date, min_amount, max_amount, category,
                     description);
 
 };
+
+using add_transaction_res = std::pair<transaction::status, unsigned long long>;
+using tran_query_res = std::pair<transaction::status, std::vector<Transfer>>;
+
 
 #endif //UCU_BANK_STATUC_HPP

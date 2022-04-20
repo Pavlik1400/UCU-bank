@@ -1,7 +1,7 @@
 #ifndef UCU_BANK_ACCOUNT_HPP
 #define UCU_BANK_ACCOUNT_HPP
 
-#include "api_utils.hpp"
+#include "gateway/api_utils.hpp"
 #include "account/account_constants.h"
 #include "account/AccountClient.h"
 #include "basic/BasicMicroservice.hpp"

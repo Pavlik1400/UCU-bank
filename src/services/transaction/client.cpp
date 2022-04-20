@@ -5,7 +5,7 @@ namespace transaction {
             client(cnf["transaction"]["rpc_address"].get<std::string>(), cnf["transaction"]["rpc_port"].get<int>()) {
     }
 
-    status Client::create(const Transaction &tran) {
+    status Client::create(const Transfer &tran) {
         return client.call("create", tran).as<transaction::status>();
     }
 
