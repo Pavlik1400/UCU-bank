@@ -68,13 +68,36 @@ namespace account {
 
     account::status Service::transaction(const std::string &from, const std::string &to, double amount) {
         CUSTOM_LOG(lg, debug) << "Transaction call";
-        auto status1 = accounts.update_one(session, document{} << account::NUMBER << from << finalize,
-                                           document{} << INC << open_document << account::BALANCE << -1 * amount
-                                                      << close_document << finalize);
-        auto status2 = accounts.update_one(session, document{} << account::NUMBER << to << finalize,
-                                           document{} << INC << open_document << account::BALANCE << amount
-                                                      << close_document << finalize);
-        return status1 && status2 ? account::status::OK : account::status::TRANSACTION_FAILED;
+        bool status;
+        mongocxx::client_session::with_transaction_cb callback = [&](mongocxx::client_session*) {
+            // Important::  You must pass the session to the operations.
+            auto status1 = accounts.update_one(session, document{} << account::NUMBER << from << finalize,
+                                               document{} << INC << open_document << account::BALANCE << -1 * amount
+                                                          << close_document << finalize);
+            auto status2 = accounts.update_one(session, document{} << account::NUMBER << to << finalize,
+                                               document{} << INC << open_document << account::BALANCE << amount
+                                                          << close_document << finalize);
+
+            if (!status1->modified_count() || !status2->modified_count()) {
+                accounts.update_one(session, document{} << account::NUMBER << from << finalize,
+                                                   document{} << INC << open_document << account::BALANCE << amount
+                                                              << close_document << finalize);
+                accounts.update_one(session, document{} << account::NUMBER << to << finalize,
+                                                   document{} << INC << open_document << account::BALANCE << -1 * amount
+                                                              << close_document << finalize);
+                status = false;
+                return;
+            }
+            status = true;
+        };
+
+        try {
+            session.with_transaction(callback, sopts);
+        } catch (const mongocxx::exception& e) {
+            CUSTOM_LOG(lg, error) << "An exception occurred: " << e.what() << std::endl;
+            return account::status::TRANSACTION_FAILED;
+        }
+        return status ? account::status::OK : account::status::TRANSACTION_FAILED;
     }
 
 
