@@ -17,7 +17,7 @@ void ucubank_api::v1::Transaction::create(const drogon::HttpRequestPtr &req,
                 req_json["to_acc_number"].as<std::string>(),
                 req_json["description"].as<std::string>(),
                 req_json["amount"].as<double>(),
-                static_cast<transaction::category>(req_json.as<int>())
+                static_cast<transaction::category>(req_json["category"].as<int>())
         };
 
         auto status = transaction_client.create(tran);
@@ -31,7 +31,7 @@ void ucubank_api::v1::Transaction::create(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::Transaction::get(const drogon::HttpRequestPtr &req,
                                        std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                        const std::string &account_number) {
-
+    callback(drg::HttpResponse::newHttpJsonResponse({}));
 }
 
 ucubank_api::v1::Transaction::Transaction(const nlohmann::json &cnf) : transaction_client(cnf) {

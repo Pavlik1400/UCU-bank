@@ -42,8 +42,6 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
     auto [success, req_json, resp_json] = prepare_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
-    // TODO: check if user is allowed to get full information
-    // if user is owner & resp[detailed] == true -> detailed=true, else false
     DEBUG_TRY
         auto[status, acc_info] = account_client.get(account_number);
         if (status != account::OK) {
@@ -52,19 +50,15 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
             return fail_response(account::status_to_str(status), callback, resp_json);
         }
 
-        bool detailed;
-        if (req_json["detailed"].empty()) detailed = false;
-        else detailed = (req_json["detailed"].as<bool>());
+        // TODO: check if user is allowed to get full information about account
 
         // TODO: find more clever serialization
         resp_json["info"] = Json::Value{};
-        if (detailed) {
-            resp_json["info"]["id"] = acc_info.id;
-            resp_json["info"]["cvv"] = acc_info.cvv;
-            resp_json["info"]["type"] = acc_info.type;
-            resp_json["info"]["opening_date"] = acc_info.opening_date;
-            resp_json["info"]["balance"] = acc_info.balance;
-        }
+        resp_json["info"]["id"] = acc_info.id;
+        resp_json["info"]["cvv"] = acc_info.cvv;
+        resp_json["info"]["type"] = acc_info.type;
+        resp_json["info"]["opening_date"] = acc_info.opening_date;
+        resp_json["info"]["balance"] = acc_info.balance;
         resp_json["info"]["user_id"] = acc_info.user_id;
         resp_json["info"]["number"] = acc_info.number;
         resp_json["info"]["active"] = acc_info.active;
@@ -75,7 +69,7 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::Account::remove(const drogon::HttpRequestPtr &req,
                                          std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                          const std::string &account_number) {
-    logger.debug("DELETE /ucubank_api/v1/accountemove/");
+    logger.debug("DELETE /ucubank_api/v1/account/remove/");
     auto [success, req_json, resp_json] = prepare_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 

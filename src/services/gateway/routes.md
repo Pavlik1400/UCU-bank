@@ -31,14 +31,10 @@ else something like that:
 - `GET http://localhost:2020/ucubank_api/v1/account/info/{number}`
 
 ```json
-{
-  "detailed": true
-}
+{}
 ```
 
-(detailed allowed when authorized user gets info about (him/her/it/)self)
-
-if number exists and `detailed=true`, response:
+if OK, response:
 
 ```json
 {
@@ -56,29 +52,7 @@ if number exists and `detailed=true`, response:
 }
 ```
 
-if number exists and `detailed=false`, responnse:
-
-```json
-{
-  "info": {
-    "active": true,
-    "number": "2941348868703448",
-    "user_id": "6255cbdb2890ea6b33749a53"
-  },
-  "status": 200
-}
-```
-
-if number exists and user is not allowed to use detailed:
-
-```json
-{
-  "message": "DETAILED_FORBIDDEN",
-  "status": 403
-}
-```
-
-else something like that:
+If not OK, response something like that:
 
 ```json
 {
