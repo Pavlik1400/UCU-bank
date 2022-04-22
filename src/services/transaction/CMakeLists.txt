@@ -3,55 +3,38 @@ find_package(rpclib CONFIG REQUIRED)
 find_package(Boost REQUIRED log)
 find_package(redis++ CONFIG REQUIRED)
 find_package(libpqxx CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
-set(BASIC_SOURCES
-        ../basic/BasicMicroservice.cpp
-        ../basic/MessageSerializer.cpp
-        ../basic/logging.cpp
-        )
-set(BASIC_HEADERS
-        ../basic/BasicMicroservice.hpp
-        ../basic/constants.hpp
-        ../basic/MessageSerializer.hpp
-        ../basic/logging.hpp
-        )
-set(SOURCES
-        ${BASIC_SOURCES}
-        service.cpp
-        constants.cpp
-        client.cpp
+set(SOURCES service.cpp)
+set(HEADERS service.hpp)
 
-        ../service_tools/utils.cpp
-        ../account/client.cpp
-        )
-set(HEADERS
-        ${BASIC_HEADERS}
-        service.hpp
-        constants.hpp
-        client.hpp
-
-        ../service_tools/utils.hpp
-
-        ../account/client.h
+add_executable(${TRANSACTION} main.cpp
+        ${BASIC_SOURCES} ${BASIC_HEADERS}
+        ${TOOLS_SOURCES} ${TOOLS_HEADERS}
+        ${ACCOUNT_SOURCES} ${ACCOUNT_HEADERS}
+        ${TRANSACTION_SOURCES} ${TRANSACTION_HEADERS}
+        ${SOURCES} ${HEADERS}
         )
 
-add_executable(${EXE_13} main.cpp ${SOURCES} ${HEADERS})
 
-target_include_directories(${EXE_13} PRIVATE
-        ${RPCLIB_INCLUDE_DIR}
-        ${HIREDIS_HEADER}
-        ${REDIS_PLUS_PLUS_HEADER}
-        ..
+target_include_directories(${TRANSACTION} PRIVATE
+        ${BASIC_INCLUDE_DIRECTORIES}
+        ${ACCOUNT_INCLUDE_DIRECTORIES}
+        ${ROOT_INCLUDE_DIRECTORIES}
         )
 
-target_link_libraries(${EXE_13} libpqxx::pqxx Boost::boost Boost::log rpclib::rpc redis++::redis++_static)
+target_link_libraries(${TRANSACTION}
+        ${BASIC_INCLUDE_DEP_LIBRARIES}
+        libpqxx::pqxx
+        )
 
-add_executable(tran_test test.cpp ${SOURCES} ${HEADERS})
+add_executable(tran_test test.cpp ${TRANSACTION_SOURCES} ${TRANSACTION_HEADERS})
 target_include_directories(tran_test PRIVATE
-        ${RPCLIB_INCLUDE_DIR}
-        ${HIREDIS_HEADER}
-        ${REDIS_PLUS_PLUS_HEADER}
-        ..
+        ${BASIC_INCLUDE_DIRECTORIES}
+        ${ROOT_INCLUDE_DIRECTORIES}
         )
-target_link_libraries(tran_test libpqxx::pqxx Boost::boost Boost::log rpclib::rpc redis++::redis++_static)
 
+target_link_libraries(tran_test
+        ${BASIC_INCLUDE_DEP_LIBRARIES}
+        libpqxx::pqxx
+        )

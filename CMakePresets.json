@@ -25,10 +25,10 @@
                 "BASIC": "microservice_basic",
                 "EXE_08": "account_microservice",
                 "EXE_09": "user_microservice",
-                "EXE_10": "gateway",
+                "GATEWAY": "gateway",
                 "EXE_11": "auth",
                 "EXE_12": "rpc_basic",
-                "EXE_13": "transaction_microservice"
+                "TRANSACTION": "transaction"
             },
             "condition": {
                 "type": "notEquals",

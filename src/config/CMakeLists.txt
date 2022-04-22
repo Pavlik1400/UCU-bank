@@ -110,3 +110,25 @@ set(TOOLS_HEADERS #${ACCOUNT_ROOT}/include/AccountMicroservice.h
     ${TOOLS_ROOT}/utils.hpp
     PARENT_SCOPE
 )
+
+#=========================================#
+# ---------- TRANSACTION ---------------- #
+#=========================================#
+set(TRANSACTION_ROOT "${ROOT_}/transaction")
+set(TRANSACTION_INCLUDE_DIRECTORIES "${TRANSACTION_ROOT}" PARENT_SCOPE)
+
+set(TRANSACTION_HEADERS
+        ${TRANSACTION_ROOT}/client.hpp
+        ${TRANSACTION_ROOT}/constants.hpp
+        PARENT_SCOPE
+        )
+
+set(TRANSACTION_SOURCES
+        ${TRANSACTION_ROOT}/client.cpp
+        ${TRANSACTION_ROOT}/constants.cpp
+        PARENT_SCOPE
+        )
+
+set(TRANSACTION_INCLUDE_DEP_LIBRARIES
+        PARENT_SCOPE
+        )

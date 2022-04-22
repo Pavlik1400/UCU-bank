@@ -5,62 +5,42 @@ find_package(rpclib CONFIG REQUIRED)
 find_package(serdepp CONFIG)
 find_package(libpqxx CONFIG REQUIRED)
 
+set(HEADERS
+        account.hpp user.hpp transaction.hpp api_utils.hpp Filters.hpp
+        ../basic/MessageSerializer.hpp
+        ../service_tools/utils.hpp
+        )
+set(SOURCES
+        account.cpp user.cpp transaction.cpp api_utils.cpp Filters.cpp
+        ../basic/MessageSerializer.cpp
+        ../service_tools/utils.cpp
+        )
 
-set(OTHER_SOURCES
+add_executable(${GATEWAY} main.cpp
         ../basic/MessageSerializer.cpp
         ../service_tools/utils.cpp
 
-        ../account/client.cpp
+        ${ACCOUNT_SOURCES} ${ACCOUNT_HEADERS}
+        ${USER_SOURCES} ${USER_HEADERS}
+        ${TRANSACTION_SOURCES} ${TRANSACTION_HEADERS}
+#        ${AUTH_SOURCES} ${AUTH_HEADERS}
+        ../auth/constants.hpp ../auth/client.hpp ../auth/client.cpp
 
-        ../user/client.cpp
+        ${TOOLS_SOURCES} ${TOOLS_HEADERS}
 
-        ../auth/client.cpp
-
-        ../transaction/constants.cpp
-        ../transaction/client.cpp
-        #        ../BasicMicroservice/src/logging.cpp
+        ${SOURCES} ${HEADERS}
         )
-set(OTHER_HEADERS
-        ../basic/MessageSerializer.hpp
-        ../service_tools/utils.hpp
-
-        ../account/client.h
-        ../account/constants.h
-
-        ../user/client.h
-        ../user/constants.h
-
-        ../auth/client.hpp
-        ../auth/constants.hpp
-
-        ../transaction/constants.hpp
-        ../transaction/client.hpp
-        #        ../BasicMicroservice/include/logging.hpp
+target_include_directories(${GATEWAY} PRIVATE
+        ${RPCLIB_INCLUDE_DIR}
+        ${ROOT_INCLUDE_DIRECTORIES}
         )
-set(SOURCES
-        main.cpp
-        user.cpp
-        transaction.cpp
-        account.cpp
-        Filters.cpp
-        api_utils.cpp
-        ${OTHER_SOURCES}
-        )
-set(HEADERS
-        user.hpp
-        account.hpp
-        transaction.hpp
-        Filters.hpp
-        api_utils.hpp
-        ${OTHER_HEADERS}
-        )
-add_executable(${EXE_10} ${SOURCES} ${HEADERS})
-target_include_directories(${EXE_10} PRIVATE .. ${RPCLIB_INCLUDE_DIR})
-target_link_libraries(${EXE_10} PRIVATE
-        Drogon::Drogon
+
+target_link_libraries(${GATEWAY} PRIVATE
         rpclib::rpc
         serdepp::serdepp
         nlohmann_json::nlohmann_json
         Boost::boost Boost::log
         libpqxx::pqxx
+
+        Drogon::Drogon
         )
