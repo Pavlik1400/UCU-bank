@@ -203,3 +203,103 @@ if not OK, something like that:
   "status": 400
 }
 ```
+
+## Transaction API
+
+- `POST http://localhost:2020/ucubank_api/v1/transaction/create/`
+
+```json
+{
+  "user_id": "62607d5616a90a56c374e652",
+  "from_acc_number": "2941348868703448",
+  "to_acc_number": "0344745254739653",
+  "description": "pizza2",
+  "amount": 20.0,
+  "category": 9
+}
+```
+
+If OK, response is something like that:
+
+```json
+{
+  "status": 200
+}
+```
+
+if not OK, something like that:
+
+```json
+{
+  "message": "'user_id' field is is not present",
+  "status": 400
+}
+```
+
+or like that:
+
+```json
+{
+  "message": "FROM_ACCOUNT_DOESNT_EXISTS",
+  "status": 400
+}
+```
+
+- `GET http://localhost:2020/ucubank_api/v1/transaction/get/{account_number}`
+  **Required only account_number and limit**
+
+```json
+{
+  "min_amount": 0.0,
+  "max_amount": 30.0,
+  "description": "pizza",
+  "category": 0,
+  "from_date": "2022-01-01",
+  "to_date": "2022-04-22",
+  "limit": 100
+}
+```
+
+if OK, resonse:
+
+```json
+{
+  "status": 200,
+  "transactions": [
+    {
+      "amount": 20.0,
+      "category": 0,
+      "date": "2022-04-21 01:07:41.403",
+      "description": "pizza",
+      "from_acc_number": "2941348868703448",
+      "to_acc_number": "344745254739653"
+    },
+    {
+      "amount": 20.0,
+      "category": 0,
+      "date": "2022-04-21 01:08:17.528",
+      "description": "pizza1",
+      "from_acc_number": "2941348868703448",
+      "to_acc_number": "344745254739653"
+    }
+  ]
+}
+```
+
+if not OK:
+
+```json
+{
+  "message": "'limit' field is is not present",
+  "status": 400
+}
+```
+
+or: 
+
+```json
+{
+    "message": "BAD_CATEGORY",
+    "status": 400
+}
+```

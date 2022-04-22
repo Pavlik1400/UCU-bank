@@ -57,7 +57,8 @@ namespace transaction {
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
         if (status != transaction::OK) return status;
         if ((status = verify_transaction(tran)) != transaction::OK) {
-            CUSTOM_LOG(lg, info) << "Transaction with id: " << entry_id << " is not verified with status " << status;
+            CUSTOM_LOG(lg, info) << "Transaction with id: " << entry_id << " is not verified with status "
+                                 << status_to_str(status);
             delete_transaction(entry_id);
             return status;
         }
@@ -89,11 +90,21 @@ namespace transaction {
         if (status != account::status::OK) {
             switch (status) {
                 case account::status::INVALID_CARD_NUMBER:
-                    return transaction::ACCOUNT_DOESNT_EXISTS;
+                    return transaction::FROM_ACCOUNT_DOESNT_EXISTS;
                 default:
                     return transaction::FAILED;
             }
         }
+        auto acc_resp = accountClient.get(tran.to_acc_number);
+        if (acc_resp.first != account::status::OK) {
+            switch (acc_resp.first) {
+                case account::status::INVALID_CARD_NUMBER:
+                    return transaction::TO_ACCOUNT_DOESNT_EXISTS;
+                default:
+                    return transaction::FAILED;
+            }
+        }
+
         // check if user has access to this card
         if (acc_info.user_id != tran.user_id) {
             return transaction::FORBIDEN;
@@ -111,6 +122,9 @@ namespace transaction {
             transaction::db_entry_status status
     ) {
         unsigned long long entry_id;
+        if (tran.category >= transaction::category::Count || tran.category < 0) {
+            return {transaction::BAD_CATEGORY, -1};
+        }
         try {
             pq::work work(pq_connection.value());
             auto sql =
@@ -170,6 +184,7 @@ namespace transaction {
     }
 
     tran_query_res Service::get_transaction(const TransactionFilter &filter) {
+        CUSTOM_LOG(lg, info) << "Get call with filter: " << filter;
         auto status = transaction::status::OK;
         auto limit = filter.limit;
         if (limit > transaction::select_query_max_limit) {
@@ -182,9 +197,8 @@ namespace transaction {
             pq::nontransaction non_tran_work(pq_connection.value());
             auto sql = "SELECT * FROM " + transaction::tables::money_transfer + " WHERE ";
             // from_acc_number
-            sql += " from_acc_number = '" + non_tran_work.esc(filter.from_acc_number) + "'";
-            if (filter.to_acc_number)
-                sql += " and to_acc_number = '" + non_tran_work.esc(filter.to_acc_number.value) + "'";
+            sql += " from_acc_number = '" + non_tran_work.esc(filter.acc_number) + "'";
+            sql += " or to_acc_number = '" + non_tran_work.esc(filter.acc_number) + "'";
             if (filter.from_date) sql += " and date > '" + non_tran_work.esc(filter.from_date.value) + "'::date";
             if (filter.to_date) sql += " and date < '" + non_tran_work.esc(filter.to_date.value) + "'::date";
             if (filter.min_amount) sql += " and amount > " + std::to_string(filter.min_amount.value);

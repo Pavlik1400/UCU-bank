@@ -24,6 +24,9 @@ namespace transaction {
         IS_NOT_LOGINED = 4,
         NOT_ENOUGH_MONEY = 5,
         FILTER_LIMIT_EXCEEDED = 6,
+        BAD_CATEGORY = 7,
+        FROM_ACCOUNT_DOESNT_EXISTS = 8,
+        TO_ACCOUNT_DOESNT_EXISTS = 9,
     };
 
     enum db_entry_status {
@@ -43,19 +46,50 @@ namespace transaction {
         GASOLINE,
         ENTERTAINMENT,
         CARD_TRANSFER,
+        Count,
     };
+
+    inline std::string category_to_str(category c) {
+        switch (c) {
+            case CAFE_AND_RESTAURANTS: return "CAFE_AND_RESTAURANTS";
+            case SALARY: return "SALARY";
+            case TECH_EQUIPMENT: return "TECH_EQUIPMENT";
+            case HOUSEHOLD_EQUIPMENT: return "HOUSEHOLD_EQUIPMENT";
+            case OTHER_INCOME: return "OTHER_INCOME";
+            case ATM: return "ATM";
+            case PRODUCTS: return "PRODUCTS";
+            case GASOLINE: return "GASOLINE";
+            case ENTERTAINMENT: return "ENTERTAINMENT";
+            case CARD_TRANSFER: return "CARD_TRANSFER";
+            default: return "EROR";
+        }
+    }
 
 
     inline std::string status_to_str(status s) {
-        switch(s) {
-            case OK: return "OK";
-            case FORBIDEN: return "FORBIDEN";
-            case ACCOUNT_DOESNT_EXISTS: return "ACCOUNT_DOESNT_EXISTS";
-            case FAILED: return "FAILED";
-            case IS_NOT_LOGINED: return "IS_NOT_LOGINED";
-            case NOT_ENOUGH_MONEY: return "NOT_ENOUGH_MONEY";
-            case FILTER_LIMIT_EXCEEDED: return "FILTER_LIMIT_EXCEEDED";
-            default: return "UNKNOWN_ERROR";
+        switch (s) {
+            case OK:
+                return "OK";
+            case FORBIDEN:
+                return "FORBIDEN";
+            case ACCOUNT_DOESNT_EXISTS:
+                return "ACCOUNT_DOESNT_EXISTS";
+            case FAILED:
+                return "FAILED";
+            case IS_NOT_LOGINED:
+                return "IS_NOT_LOGINED";
+            case NOT_ENOUGH_MONEY:
+                return "NOT_ENOUGH_MONEY";
+            case FILTER_LIMIT_EXCEEDED:
+                return "FILTER_LIMIT_EXCEEDED";
+            case BAD_CATEGORY:
+                return "BAD_CATEGORY";
+            case FROM_ACCOUNT_DOESNT_EXISTS:
+                return "FROM_ACCOUNT_DOESNT_EXISTS";
+            case TO_ACCOUNT_DOESNT_EXISTS:
+                return "TO_ACCOUNT_DOESNT_EXISTS";
+            default:
+                return "UNKNOWN_ERROR";
         }
     }
 }
@@ -70,7 +104,7 @@ struct Transfer {
     str from_acc_number;
     str to_acc_number;
     str description;
-    double amount{};
+    double amount;
     transaction::category category;
 
     // those are filled only in select query
@@ -102,18 +136,27 @@ public:
 };
 
 struct TransactionFilter {
-    std::string from_acc_number;
+    std::string acc_number;
     unsigned long long limit;
-    ucu_optional<std::string> to_acc_number;
-    ucu_optional<std::string> from_date;
-    ucu_optional<std::string> to_date;
-    ucu_optional<double> min_amount;
-    ucu_optional<double> max_amount;
-    ucu_optional<transaction::category> category;
-    ucu_optional<std::string> description;
-    MSGPACK_DEFINE (from_acc_number, limit, to_acc_number, from_date, to_date, min_amount, max_amount, category,
+    ucu_optional<std::string> from_date = {};
+    ucu_optional<std::string> to_date = {};
+    ucu_optional<double> min_amount = {};
+    ucu_optional<double> max_amount = {};
+    ucu_optional<transaction::category> category = {};
+    ucu_optional<std::string> description = {};
+    MSGPACK_DEFINE (acc_number, limit, from_date, to_date, min_amount, max_amount, category,
                     description);
 
+public:
+    inline friend std::ostream &operator<<(std::ostream &os, const TransactionFilter &filter) {
+        os << "Filter(acc_number=" << filter.acc_number << ", limit=" << filter.limit << ", from_date="
+           << filter.from_date << ", to_date=" << filter.to_date << ", min_amount=" << filter.min_amount
+           << ", max_amount=" << filter.max_amount;
+        if (filter.category)
+            os << ", category=" << transaction::category_to_str(filter.category.value);
+        os << ", description=" << filter.description << ")";
+        return os;
+    };
 };
 
 using add_transaction_res = std::pair<transaction::status, unsigned long long>;
