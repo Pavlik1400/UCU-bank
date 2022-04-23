@@ -130,7 +130,6 @@ or something like that:
 
 ```json
 {
-  "name": "Masha",
   "phone_num": "+390961234567",
   "hashed_password": "password"
 }
@@ -201,6 +200,40 @@ if not OK, something like that:
 {
   "message": "USER_EXISTS",
   "status": 400
+}
+```
+
+- `DELETE http://localhost:2020/ucubank_api/v1/user/remove/`
+```json
+{
+    "phoneNo": "+381235431256",
+    "hashed_password": "123"
+}
+```
+
+If OK, response: 
+
+```json
+{
+    "status": 200
+}
+```
+
+if not ok, something like that:
+
+```json
+{
+    "message": "Incorrect password",
+    "status": 403
+}
+```
+
+Or that: 
+
+```json
+{
+    "message": "USER_DOESNT_EXIST",
+    "status": 400
 }
 ```
 

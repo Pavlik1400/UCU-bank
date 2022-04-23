@@ -49,19 +49,8 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
                 return fail_response("db error", callback, resp_json, 500);
             return fail_response(account::status_to_str(status), callback, resp_json);
         }
-
         // TODO: check if user is allowed to get full information about account
-
-        // TODO: find more clever serialization
-        resp_json["info"] = Json::Value{};
-        resp_json["info"]["id"] = acc_info.id;
-        resp_json["info"]["cvv"] = acc_info.cvv;
-        resp_json["info"]["type"] = acc_info.type;
-        resp_json["info"]["opening_date"] = acc_info.opening_date;
-        resp_json["info"]["balance"] = acc_info.balance;
-        resp_json["info"]["user_id"] = acc_info.user_id;
-        resp_json["info"]["number"] = acc_info.number;
-        resp_json["info"]["active"] = acc_info.active;
+        resp_json["info"] = serialize_account_t(acc_info, true);
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 }
@@ -80,4 +69,21 @@ void ucubank_api::v1::Account::remove(const drogon::HttpRequestPtr &req,
         }
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
+}
+
+
+Json::Value ucubank_api::v1::serialize_account_t(const account_t &acc_info, bool detailed) {
+    // TODO: find more clever serialization
+    Json::Value result{};
+    if (detailed) {
+        result["id"] = acc_info.id;
+        result["cvv"] = acc_info.cvv;
+        result["opening_date"] = acc_info.opening_date;
+        result["balance"] = acc_info.balance;
+    }
+    result["type"] = acc_info.type;
+    result["user_id"] = acc_info.user_id;
+    result["number"] = acc_info.number;
+    result["active"] = acc_info.active;
+    return result;
 }

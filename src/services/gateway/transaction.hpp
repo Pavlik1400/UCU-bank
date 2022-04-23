@@ -8,10 +8,11 @@
 
 namespace ucubank_api::v1 {
 
-    std::pair<transaction::status, TransactionFilter> json_to_tran_filter(
+    std::pair<transaction::status, trans_filter> deserialize_trans_filter(
             const Json::Value &req_json, const std::string &acc_number
             );
-    Json::Value tran_to_json(const Transfer &tran);
+    Json::Value serialize_transaction_t(const transaction_t &tran);
+    transaction_t deserialize_transaction_t(const Json::Value &json);
 
     class Transaction : public drogon::HttpController<Transaction, false> {
     public:

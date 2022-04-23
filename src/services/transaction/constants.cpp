@@ -1,7 +1,7 @@
 #include "transaction/constants.hpp"
 
-Transfer Transfer::from_row(const pqxx::row &row) {
-    return Transfer{
+transaction_t transaction_t::from_row(const pqxx::row &row) {
+    return transaction_t{
             "",
             row["from_acc_number"].as<std::string>(),
             row["to_acc_number"].as<std::string>(),
@@ -13,7 +13,7 @@ Transfer Transfer::from_row(const pqxx::row &row) {
     };
 }
 
-Transfer::Transfer(
+transaction_t::transaction_t(
         str user_id,
         str from_acc_number,
         str to_acc_number,
@@ -30,7 +30,7 @@ Transfer::Transfer(
         date(ucu_optional<std::string>{}),
         status(ucu_optional<transaction::db_entry_status>{}) {}
 
-Transfer::Transfer(
+transaction_t::transaction_t(
         str user_id,
         str from_acc_number,
         str to_acc_number,
@@ -49,4 +49,4 @@ Transfer::Transfer(
         date(date),
         status(status) {}
 
-Transfer::Transfer() = default;
+transaction_t::transaction_t() = default;

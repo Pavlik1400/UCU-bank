@@ -8,7 +8,7 @@ int main() {
     transaction::Client tclient{cnf};
 
     // get transaction
-    TransactionFilter filter{
+    trans_filter filter{
             "1",
             10,
             std::string("2"),
@@ -28,7 +28,7 @@ int main() {
     }
 
     // add transaction
-    Transfer tran{
+    transaction_t tran{
             "0",
             "6390721926535760",
             "9822957320297810",
