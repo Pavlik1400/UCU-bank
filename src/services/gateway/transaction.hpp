@@ -18,7 +18,7 @@ namespace ucubank_api::v1 {
     public:
         METHOD_LIST_BEGIN
             METHOD_ADD(Transaction::create, "/create/", drg::Post);
-            METHOD_ADD(Transaction::get, "/get/{account_number}", drg::Get);
+            METHOD_ADD(Transaction::get, "/get/{account_number}", drg::Post);
         METHOD_LIST_END
 
         void create(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);

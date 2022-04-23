@@ -16,9 +16,9 @@ namespace ucubank_api::v1 {
     class User : public drogon::HttpController<User, false> {
     public:
         METHOD_LIST_BEGIN
-            METHOD_ADD(User::info, "/info/", drg::Get);
-            METHOD_ADD(User::login1, "/login1/", drg::Get);
-            METHOD_ADD(User::login2, "/login2/", drg::Get);
+            METHOD_ADD(User::info, "/info/", drg::Post);
+            METHOD_ADD(User::login1, "/login1/", drg::Post);
+            METHOD_ADD(User::login2, "/login2/", drg::Post);
             METHOD_ADD(User::register_, "/register/", drg::Post);
             METHOD_ADD(User::remove, "/remove/", drg::Delete);
         METHOD_LIST_END
