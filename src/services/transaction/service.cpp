@@ -206,6 +206,7 @@ namespace transaction {
             if (filter.category) sql += " and category = " + std::to_string(filter.category.value);
             if (filter.description)
                 sql += " and description LIKE '%" + non_tran_work.esc(filter.description.value) + "%'";
+            sql += " ORDER BY date";
             sql += " LIMIT " + std::to_string(limit);
 
             pq::result select_res = non_tran_work.exec(sql);
