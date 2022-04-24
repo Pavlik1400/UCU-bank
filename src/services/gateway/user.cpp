@@ -44,10 +44,17 @@ void ucubank_api::v1::User::login1(const drogon::HttpRequestPtr &req,
 
         auto phone_num = req_json["phone_num"].as<std::string>();
         auto hashed_password = req_json["hashed_password"].as<std::string>();
-        auto [status, key] = auth_client.log1(phone_num, hashed_password);
-        if (status != auth::OK) return fail_response(auth::status_to_str(status), callback, resp_json);
+        auto [status, key_secret] = auth_client.tfa_pwd({phone_num, hashed_password});
+        if (status != auth::OK) {
+            return fail_response(auth::status_to_str(status), callback, resp_json);
+        }
 
-        resp_json["auth_id"] = key;
+        auto [otp_k, otp] = key_secret;
+        if (!otp.empty()) {
+            resp_json["one_time_passwd"] = otp;
+        }
+
+        resp_json["otp_key"] = otp_k;
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 }
@@ -59,15 +66,18 @@ void ucubank_api::v1::User::login2(const drogon::HttpRequestPtr &req,
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
     DEBUG_TRY
-        if (!verify_fields_present(req_json, resp_json, {"auth_id", "secret"}))
+        if (!verify_fields_present(req_json, resp_json, {"one_time_passwd", "otp_key"}))
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
-        auto auth_id = req_json["auth_id"].as<std::string>();
-        auto secret = req_json["secret"].as<std::string>();
-        auto [status, token] = auth_client.log2(auth_id, secret);
-        if (status != auth::OK) return fail_response(auth::status_to_str(status), callback, resp_json);
-
-        resp_json["token"] = token;
+        auto otp_key = req_json["otp_key"].as<std::string>();
+        auto otp = req_json["one_time_passwd"].as<std::string>();
+        auto [status, uid_tk] = auth_client.tfa_otp({otp_key, otp});
+        if (status != auth::OK) {
+            return fail_response(auth::status_to_str(status), callback, resp_json);
+        }
+        auto [uid, tk] = uid_tk;
+        resp_json["uid"] = uid;
+        resp_json["token"] = tk;
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 

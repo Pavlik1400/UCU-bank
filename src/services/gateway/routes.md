@@ -134,10 +134,12 @@ or something like that:
 
 If OK, response:
 
+**NOTE**: one_time_passwd should come to email, only in a mock mode it is returned
 ```json
 {
-  "status": 200,
-  "auth_id": "abrakadabra"
+  "one_time_passwd": "820de4fd-55c9-4dc9-a54b-1234c9b98d99",
+  "otp_key": "3cd8180b-4abf-47cb-b79d-4fd6f2b94373",
+  "status": 200
 }
 ```
 
@@ -145,7 +147,7 @@ If not OK, something like that:
 
 ```json
 {
-  "message": "MAIL_FAILED",
+  "message": "'phone_num' field is is not present",
   "status": 400
 }
 ```
@@ -154,8 +156,8 @@ If not OK, something like that:
 
 ```json
 {
-  "auth_id": "1234",
-  "secret": "3214"
+  "one_time_passwd": "820de4fd-55c9-4dc9-a54b-1234c9b98d99",
+  "otp_key": "3cd8180b-4abf-47cb-b79d-4fd6f2b94373"
 }
 ```
 
@@ -164,7 +166,8 @@ If OK, response:
 ```json
 {
   "status": 200,
-  "token": "abrakadabra"
+  "token": "3b17e871-6fe3-47c2-8b29-7be87ec9a426",
+  "uid": "6255cbdb2890ea6b33749a53"
 }
 ```
 

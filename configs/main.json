@@ -29,7 +29,7 @@
   
   "auth": {
     "reddis_address": "localhost",
-    "reddis_port": 6382,
+    "reddis_port": 6379,
     "rpc_address": "localhost",
     "rpc_port": 45648,
     "mock_mail": true
