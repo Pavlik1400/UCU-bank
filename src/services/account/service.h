@@ -62,6 +62,8 @@ namespace account {
 
         std::pair<account::status, account_t> get(const std::string &card);
 
+        std::pair<account::status, std::vector<account_t>> get_all(const std::string &user_id);
+
         account::status remove(const std::string &card);
 
         account::status transaction(const std::string &from, const std::string &to, double amount);

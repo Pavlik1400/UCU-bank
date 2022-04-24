@@ -20,4 +20,8 @@ namespace account {
     account::status Client::exists(const std::string &card) {
         return client.call("exists", card).as<account::status>();
     }
+
+    std::pair<account::status, std::vector<account_t>> Client::get_all(const std::string &user_id) {
+        return client.call("get_all", user_id).as<std::pair<account::status, std::vector<account_t>>>();
+    }
 }

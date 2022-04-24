@@ -144,6 +144,33 @@ namespace account {
         sopts.read_preference(rp_primary);
         CUSTOM_LOG(lg, debug) << "Account service initialized";
     }
+
+    std::pair<account::status, std::vector<account_t>> Service::get_all(const std::string &user_id) {
+        CUSTOM_LOG(lg, debug) << "Get all call";
+        if (userClient.valid_id(user_id) == user::status::USER_DOESNT_EXIST) {
+            return {account::status::INVALID_USER_ID, {}};
+        }
+        auto result = accounts.find(session, document{} << account::USER_ID << user_id << finalize);
+        std::vector<account_t> user_accounts{};
+        for(auto& info: result){
+            account_t account;
+            try {
+                account.user_id = info[account::USER_ID].get_utf8().value.to_string();
+                account.cvv = info[account::CVV].get_utf8().value.to_string();
+                account.number = info[account::NUMBER].get_utf8().value.to_string();
+                account.type = info[account::TYPE].get_utf8().value.to_string();
+                account.opening_date = info[account::OPENING_DATE].get_utf8().value.to_string();
+                account.active = info[account::ACTIVE].get_bool();
+                account.balance = info[account::BALANCE].get_double();
+            } catch (const std::exception &exc) {
+                CUSTOM_LOG(lg, error) << "get failed: \n" << exc.what();
+                return {account::status::GET_FAILED, {}};
+            }
+            user_accounts.push_back(account);
+        }
+
+        return {account::status::OK, user_accounts};
+    }
 }
 
 
