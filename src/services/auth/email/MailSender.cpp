@@ -1,4 +1,4 @@
-#include "email/MailSender.h"
+#include "auth/email/MailSender.h"
 
 namespace email {
     MailSender& MailSender::with_receiver(const std::string& receiver)

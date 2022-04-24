@@ -1,5 +1,5 @@
 #include "auth/service.hpp"
-#include "MailSender.h"
+#include "auth/email/MailSender.h"
 #include "auth/constants.hpp"
 #include "client.hpp"
 #include "service_tools/utils.hpp"
