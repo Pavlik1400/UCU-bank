@@ -4,7 +4,6 @@ if (DEFINED ENV{DOCKER_ENV})
 endif ()
 
 set(DIRECTORIES "config/"
-        "services/basic"
         "services/account"
         "services/user"
         "services/gateway"

@@ -23,13 +23,16 @@
                 "EXE_04": "mongodb_basic",
                 "EXE_05": "mongodb_transactions",
                 "EXE_06": "postgres_basic",
-                "BASIC": "microservice_basic",
-                "EXE_08": "account_microservice",
-                "EXE_09": "user_microservice",
-                "GATEWAY": "gateway",
-                "EXE_11": "auth",
                 "EXE_12": "rpc_basic",
-                "TRANSACTION": "transaction"
+
+                "BASIC": "basic",
+                "ACCOUNT": "account",
+                "USER": "user",
+                "AUTH": "auth",
+                "TRANSACTION": "transaction",
+                "GATEWAY": "gateway",
+
+                "TOOLS": "service-tools"
             },
             "condition": {
                 "type": "notEquals",
