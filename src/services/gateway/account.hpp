@@ -17,6 +17,7 @@ namespace ucubank_api::v1 {
             METHOD_ADD(Account::create, "/create/", drg::Post);
             METHOD_ADD(Account::info, "/info/{account_number}", drg::Get);
             METHOD_ADD(Account::remove, "/remove/{account_number}", drg::Delete);
+            METHOD_ADD(Account::get_accs, "/get_accounts/{user_id}", drg::Post);
         METHOD_LIST_END
 
         void create(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
@@ -26,6 +27,9 @@ namespace ucubank_api::v1 {
 
         void remove(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
                  const std::string &account_number);
+
+        void get_accs(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
+                    const std::string &user_id);
 
 
     public:

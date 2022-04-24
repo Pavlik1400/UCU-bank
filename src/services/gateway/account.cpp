@@ -38,7 +38,7 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
                                        std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                        const std::string &account_number) {
 
-    logger.debug("GET /ucubank_api/v1/account/info/");
+    logger.debug("POST /ucubank_api/v1/account/info/");
     auto [success, req_json, resp_json] = prepare_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
@@ -67,6 +67,27 @@ void ucubank_api::v1::Account::remove(const drogon::HttpRequestPtr &req,
         if (status != account::OK) {
             return fail_response(account::status_to_str(status), callback, resp_json);
         }
+        callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+    DEBUG_CATCH
+}
+
+void ucubank_api::v1::Account::get_accs(const drogon::HttpRequestPtr &req,
+                                        std::function<void(const drg::HttpResponsePtr &)> &&callback,
+                                        const std::string &user_id) {
+    logger.debug("POST /ucubank_api/v1/account/remove/");
+    auto [success, req_json, resp_json] = prepare_json(req);
+    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+
+    DEBUG_TRY
+        auto [status, accs] = account_client.get_all(user_id);
+        if (status != account::OK) {
+            return fail_response(account::status_to_str(status), callback, resp_json);
+        }
+        resp_json["accounts"] = Json::Value{Json::arrayValue};
+        for (auto const &acc: accs) {
+            resp_json["accounts"].append(serialize_account_t(acc));
+        }
+
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 }

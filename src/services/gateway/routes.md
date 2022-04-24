@@ -11,7 +11,7 @@
 }
 ```
 
-if user_id exists, response:
+Reponse:
 
 ```json
 {
@@ -19,19 +19,9 @@ if user_id exists, response:
 }
 ```
 
-else something like that:
-
-```json
-{
-  "message": "INVALID_USER_ID",
-  "status": 400
-}
-```
-
 - `GET http://localhost:2020/ucubank_api/v1/account/info/{number}`
 
-
-if OK, response:
+Reponse:
 
 ```json
 {
@@ -49,14 +39,6 @@ if OK, response:
 }
 ```
 
-If not OK, response something like that:
-
-```json
-{
-  "message": "INVALID_CARD_NUMBER",
-  "status": 400
-}
-```
 
 - `DELETE http://localhost:2020/ucubank_api/v1/account/remove/{number}`
   if number exists, response:
@@ -67,15 +49,27 @@ If not OK, response something like that:
 }
 ```
 
-else something like that (**doesn't work yet**):
+- `POST http://localhost:2020/ucubank_api/v1/account/get_accounts/{user_id}`
+
+Response: 
 
 ```json
 {
-  "message": "INVALID_CARD_NUMBER",
-  "status": 400
+  "accounts": [
+    {
+      "active": true,
+      "balance": 0.0,
+      "cvv": "727",
+      "id": "",
+      "number": "1784059466298605",
+      "opening_date": "24-04-2022 14-42-10",
+      "type": "sex",
+      "user_id": "6255cbdb2890ea6b33749a53"
+    }
+  ],
+  "status": 200
 }
 ```
-
 ## User API
 
 - `POST http://localhost:2020/ucubank_api/v1/user/info/`
@@ -86,7 +80,7 @@ else something like that (**doesn't work yet**):
 }
 ```
 
-if OK, response:
+Response:
 
 ```json
 {
@@ -104,25 +98,6 @@ if OK, response:
   "status": 200
 }
 ```
-
-if not OK:
-
-```json
-{
-  "message": "'name' field is is not present",
-  "status": 400
-}
-```
-
-or something like that:
-
-```json
-{
-  "message": "USER_DOESNT_EXIST",
-  "status": 400
-}
-```
-
 - `POST http://localhost:2020/ucubank_api/v1/user/login1/`
 
 ```json
@@ -132,7 +107,7 @@ or something like that:
 }
 ```
 
-If OK, response:
+Response:
 
 **NOTE**: one_time_passwd should come to email, only in a mock mode it is returned
 ```json
@@ -140,15 +115,6 @@ If OK, response:
   "one_time_passwd": "820de4fd-55c9-4dc9-a54b-1234c9b98d99",
   "otp_key": "3cd8180b-4abf-47cb-b79d-4fd6f2b94373",
   "status": 200
-}
-```
-
-If not OK, something like that:
-
-```json
-{
-  "message": "'phone_num' field is is not present",
-  "status": 400
 }
 ```
 
@@ -161,7 +127,7 @@ If not OK, something like that:
 }
 ```
 
-If OK, response:
+Response:
 
 ```json
 {
@@ -186,20 +152,11 @@ If OK, response:
 }
 ```
 
-if OK, response:
+Response:
 
 ```json
 {
   "status": 200
-}
-```
-
-if not OK, something like that:
-
-```json
-{
-  "message": "USER_EXISTS",
-  "status": 400
 }
 ```
 
@@ -211,29 +168,11 @@ if not OK, something like that:
 }
 ```
 
-If OK, response: 
+Response: 
 
 ```json
 {
     "status": 200
-}
-```
-
-if not ok, something like that:
-
-```json
-{
-    "message": "Incorrect password",
-    "status": 403
-}
-```
-
-Or that: 
-
-```json
-{
-    "message": "USER_DOESNT_EXIST",
-    "status": 400
 }
 ```
 
@@ -252,7 +191,7 @@ Or that:
 }
 ```
 
-If OK, response is something like that:
+Reponse:
 
 ```json
 {
@@ -260,26 +199,9 @@ If OK, response is something like that:
 }
 ```
 
-if not OK, something like that:
-
-```json
-{
-  "message": "'user_id' field is is not present",
-  "status": 400
-}
-```
-
-or like that:
-
-```json
-{
-  "message": "FROM_ACCOUNT_DOESNT_EXISTS",
-  "status": 400
-}
-```
-
 - `POST http://localhost:2020/ucubank_api/v1/transaction/get/{account_number}`
-  **Required only account_number and limit**
+  
+**Required only 'account_number' and 'limit'**
 
 ```json
 {
@@ -293,7 +215,7 @@ or like that:
 }
 ```
 
-if OK, resonse:
+Reponse
 
 ```json
 {
@@ -316,23 +238,5 @@ if OK, resonse:
       "to_acc_number": "344745254739653"
     }
   ]
-}
-```
-
-if not OK:
-
-```json
-{
-  "message": "'limit' field is is not present",
-  "status": 400
-}
-```
-
-or: 
-
-```json
-{
-    "message": "BAD_CATEGORY",
-    "status": 400
 }
 ```
