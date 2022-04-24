@@ -23,7 +23,7 @@ namespace account {
 
         account::status exists(const std::string &card);
 
-        std::pair<account::status, std::vector<account_t>> get_all(const std::string &user_id)
+        std::pair<account::status, std::vector<account_t>> get_all(const std::string &user_id);
     };
 }
 
