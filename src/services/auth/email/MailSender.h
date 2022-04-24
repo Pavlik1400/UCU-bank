@@ -9,16 +9,18 @@
 #include <aws/email/model/Body.h>
 #include <aws/email/model/Content.h>
 #include <exception>
+#include <optional>
 
 namespace email {
     class AWSSessionGuard {
     public:
-        AWSSessionGuard() 
+        AWSSessionGuard()
         {
             Aws::InitAPI(options_);
+            std::cerr << "INIT" << std::endl;
         }
 
-        AWSSessionGuard(Aws::SDKOptions&& options) 
+        AWSSessionGuard(Aws::SDKOptions && options) 
             : options_(options)
         {
             Aws::InitAPI(options_);
@@ -26,6 +28,7 @@ namespace email {
 
         ~AWSSessionGuard() {
             Aws::ShutdownAPI(options_);
+            std::cerr << "DINIT";
         }
 
     private:
@@ -49,6 +52,11 @@ namespace email {
 
     class MailSender {
     public:
+        MailSender(bool mock)
+        : session_{mock? std::optional<AWSSessionGuard>(): std::make_optional<AWSSessionGuard>()}
+        , ses_{mock? std::optional<SESService>(): std::make_optional<SESService>()}
+        {};
+        
         MailSender& with_receiver(const std::string& receiver);
         MailSender& with_sender(const std::string& sender);
         MailSender& with_subject(const std::string& subject);
@@ -56,8 +64,8 @@ namespace email {
         void send(void) noexcept(false);
 
     private: 
-        AWSSessionGuard session_; // Initialize and cleans SDK
-        SESService ses_;
+        std::optional<AWSSessionGuard> session_; // Initialize and cleans SDK
+        std::optional<SESService> ses_;
         MailInfo minfo_; 
 
         Aws::SES::Model::Destination get_receiver__(void);

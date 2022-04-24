@@ -1,7 +1,7 @@
 find_package(aws-cpp-sdk-email REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(rpclib CONFIG REQUIRED)
-find_package(Boost REQUIRED log)
+find_package(Boost REQUIRED log program_options)
 find_package(redis++ CONFIG REQUIRED)
 find_package(libpqxx CONFIG REQUIRED)
 find_package(serdepp CONFIG)
@@ -84,4 +84,5 @@ target_link_libraries(${EXE_11}.test PRIVATE
 
 target_link_libraries(${EXE_11}.cli PRIVATE 
     ${BASIC_INCLUDE_DEP_LIBRARIES}
+    Boost::program_options
 )
