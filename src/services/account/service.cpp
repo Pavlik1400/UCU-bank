@@ -113,6 +113,7 @@ namespace account {
             return create(user_id, account_type);
         });
         rpc_server.bind("get", [&](const std::string &card) { return get(card); });
+        rpc_server.bind("get_all", [&](const std::string &user_id) { return get_all(user_id); });
         rpc_server.bind("remove", [&](const std::string &card) { return remove(card); });
         rpc_server.bind("exists", [&](const std::string &card) { return exists(card); });
         rpc_server.bind("transaction", [&](const std::string &from, const std::string &to, double amount) {
