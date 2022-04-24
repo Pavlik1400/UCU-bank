@@ -30,9 +30,6 @@ else something like that:
 
 - `GET http://localhost:2020/ucubank_api/v1/account/info/{number}`
 
-```json
-{}
-```
 
 if OK, response:
 
@@ -81,7 +78,7 @@ else something like that (**doesn't work yet**):
 
 ## User API
 
-- `GET http://localhost:2020/ucubank_api/v1/user/info/`
+- `POST http://localhost:2020/ucubank_api/v1/user/info/`
 
 ```json
 {
@@ -126,7 +123,7 @@ or something like that:
 }
 ```
 
-- `GET http://localhost:2020/ucubank_api/v1/user/login1/`
+- `POST http://localhost:2020/ucubank_api/v1/user/login1/`
 
 ```json
 {
@@ -153,7 +150,7 @@ If not OK, something like that:
 }
 ```
 
-- `GET http://localhost:2020/ucubank_api/v1/user/login2/`
+- `POST http://localhost:2020/ucubank_api/v1/user/login2/`
 
 ```json
 {
@@ -278,7 +275,7 @@ or like that:
 }
 ```
 
-- `GET http://localhost:2020/ucubank_api/v1/transaction/get/{account_number}`
+- `POST http://localhost:2020/ucubank_api/v1/transaction/get/{account_number}`
   **Required only account_number and limit**
 
 ```json

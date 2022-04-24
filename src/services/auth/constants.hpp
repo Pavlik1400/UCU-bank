@@ -2,6 +2,7 @@
 #define UCU_BANK_AUTH_CONSTANTS_H
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <rpc/msgpack.hpp>
 
@@ -37,6 +38,17 @@ namespace auth {
             default: return "UMKNOWN ERROR";
         }
     }
+
+    inline std::ostream &operator<<(std::ostream &os, const status &s)
+    {
+        return os << std::string{"auth::status::"+status_to_str(s)};
+    }
+    
+    struct AuthDU {
+        std::string cred;
+        std::string data;
+        MSGPACK_DEFINE (cred, data);
+    };
 }
 
 MSGPACK_ADD_ENUM(auth::status)

@@ -1,9 +1,12 @@
 #include "auth/service.hpp"
+#include "MailSender.h"
 #include "auth/constants.hpp"
+#include "client.hpp"
 #include "service_tools/utils.hpp"
 #include "user/client.h"
 #include "user/constants.h"
 #include <boost/log/trivial.hpp>
+#include <iterator>
 #include <optional>
 #include <rpc/config.h>
 #include <rpc/rpc_error.h>
@@ -14,12 +17,24 @@
 #include <string>
 #include <chrono>
 
+
+
 namespace auth {
+    namespace {
+        std::string tmp_upriv_tpx{"tmp_upriv_tpx"};
+        std::string tmp_uid_tpx{"tmp_uid_tpx"};
+        std::string otp_tpx{"otp_tpx"};
+        std::string upriv_tpx{"upriv_tpx"};
+        std::string uid_tpx{"uid_tpx"};
+    }
+
     Service::Service(const nlohmann::json &cnf)
         : BasicMicroservice(cnf["auth"]["rpc_port"].get<int>(),
                           "tcp://" + cnf["auth"]["reddis_address"].get<std::string>() +
                           ":" + std::to_string(cnf["auth"]["reddis_port"].get<int>()))
         , user(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>())
+        , mock(cnf["auth"]["mock_mail"])
+        , msender(mock)
     {
         CUSTOM_LOG(lg, info) << '\n'
         << "auth::Service::Sercie(\n"
@@ -44,21 +59,21 @@ namespace auth {
         register_methods();
     }
 
-    std::optional<boost::uuids::uuid>
-    Service::send_secret(const boost::uuids::uuid & secret,
+    std::optional<std::string>
+    Service::send_otp(const std::string & otp,
         const std::string & email)
     {
         CUSTOM_LOG(lg, info) << '\n'
         << "auth::Service::send_secret(\n"
-        << '\t' << secret << ",\n"
+        << '\t' << otp << ",\n"
         << '\t' << email << ",\n"
         << ")";
 
         try {
             msender.with_receiver(email)
-                .with_body("SECRET-KEY: " + boost::uuids::to_string(secret))
+                .with_body("SECRET-KEY: " + otp)
                 .send();
-            return boost::uuids::random_generator()();
+            return boost::uuids::to_string(boost::uuids::random_generator()());
         } catch (std::exception& e) {
             CUSTOM_LOG(lg, error) << "auth::Service::send_secret failed to sent secret: " << e.what();
             return {};
@@ -66,38 +81,31 @@ namespace auth {
     }
 
     bool
-    Service::hash_secret(const boost::uuids::uuid & id,
-        const boost::uuids::uuid & secret)
+    Service::store(const std::string & key,
+        const std::string & val,
+        const long & ttl
+    )
     {
         CUSTOM_LOG(lg, info) << "\n"
-        << "auth::Service::hash_store(\n"
-        << '\t' << id << ",\n"
-        << '\t' << secret << "\n"
+        << "auth::Service::store(\n"
+        << '\t' << key << ",\n"
+        << '\t' << val << "\n"
+        << '\t' << ttl << "\n"
         << ")";
 
-        auto login_id{"login1-ids"+boost::uuids::to_string(id)};
-        if (!redis_client.set(login_id, boost::uuids::to_string(secret)) ) {
-            CUSTOM_LOG(lg, error) << "auth::Service::hash_store failed to store secret in redis";
-            return false;
-        }
-        if (!redis_client.expire(login_id, std::chrono::seconds(60))) {
-            CUSTOM_LOG(lg, error) << "auth::Service::hash_store failed to make secret expirable";
-            return false;
-        }
+        redis_client.setex(key, ttl, val);
         return true;
     }
 
-    std::pair<auth::status, std::string>
-    Service::log1(
-        const std::string &phoneNo,
-        const std::string &pswd)
+    std::pair<auth::status, AuthDU>
+    Service::tfa_req_otp(const AuthDU & id_n_pwd)
     {
         CUSTOM_LOG(lg, info) << '\n'
         << "auth::Service::log1(\n"
-        << '\t' << phoneNo << ",\n"
-        << '\t' << pswd << "\n"
+        << '\t' << id_n_pwd.cred << ",\n"
+        << '\t' << id_n_pwd.data << "\n"
         ")";
-
+        auto & [phoneNo, password] = id_n_pwd;
         user::status status;
         user_t table;
 
@@ -122,45 +130,92 @@ namespace auth {
             return {auth::status::INVALID_DB_RESPONSE, {}};
         }
 
-        if ( pswd != table.password ) {
+        if ( password != table.password ) {
             CUSTOM_LOG(lg, info) << "auth::Service::log1: INVALID_USER_PASSWORD";
             return {auth::status::INVALID_USER_PASSWORD, {}};
         }
 
-        auto secret {uuid_gen()};
-        auto auth_id{send_secret(secret, table.email)};
-        if (!auth_id) {
+        auto otp {boost::uuids::to_string(uuid_gen())};
+        auto otp_tk{send_otp(otp, table.email)};
+        if (!otp_tk) {
             CUSTOM_LOG(lg, info) << "auth::Service::log1: MAIL_FAILED";
             return {auth::status::MAIL_FAILED, {}};
         }
 
-        if (!hash_secret(*auth_id, secret)) {
-            CUSTOM_LOG(lg, info) << "auth::Service::log1: HASH_FAILED";
-            return {auth::status::HASH_FAILED, {}};
-        }
-        return { auth::status::OK, boost::uuids::to_string(*auth_id)};
+        store(otp_tpx+*otp_tk, otp, 600);
+        store(tmp_uid_tpx+*otp_tk, table.id, 600);
+        store(tmp_upriv_tpx+*otp_tk, table.type, 600);
+
+        return { auth::status::OK, {*otp_tk, mock? otp: std::string()}
+        };
     }
 
-    std::pair<auth::status, std::string>
-    Service::log2(const std::string & login_id,
-        const std::string & secret)
+    std::pair<auth::status, AuthDU>
+    Service::tfa_ver_otp(const AuthDU & id_n_otp)
     {
         CUSTOM_LOG(lg, info) << '\n'
         << "auth::Service::log1(\n"
-        << '\t' << login_id << ",\n"
-        << '\t' << secret << '\n'
+        << '\t' << id_n_otp.cred << ",\n"
+        << '\t' << id_n_otp.data << '\n'
         << ")";
-        return {auth::status::OK, {}};
+        auto & [otp_tk, otp] = id_n_otp;
+
+        auto exp_otp{redis_client.get(otp_tpx + otp_tk)};
+        if (!exp_otp) {
+            std::cerr << "Invalid login_id" << std::endl;
+            return {auth::status::HASH_FAILED, {}};
+        }
+
+        std::cerr << "RES: " << *exp_otp << std::endl;
+
+        if ( *exp_otp != otp ) {
+            std::cerr << "Invalid secret" << std::endl;
+            return {auth::status::INVALID_USER_PASSWORD, {}};
+        }
+
+        auto uid {redis_client.get(tmp_uid_tpx+otp_tk)};    
+        if ( !uid ) {
+            std::cerr << "FAILED to get uid" << std::endl;
+            return {auth::status::HASH_FAILED, {}};
+        }
+        auto upriv {redis_client.get(tmp_upriv_tpx+otp_tk)};    
+        if ( !upriv ) {
+            std::cerr << "FAILED to get upriv" << std::endl;
+            return {auth::status::HASH_FAILED, {}};
+        }
+
+        redis_client.del(otp_tpx + otp_tk);
+        redis_client.del(tmp_uid_tpx + otp_tk);
+        redis_client.del(tmp_upriv_tpx + otp_tk);
+
+        auto tk {boost::uuids::to_string(uuid_gen())};
+        store(uid_tpx+tk, *uid, 6000);        
+        store(upriv_tpx+tk, *upriv, 6000);        
+        return {auth::status::OK, {*uid, tk}};
+    }
+
+    std::pair<auth::status, AuthDU>
+    Service::sess_info(const AuthDU & tk_n_info)
+    {
+        auto & [tk, info] {tk_n_info};
+
+        if (info != uid_tpx &&
+            info != upriv_tpx) {
+           return {status::INVALID_CARD_NUMBER, {}}; 
+        }
+        auto ret = redis_client.get(info + tk); 
+        if (!ret) {
+            return {status::GET_FAILED, {}};
+        }
+        return {status::OK, {{}, *ret}};
     }
 
     void Service::register_methods() {
         CUSTOM_LOG(lg, info) << '\n'
         << "auth::Service::register_methods()";
-        rpc_server.bind("log1", [&](
-            const std::string &phoneNo,
-            const std::string &pswd){return log1(phoneNo, pswd);});
-        rpc_server.bind("log2", [&](const std::string & login_id,
-            const std::string & secret){return log2(login_id, secret);});
+        rpc_server.bind("tfa_pwd", [&](const AuthDU & id_n_pwd){return tfa_req_otp(id_n_pwd);});
+        rpc_server.bind("tfa_otp", [&](const AuthDU & id_n_otp){return tfa_ver_otp(id_n_otp);});
+        rpc_server.bind("sess_info", [&](const AuthDU & tk_n_info){return sess_info(tk_n_info);});
     }
 
     void Service::finish() {

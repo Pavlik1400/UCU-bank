@@ -27,11 +27,15 @@ namespace email {
 
     void MailSender::send(void) noexcept(false)
     {
-        set_req__();
-        auto ses_res = ses_.client.SendEmail(ses_.request);
+        if ( session_ ) {
+            set_req__();
+            auto ses_res = ses_->client.SendEmail(ses_->request);
 
-        if ( false == ses_res.IsSuccess() )
-            throw std::runtime_error("Error" + ses_res.GetError().GetMessage());
+            if ( false == ses_res.IsSuccess() )
+                throw std::runtime_error("Error" + ses_res.GetError().GetMessage());
+        } else {
+            std::cout << "MOCK" << std::endl;
+        }
     }
 
     Aws::SES::Model::Destination MailSender::get_receiver__(void)
@@ -59,7 +63,7 @@ namespace email {
 
     void MailSender::set_req__(void)
     {
-    ses_.request.WithSource(minfo_.sender.c_str())
+    ses_->request.WithSource(minfo_.sender.c_str())
                 .WithDestination(get_receiver__())
                 .WithMessage(
                     Aws::SES::Model::Message()

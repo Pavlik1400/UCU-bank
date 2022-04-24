@@ -11,16 +11,20 @@
 namespace auth {
 
 class Client {
+public:
+    Client(const nlohmann::json &cnf);
+
+    std::pair<auth::status, AuthDU>
+    tfa_pwd(const AuthDU & id_n_pwd);
+    
+    std::pair<auth::status, AuthDU>
+    tfa_otp(const AuthDU & id_n_otp);
+    
+    std::pair<auth::status, AuthDU>
+    sess_info(const AuthDU & tk_n_info);
+
 private:
     rpc::client client;
-public:
-    explicit Client(const nlohmann::json &cnf);
-    std::pair<auth::status, std::string>
-    log1(const std::string & phoneNo, const std::string & pswd  );
-    
-    std::pair<auth::status, std::string>
-    log2(   const std::string & auth_id, 
-            const std::string & secret );
 };
 
 } //auth
