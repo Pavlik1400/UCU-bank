@@ -30,9 +30,6 @@ else something like that:
 
 - `GET http://localhost:2020/ucubank_api/v1/account/info/{number}`
 
-```json
-{}
-```
 
 if OK, response:
 
@@ -81,7 +78,7 @@ else something like that (**doesn't work yet**):
 
 ## User API
 
-- `GET http://localhost:2020/ucubank_api/v1/user/info/`
+- `POST http://localhost:2020/ucubank_api/v1/user/info/`
 
 ```json
 {
@@ -126,11 +123,10 @@ or something like that:
 }
 ```
 
-- `GET http://localhost:2020/ucubank_api/v1/user/login1/`
+- `POST http://localhost:2020/ucubank_api/v1/user/login1/`
 
 ```json
 {
-  "name": "Masha",
   "phone_num": "+390961234567",
   "hashed_password": "password"
 }
@@ -154,7 +150,7 @@ If not OK, something like that:
 }
 ```
 
-- `GET http://localhost:2020/ucubank_api/v1/user/login2/`
+- `POST http://localhost:2020/ucubank_api/v1/user/login2/`
 
 ```json
 {
@@ -204,6 +200,40 @@ if not OK, something like that:
 }
 ```
 
+- `DELETE http://localhost:2020/ucubank_api/v1/user/remove/`
+```json
+{
+    "phoneNo": "+381235431256",
+    "hashed_password": "123"
+}
+```
+
+If OK, response: 
+
+```json
+{
+    "status": 200
+}
+```
+
+if not ok, something like that:
+
+```json
+{
+    "message": "Incorrect password",
+    "status": 403
+}
+```
+
+Or that: 
+
+```json
+{
+    "message": "USER_DOESNT_EXIST",
+    "status": 400
+}
+```
+
 ## Transaction API
 
 - `POST http://localhost:2020/ucubank_api/v1/transaction/create/`
@@ -245,7 +275,7 @@ or like that:
 }
 ```
 
-- `GET http://localhost:2020/ucubank_api/v1/transaction/get/{account_number}`
+- `POST http://localhost:2020/ucubank_api/v1/transaction/get/{account_number}`
   **Required only account_number and limit**
 
 ```json

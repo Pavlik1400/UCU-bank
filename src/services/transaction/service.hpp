@@ -21,14 +21,14 @@ namespace transaction {
         ~Service() override;
 
     public:
-        transaction::status make_transaction(const Transfer &tran);
+        transaction::status make_transaction(const transaction_t &tran);
 
-        tran_query_res get_transaction(const TransactionFilter &filter);
+        tran_query_res get_transaction(const trans_filter &filter);
 
     private:
-        transaction::status verify_transaction(const Transfer &tran);
+        transaction::status verify_transaction(const transaction_t &tran);
 
-        add_transaction_res add_transaction_to_db(const Transfer &tran, transaction::db_entry_status status);
+        add_transaction_res add_transaction_to_db(const transaction_t &tran, transaction::db_entry_status status);
 
         transaction::status update_transaction_status(unsigned long long entry_id, transaction::db_entry_status status);
 

@@ -98,7 +98,7 @@ MSGPACK_ADD_ENUM(transaction::status)
 MSGPACK_ADD_ENUM(transaction::db_entry_status)
 MSGPACK_ADD_ENUM(transaction::category)
 
-struct Transfer {
+struct transaction_t {
     // those fields are required when adding transaction
     str user_id;
     str from_acc_number;
@@ -115,27 +115,27 @@ struct Transfer {
 
 
 public:
-    Transfer(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
-             transaction::category category);
+    transaction_t(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
+                  transaction::category category);
 
-    Transfer();
+    transaction_t();
 
 private:
-    Transfer(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
-             transaction::category category, str date, transaction::db_entry_status status);
+    transaction_t(str user_id, str from_acc_number, str to_acc_number, str description, double amount,
+                  transaction::category category, str date, transaction::db_entry_status status);
 
 public:
-    inline friend std::ostream &operator<<(std::ostream &os, const Transfer &tran) {
+    inline friend std::ostream &operator<<(std::ostream &os, const transaction_t &tran) {
         os << "Account(num=" << tran.from_acc_number << ") --(" << tran.amount
            << "$)>> Account(num=" << tran.to_acc_number << ")";
         return os;
     }
 
 public:
-    static Transfer from_row(const pqxx::row &row);
+    static transaction_t from_row(const pqxx::row &row);
 };
 
-struct TransactionFilter {
+struct trans_filter {
     std::string acc_number;
     unsigned long long limit;
     ucu_optional<std::string> from_date = {};
@@ -148,7 +148,7 @@ struct TransactionFilter {
                     description);
 
 public:
-    inline friend std::ostream &operator<<(std::ostream &os, const TransactionFilter &filter) {
+    inline friend std::ostream &operator<<(std::ostream &os, const trans_filter &filter) {
         os << "Filter(acc_number=" << filter.acc_number << ", limit=" << filter.limit << ", from_date="
            << filter.from_date << ", to_date=" << filter.to_date << ", min_amount=" << filter.min_amount
            << ", max_amount=" << filter.max_amount;
@@ -160,6 +160,6 @@ public:
 };
 
 using add_transaction_res = std::pair<transaction::status, unsigned long long>;
-using tran_query_res = std::pair<transaction::status, std::vector<Transfer>>;
+using tran_query_res = std::pair<transaction::status, std::vector<transaction_t>>;
 
 #endif //UCU_BANK_TRANSACTION_CONSTANTS_HPP

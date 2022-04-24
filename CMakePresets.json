@@ -13,6 +13,7 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/bin",
                 "CMAKE_CXX_STANDARD": "17",
+                "MAKE_EXAMPLES": false,
                 
                 "PROJECT_NAME": "UCU_BANK",
                 "EXE_00": "drogon_basic",

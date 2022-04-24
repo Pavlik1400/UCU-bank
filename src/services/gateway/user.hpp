@@ -10,15 +10,17 @@
 
 namespace ucubank_api::v1 {
 
+    Json::Value serialized_user_t(const user_t &user_info, bool detailed=true);
+    user_t deserialize_user_t(const Json::Value &json);
+
     class User : public drogon::HttpController<User, false> {
     public:
         METHOD_LIST_BEGIN
-            //use METHOD_ADD to add your custom processing function here;
-            METHOD_ADD(User::info, "/info/", drg::Get);
-            METHOD_ADD(User::login1, "/login1/", drg::Get);
-            METHOD_ADD(User::login2, "/login2/", drg::Get);
+            METHOD_ADD(User::info, "/info/", drg::Post);
+            METHOD_ADD(User::login1, "/login1/", drg::Post);
+            METHOD_ADD(User::login2, "/login2/", drg::Post);
             METHOD_ADD(User::register_, "/register/", drg::Post);
-//            METHOD_ADD(UserAPI::remove, "/register/{login}", drg::Delete);
+            METHOD_ADD(User::remove, "/remove/", drg::Delete);
         METHOD_LIST_END
 
         //your declaration of processing function maybe like this:
@@ -30,8 +32,7 @@ namespace ucubank_api::v1 {
 
         void register_(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
-//        void remove(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
-//                       const std::string &login);
+        void remove(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
     public:
         explicit User(const nlohmann::json &cnf);

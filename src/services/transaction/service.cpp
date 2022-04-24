@@ -51,7 +51,7 @@ namespace transaction {
         CUSTOM_LOG(lg, info) << "Transcation service finished";
     }
 
-    transaction::status Service::make_transaction(const Transfer &tran) {
+    transaction::status Service::make_transaction(const transaction_t &tran) {
         CUSTOM_LOG(lg, debug) << "create " << tran;
         auto [status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
@@ -80,7 +80,7 @@ namespace transaction {
         return transaction::status::OK;
     }
 
-    transaction::status Service::verify_transaction(const Transfer &tran) {
+    transaction::status Service::verify_transaction(const transaction_t &tran) {
         // TODO: check if user is loggined - Auth serice
 //    if (!auth_rpc.is_logined(tran.user_id)) {
 //        return TransactionStatus::IS_NOT_LOGINED;
@@ -118,7 +118,7 @@ namespace transaction {
     }
 
     add_transaction_res Service::add_transaction_to_db(
-            const Transfer &tran,
+            const transaction_t &tran,
             transaction::db_entry_status status
     ) {
         unsigned long long entry_id;
@@ -183,7 +183,7 @@ namespace transaction {
         return transaction::OK;
     }
 
-    tran_query_res Service::get_transaction(const TransactionFilter &filter) {
+    tran_query_res Service::get_transaction(const trans_filter &filter) {
         CUSTOM_LOG(lg, info) << "Get call with filter: " << filter;
         auto status = transaction::status::OK;
         auto limit = filter.limit;
@@ -191,7 +191,7 @@ namespace transaction {
             status = transaction::status::FILTER_LIMIT_EXCEEDED;
             limit = transaction::select_query_max_limit;
         }
-        std::vector<Transfer> query_result;
+        std::vector<transaction_t> query_result;
         query_result.reserve(limit);
         try {
             pq::nontransaction non_tran_work(pq_connection.value());
@@ -206,11 +206,12 @@ namespace transaction {
             if (filter.category) sql += " and category = " + std::to_string(filter.category.value);
             if (filter.description)
                 sql += " and description LIKE '%" + non_tran_work.esc(filter.description.value) + "%'";
+            sql += " ORDER BY date";
             sql += " LIMIT " + std::to_string(limit);
 
             pq::result select_res = non_tran_work.exec(sql);
             for (pq::result::const_iterator c = select_res.begin(); c != select_res.end(); ++c) {
-                query_result.push_back(Transfer::from_row(c));
+                query_result.push_back(transaction_t::from_row(c));
             }
 
         } catch (const std::exception &exc) {
@@ -221,8 +222,8 @@ namespace transaction {
     }
 
     void Service::register_methods() {
-        rpc_server.bind("get", [&](const TransactionFilter &filter) { return get_transaction(filter); });
-        rpc_server.bind("create", [&](const Transfer &tran) { return make_transaction(tran); });
+        rpc_server.bind("get", [&](const trans_filter &filter) { return get_transaction(filter); });
+        rpc_server.bind("create", [&](const transaction_t &tran) { return make_transaction(tran); });
     }
 
     Service::~Service() = default;
