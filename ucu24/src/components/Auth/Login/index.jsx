@@ -6,12 +6,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Container } from '@mui/material';
+import { useDispatch } from 'react-redux'
 
 import Register from '../Register'
 import DuoFactor from '../DuoFactor'
+import { login1, setPhoneNum } from '../../../store/slices/AuthSlice'
 
 
 const Login = ({ openLoginFunc }) => {
+    const dispatch = useDispatch()
 
     const [open, setOpen] = React.useState(false);
 
@@ -26,7 +29,10 @@ const Login = ({ openLoginFunc }) => {
     const openRegisterFunc = React.useRef(null)
     const openDuoFactorFunc = React.useRef(null)
 
-    React.useEffect(() => { openLoginFunc.current = handleClickOpen }, [])
+    const phoneRef = React.useRef('')
+    const passwordRef = React.useRef('')
+
+    React.useEffect(() => { openLoginFunc.current = handleClickOpen }, [openLoginFunc])
 
     return (
       <Dialog open={open} onClose={handleClose}>
@@ -37,10 +43,11 @@ const Login = ({ openLoginFunc }) => {
                 autoFocus
                 fullWidth
                 margin="dense"
-                id="email"
-                label="Email Address"
-                type="email"
+                id="phone"
+                label="Phone"
+                type="number"
                 variant="filled"
+                inputRef={phoneRef}
             />
             </Container>
             <Container>
@@ -52,12 +59,20 @@ const Login = ({ openLoginFunc }) => {
                 label="Password"
                 type="password"
                 variant="filled"
+                inputRef={passwordRef}
             />
             </Container>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={() => {
+              dispatch(setPhoneNum({
+                "phone_num": phoneRef.current.value
+              }))
+              dispatch(login1({
+                phone_num: phoneRef.current.value, 
+                hashed_password: passwordRef.current.value
+              }));
               openDuoFactorFunc.current();
           }}>Login</Button>
           <Button onClick={() => {

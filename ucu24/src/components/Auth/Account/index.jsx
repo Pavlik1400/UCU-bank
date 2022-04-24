@@ -8,7 +8,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import { useDispatch, useSelector } from 'react-redux'
-import { exit } from '../../../store/slices/AuthSlice'
+import { exit, getUserData } from '../../../store/slices/AuthSlice'
 import { Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
@@ -17,6 +17,8 @@ const Account = ({ openAccountFunc }) => {
     const dispatch = useDispatch()
 
     const account_data = useSelector((state) => state.auth.account)
+    const logined = useSelector((state) => state.auth.logined)
+    const phone_num = useSelector((state) => state.auth.phone_num)
 
     const [open, setOpen] = React.useState(false);
 
@@ -28,7 +30,13 @@ const Account = ({ openAccountFunc }) => {
       setOpen(false);
     };
 
-    React.useEffect(() => { openAccountFunc.current = handleClickOpen }, [])
+    React.useEffect(() => { openAccountFunc.current = handleClickOpen }, [openAccountFunc])
+
+    React.useEffect(() => {
+        if (logined) {
+            dispatch(getUserData({"phone_num": phone_num}))
+        }
+    }, [logined, phone_num, dispatch]);
 
     return (
       <Dialog open={open} onClose={handleClose}>

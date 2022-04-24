@@ -1,61 +1,84 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+
+import fetchWithTimeout from '../fetcher'
+
+export const createTransaction = createAsyncThunk('transaction/createTransaction', async (auth_data) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(auth_data)
+    };
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/transaction/create/', requestOptions)
+    return response
+})
+
+export const getTransactions = createAsyncThunk('transaction/getTransactions', async (auth_data) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(auth_data),
+    };
+    var results = await Promise.all(auth_data["account_numbers"].map(async (value) => await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/transaction/get/' + value, requestOptions)));
+    let i = 0;
+    var obj = results.reduce(function(o, val) { o[auth_data["account_numbers"][i]] = val["transactions"]; i = i + 1; return o; }, {});
+    i = 0;
+    var statuses = results.reduce(function(o, val) { o[auth_data["account_numbers"][i]] = val["status"]; i = i + 1; return o; }, {});
+
+    return {"transactions": obj, "status": statuses }
+})
+
 
 export const transactionSlice = createSlice({
   name: 'transaction',
   initialState: {
-    last_transactions: [
-        {
-            "from": "1234567812345678",
-            "to": "0987654312345123",
-            "amount": 1395,
-            "date": "22.06.2021",
-            "time": "14:30",
-        },
-        {
-            "from": "0987654312345123",
-            "to": "1234567812345678",
-            "amount": 24.9,
-            "date": "22.06.2021",
-            "time": "14:30",
-        },
-        {
-            "from": "1234567812345678",
-            "to": "0987654312345123",
-            "amount": 1395,
-            "date": "22.06.2021",
-            "time": "14:30",
-        },
-        {
-            "from": "0987654312345123",
-            "to": "1234567812345678",
-            "amount": 24.9,
-            "date": "22.06.2021",
-            "time": "14:30",
-        },
-        {
-            "from": "1234567812345678",
-            "to": "0987654312345123",
-            "amount": 1395,
-            "date": "22.06.2021",
-            "time": "14:30",
-        },
-        {
-            "from": "0987654312345123",
-            "to": "1234567812345678",
-            "amount": 24.9,
-            "date": "22.06.2021",
-            "time": "14:30",
-        },
-    ],
+    status: "idle",
+    error: "",
+
+    last_transactions: [],
   },
   reducers: {
-    addTransaction: (state, action) => {
-        state.last_transactions.push(action.payload);
+    clearStatus: (state) => {
+        state.status = "idle"
+        state.error = ""
     },
   },
+
+  extraReducers(builder) {
+    builder
+      .addCase(createTransaction.pending, (state, action) => {
+        state.status = 'loading'
+      })
+      .addCase(createTransaction.fulfilled, (state, action) => {
+        if (action.payload["status"] === 200) {
+          state.status = 'succeeded'
+        } else {
+          state.status = 'failed'
+          state.error = action.payload["message"]
+        }
+      })
+      .addCase(createTransaction.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(getTransactions.pending, (state, action) => {
+        state.status = 'loading'
+        state.last_transactions = []
+      })
+      .addCase(getTransactions.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.last_transactions = action.payload["transactions"]
+      })
+      .addCase(getTransactions.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+        state.last_transactions = []
+      })
+  }
+
 })
 
 // Action creators are generated for each case reducer function
-export const { addTransaction } = transactionSlice.actions
+export const { addTransaction, clearStatus } = transactionSlice.actions
 
 export default transactionSlice.reducer

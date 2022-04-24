@@ -1,41 +1,34 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useDispatch } from 'react-redux'
-import { addTransaction } from '../../../store/slices/TransactionSlice'
-import { makeAccoutTransaction } from '../../../store/slices/AccountSlice'
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import { useDispatch, useSelector } from 'react-redux'
+import { getTransactions, createTransaction, clearStatus } from '../../../store/slices/TransactionSlice'
 import { Container } from '@mui/material';
-
-function getCurrentDate(){
-
-    let newDate = new Date()
-    let date = newDate.getDate();
-    let month = newDate.getMonth() + 1;
-    let year = newDate.getFullYear();
-    
-    return `${date}.${month<10?`0${month}`:`${month}`}.${year}`
-}
-
-function getCurrentTime(){
-
-    let newDate = new Date()
-    let hours = newDate.getHours();
-    let minutes = newDate.getMinutes();
-    
-    return `${hours}:${minutes}`
-}
     
 
 const NewTransaction = ({ openTransactionFunc }) => {
     const dispatch = useDispatch()
+    const uid = useSelector((state) => state.auth.uid)
+    const accounts = useSelector((state) => state.account.accounts)
+    const error = useSelector((state) => state.transaction.error)
+    const status = useSelector((state) => state.transaction.status)
 
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
+        dispatch(clearStatus())
+        clearSetOperationStarted()
         setOpen(true);
     };
   
@@ -43,27 +36,63 @@ const NewTransaction = ({ openTransactionFunc }) => {
       setOpen(false);
     };
 
-    React.useEffect(() => { openTransactionFunc.current = handleClickOpen }, [])
+    const [operationStarted, setOperationStarted] = React.useState(false);
+    const handleSetOperationStarted = () => {
+      setOperationStarted(true);
+    };
+    const clearSetOperationStarted = () => {
+      setOperationStarted(false);
+    };
 
-    const fromRef = React.useRef('')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    React.useEffect(() => { openTransactionFunc.current = handleClickOpen }, [openTransactionFunc])
+
     const toRef = React.useRef('')
     const amountRef = React.useRef(0)
+    const descriptionRef = React.useRef('')
+
+    React.useEffect(() => {
+        if (status !== "loading" && error === "" && operationStarted) {
+        dispatch(getTransactions({
+            account_numbers: accounts.map((account) => account["number"]),
+            limit: 100,
+        }))
+        handleClose()
+        clearSetOperationStarted()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status, operationStarted]);
+
+    const [fromAccount, setFromAccount] = React.useState('');
+    const handleFromAccountChange = (event) => {
+        setFromAccount(event.target.value);
+    };
 
     return (
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>New transaction</DialogTitle>
+        {status === "loading" && error === "" &&
+        <Box>
+          <CircularProgress />
+        </Box>}
+        {error !== "" && <Alert severity="error">{error}</Alert>}
+        {status !== "loading" && error === "" && <Container><DialogTitle>New transaction</DialogTitle>
         <DialogContent>
             <Container>
-            <TextField
-                autoFocus
-                fullWidth
-                margin="dense"
-                id="fromAccount"
+            <FormControl fullWidth sx={{
+              mt: "8px",
+              mb: "4px",
+            }}>
+              <InputLabel id="account-from-label">From</InputLabel>
+              <Select
+                labelId="account-from-label"
+                id="account-from"
+                value={fromAccount}
                 label="From"
-                type="number"
-                variant="filled"
-                inputRef={fromRef}
-            />
+                onChange={handleFromAccountChange}
+              >
+                {accounts.map((account) => <MenuItem key={account["number"]} value={account["number"]}>{account["number"]}</MenuItem>)}
+              </Select>
+            </FormControl>
             </Container>
             <Container>
             <TextField
@@ -89,25 +118,34 @@ const NewTransaction = ({ openTransactionFunc }) => {
                 inputRef={amountRef}
             />
             </Container>
+            <Container>
+            <TextField
+                autoFocus
+                fullWidth
+                margin="dense"
+                id="description"
+                label="Description"
+                type="text"
+                variant="filled"
+                inputRef={descriptionRef}
+            />
+            </Container>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={() => {
-                dispatch(addTransaction({
-                    "from": fromRef.current.value,
-                    "to": toRef.current.value,
-                    "amount": amountRef.current.value,
-                    "date": getCurrentDate(),
-                    "time": getCurrentTime(),
-                }));
-                dispatch(makeAccoutTransaction({
-                    "from": fromRef.current.value,
-                    "to": toRef.current.value,
-                    "amount": amountRef.current.value,
-                }));
-              handleClose();
+              dispatch(createTransaction({
+                "user_id": uid,
+                "from_acc_number": fromAccount,
+                "to_acc_number": toRef.current.value,
+                "description": descriptionRef.current.value,
+                "amount": parseInt(amountRef.current.value),
+                "category": 9
+              }));
+              handleSetOperationStarted()
           }}>Transfer</Button>
         </DialogActions>
+        </Container>}
       </Dialog>
     );
 }

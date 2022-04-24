@@ -10,13 +10,49 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { Box } from '@mui/system';
 import { CardActionArea } from '@mui/material';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { getUserAccounts } from '../../../store/slices/AccountSlice'
+import { getTransactions } from '../../../store/slices/TransactionSlice'
 
 
 const MainContent = () => {
+    const dispatch = useDispatch()
     const logined = useSelector((state) => state.auth.logined)
+    const uid = useSelector((state) => state.auth.uid)
     const last_transactions = useSelector((state) => state.transaction.last_transactions)
     const accounts = useSelector((state) => state.account.accounts)
+
+    React.useEffect(() => {
+        if (logined) {
+            dispatch(getUserAccounts({
+                user_id: uid
+            }))
+        }
+    }, [dispatch, logined, uid]);
+
+    React.useEffect(() => {
+        if (logined) {
+            dispatch(getTransactions({
+                account_numbers: accounts.map((account) => account["number"]),
+                limit: 100,
+            }))
+        }
+    }, [accounts, dispatch, logined]);
+
+    const [filteredTransactions, setFilteredTransactions] = React.useState([]);
+    React.useEffect(() => {
+        var tmp = [].concat.apply([], Object.keys(last_transactions).map((key) => [...last_transactions[key]]))
+        tmp = tmp.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.from_acc_number === value.from_acc_number && t.to_acc_number === value.to_acc_number && t.amount === value.amount
+                && t.category === value.category && t.date === value.date && t.description === value.description
+            ))
+        )
+        setFilteredTransactions(tmp)
+    }, [last_transactions]);
+
+
 
     return (
     <div>
@@ -42,7 +78,7 @@ const MainContent = () => {
                         </Grid>
                     </Box>
                     <Box sx={{ m: 2 }}>
-                        {accounts.map((value, idx) => {
+                        {accounts.slice(-3).map((value, idx) => {
                             return (
                                 <Box sx={{ mt: 2.5, pb: 2.5 }} key={idx}>
                                     <Card sx={{ padding: "1rem" }}>
@@ -56,7 +92,7 @@ const MainContent = () => {
                                                     *{value["number"].substring(12, 16)}
                                                 </Typography>
                                                 <Typography variant="subtitle1" color="text.secondary" component="div">
-                                                {value["amount"]}$
+                                                {value["balance"]}$
                                                 </Typography>
                                             </CardContent>
                                         </Box>
@@ -94,7 +130,7 @@ const MainContent = () => {
                         </Grid>
                     </Box>
                     <Box>
-                    {last_transactions.slice(-3).map((value, idx) => {
+                    {filteredTransactions.slice(-3).map((value, idx) => {
                         return (
                             <Box key={idx}>
                             <Divider variant="middle" />
@@ -119,10 +155,10 @@ const MainContent = () => {
                                             {value["amount"]}$
                                         </Typography>
                                         <Typography variant="subtitle1" color="text.secondary" component="div">
-                                        From: *{value["from"].substring(12,16)}
+                                        From: *{value["from_acc_number"].substring(12,16)}
                                         </Typography>
                                         <Typography variant="subtitle1" color="text.secondary" component="div">
-                                        To: *{value["to"].substring(12,16)}
+                                        To: *{value["to_acc_number"].substring(12,16)}
                                         </Typography>
                                     </CardContent>
                                 </Box>
@@ -132,9 +168,6 @@ const MainContent = () => {
                                     <CardContent sx={{ flex: '1 0 auto' }}>
                                         <Typography variant="subtitle1" color="text.secondary" component="div">
                                         {value["date"]}
-                                        </Typography>
-                                        <Typography variant="subtitle1" color="text.secondary" component="div">
-                                        {value["time"]}
                                         </Typography>
                                     </CardContent>
                                 </Box>

@@ -10,14 +10,40 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Box } from '@mui/system';
 import { Button } from '@mui/material';
-import { addAccount } from '../../../store/slices/AccountSlice'
+import { getUserAccounts } from '../../../store/slices/AccountSlice'
 import { useSelector, useDispatch } from 'react-redux'
+
+import CreateAccount from '../CreateAccount'
+
+
+const adaptCVV = (cvv) => {return "***"}
+const adaptBalance = (balance) => {return balance + "$"}
+const adaptAny = (smthg) => {return smthg}
 
 
 const AccountContent = () => {
     const dispatch = useDispatch()
     const logined = useSelector((state) => state.auth.logined)
+    const uid = useSelector((state) => state.auth.uid)
     const accounts = useSelector((state) => state.account.accounts)
+
+    React.useEffect(() => {
+        if (logined) {
+            dispatch(getUserAccounts({
+                user_id: uid
+            }))
+        }
+    }, [dispatch, logined, uid]);
+
+    const openCreateAccountFunc = React.useRef(null)
+
+    const aceptedKeys = {
+        "Number": ["number", adaptAny], 
+        "Opening date": ["opening_date", adaptAny],
+        "Type": ["type", adaptAny],
+        "CVV": ["cvv", adaptCVV],
+        "Balance": ["balance", adaptBalance], 
+    };
 
     return (
     <div>
@@ -39,7 +65,7 @@ const AccountContent = () => {
                         </Grid>
                         <Grid item xs={2} sx={{ mt: 1 }}>
                             <Button variant="contained" onClick={() => {
-                                dispatch(addAccount());
+                                    openCreateAccountFunc.current();
                                 }}>New Account</Button>
                         </Grid>
                         </Grid>
@@ -49,9 +75,11 @@ const AccountContent = () => {
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
                         <TableRow>
-                            <TableCell>Idx</TableCell>
-                            <TableCell align="right">Number</TableCell>
-                            <TableCell align="right">Amount</TableCell>
+                            {
+                                Object.keys(aceptedKeys).map((key, index) => ( 
+                                    <TableCell align="right" key={index}>{key}</TableCell>
+                                ))
+                            }
                         </TableRow>
                         </TableHead>
                         <TableBody>
@@ -60,9 +88,11 @@ const AccountContent = () => {
                             key={idx}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                            <TableCell component="th" scope="row">{idx}</TableCell>
-                            <TableCell align="right">{row["number"]}</TableCell>
-                            <TableCell align="right">{row["amount"]}$</TableCell>
+                            {
+                                Object.keys(aceptedKeys).map((key, index) => ( 
+                                    <TableCell align="right" key={index}>{aceptedKeys[key][1](row[aceptedKeys[key][0]])}</TableCell>
+                                ))
+                            }
                             </TableRow>
                         ))}
                         </TableBody>
@@ -73,6 +103,8 @@ const AccountContent = () => {
             </Grid>
             <Grid item xs={2}></Grid>
             </Grid>
+
+            <CreateAccount openCreateAccountFunc={openCreateAccountFunc}></CreateAccount>
         </Box> }
     </div>
   );

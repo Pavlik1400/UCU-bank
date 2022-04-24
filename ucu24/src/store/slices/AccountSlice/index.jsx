@@ -1,65 +1,95 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-function makeid(length) {
-    var result           = '';
-    var characters       = '0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * 
- charactersLength));
-   }
-   return result;
-}
+import fetchWithTimeout from '../fetcher'
+
+
+export const createAccount = createAsyncThunk('account/createAccount', async (auth_data) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(auth_data)
+    };
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/account/create/', requestOptions)
+    return response
+})
+
+export const getAccountInfo = createAsyncThunk('account/getAccountInfo', async (auth_data) => {
+    const requestOptions = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    };
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/account/info/' + auth_data["number"], requestOptions)
+    return response
+})
+
+export const getUserAccounts = createAsyncThunk('account/getUserAccounts', async (auth_data) => {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+    };
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/account/get_accounts/' + auth_data["user_id"], requestOptions)
+    return response
+})
+
 
 export const accountSlice = createSlice({
   name: 'account',
   initialState: {
-    accounts: [
-        {
-            "number": "1234567812345678",
-            "amount": 1000
-        },
-        {
-            "number": "0987654312345123",
-            "amount": 5000
-        },
-    ],
+    status: "idle",
+    error: "",
+
+    accounts: [],
   },
   reducers: {
-    addAccount: (state, action) => {
-        const newAcc = makeid(16);
-        state.accounts.push({
-            "number": newAcc,
-            "amount": 0
-        })
-    },
-
-    makeAccoutTransaction: (state, action) => {
-        let flag_from = false;
-        let elem_from = 0;
-        let flag_to = false;
-        let elem_to = 0;
-
-        for (let index = 0; index < state.accounts.length; index++) {
-            if (state.accounts[index]["number"] === action.payload["from"]) {
-                flag_from = true;
-                elem_from = index;
-            }
-            if (state.accounts[index]["number"] === action.payload["to"]) {
-                flag_to = true;
-                elem_to = index;
-            }
-        }
-
-        if (flag_from && flag_to) {
-            state.accounts[elem_from]["amount"] -= parseInt(action.payload["amount"]);
-            state.accounts[elem_to]["amount"] += parseInt(action.payload["amount"]);
-        }
+    clearStatus: (state) => {
+        state.status = "idle"
+        state.error = ""
     },
   },
+
+extraReducers(builder) {
+    builder
+      .addCase(createAccount.pending, (state, action) => {
+        state.status = 'loading'
+      })
+      .addCase(createAccount.fulfilled, (state, action) => {
+        if (action.payload["status"] === 200) {
+          state.status = 'succeeded'
+        } else {
+          state.status = 'failed'
+          state.error = action.payload["message"]
+        }
+      })
+      .addCase(createAccount.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(getUserAccounts.pending, (state, action) => {
+        state.status = 'loading'
+        state.accounts = []
+      })
+      .addCase(getUserAccounts.fulfilled, (state, action) => {
+        if (action.payload["status"] === 200) {
+          state.status = 'succeeded'
+          state.accounts = action.payload["accounts"]
+        } else {
+          state.status = 'failed'
+          state.error = action.payload["message"]
+          state.accounts = []
+        }
+      })
+      .addCase(getUserAccounts.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+        state.accounts = []
+      })
+  }
+
 })
 
 // Action creators are generated for each case reducer function
-export const { makeAccoutTransaction, addAccount } = accountSlice.actions
+export const { clearStatus } = accountSlice.actions
 
 export default accountSlice.reducer
