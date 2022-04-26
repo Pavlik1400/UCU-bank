@@ -1,37 +1,37 @@
 {
   "transaction": {
     "db": {
-      "dbname": "transactions",
+      "dbname": "transactions", 
       "user": "postgres",
       "password": "postgres",
-      "hostaddr": "127.0.0.1",
+      "host": "postgres-db",
       "port": "5432"
     },
-    "reddis_address": "localhost",
-    "reddis_port": 6380,
-    "rpc_address": "localhost",
-    "rpc_port": 45640
+    "reddis_address": "transaction-hash",
+    "reddis_port": 6379,
+    "rpc_address": "bin-transaction",
+    "rpc_port": 54321
   },
 
   "account": {
-    "reddis_address": "localhost",
+    "reddis_address": "account-hash",
     "reddis_port": 6379,
-    "rpc_address": "localhost",
-    "rpc_port": 45639
+    "rpc_address": "bin-account",
+    "rpc_port": 54321
   },
 
   "user": {
-    "reddis_address": "localhost",
-    "reddis_port": 6381,
-    "rpc_address": "localhost",
-    "rpc_port": 45646
+    "reddis_address": "user-hash",
+    "reddis_port": 6379,
+    "rpc_address": "bin-user",
+    "rpc_port": 54321
   },
   
   "auth": {
-    "reddis_address": "localhost",
+    "reddis_address": "auth-hash",
     "reddis_port": 6379,
-    "rpc_address": "localhost",
-    "rpc_port": 45648,
-    "mock_mail": true
+    "rpc_address": "bin-auth",
+    "rpc_port": 54321,
+    "mock_mail": false
   }
 }
