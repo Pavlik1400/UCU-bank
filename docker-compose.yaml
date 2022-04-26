@@ -1,61 +1,86 @@
 version: '3.9'
 
 services:
-  develop:
-    image: mak9su4roi/dev:full
-    working_dir: /home
+  bin-user:
+    build:
+      context: .
+      dockerfile: ./docker/services/dockerfile
+      args:
+        - SERVICE=user
+        - PRESET=dev-posix
     volumes:
-      - "./src:/home/src:ro"
-
-  # mongodb:
-    # build: src/mongodb
-    # entrypoint: bash -c "mongod --replSet 'rs0' --bind_ip localhost& sleep 10 && mongosh --host mongodb"
-    # --eval 'EJSON.stringify(rs.initiate())' --shell"
-    # networks:
-      # new:
-        # aliases:
-          # - mongodb
-    # tty: true
-
-  develop-custom:
-    extends: develop
-    networks:
-      - new
-    environment:
-      - examples_mongodb_examples=1
-    tty: true
-    entrypoint: bash
-    ## -c "python3 src/build.py dev-posix && bash"
-    #&& bin/mongodb_transactions || bash"
-  
-  db:
-    image: mongo
-    # entrypoint: bash
-    ports:
-      - 27017:27017
-    entrypoint: bash
-    command: [-c, 'docker-entrypoint.sh mongod -f /etc/mongo-conf.yaml >/dev/null& mongosh --file /etc/mongo-conf.js& while true; do sleep 1 && echo 1; done;']
-    volumes:
-      - $PWD/mongo-conf.yaml:/etc/mongo-conf.yaml:ro
-      - $PWD/mongo-conf.js:/etc/mongo-conf.js
-    profiles:
-      - auth
-  
-  hash:
-    image: redis
-    ports:
-      - 6382:6379
-    profiles:
-      - auth
-
-  dbsh: 
-    image: mongo:latest
-    entrypoint: mongosh
+      - ./configs/:/ucu-bank/configs/:ro
     depends_on:
-      - db
-    command: [-c, "while true; do sleep 1 && echo 1; done;"]
-  
+      - mongo-db
 
-networks: 
-  new:
-    name: my-app-net
+  bin-account:
+    build:
+      context: .
+      dockerfile: ./docker/services/dockerfile
+      args:
+        - SERVICE=account
+        - PRESET=dev-posix
+    volumes:
+      - ./configs/:/ucu-bank/configs/:ro
+    depends_on:
+      - bin-user
+
+  bin-transaction:
+    build:
+      context: .
+      args:
+        - SERVICE=transaction
+        - PRESET=dev-posix
+      dockerfile: ./docker/services/dockerfile
+    volumes:
+      - ./configs/:/ucu-bank/configs/:ro
+    depends_on:
+      - postgres-db
+      - bin-account
+
+  bin-auth:
+    build:
+      context: .
+      dockerfile: ./docker/services/dockerfile
+      args:
+        - SERVICE=auth
+        - PRESET=dev-posix
+    volumes:
+      - ./configs/:/ucu-bank/configs/:ro
+      - ~/.aws:/root/.aws:ro
+    depends_on:
+      - bin-user
+      - auth-hash
+
+  bin-gateway:
+    build:
+      context: .
+      dockerfile: ./docker/services/dockerfile
+      args:
+        - SERVICE=gateway
+        - PRESET=dev-posix
+    volumes:
+      - ./configs/:/ucu-bank/configs/:ro
+      - ./configs/gateway/gateway_config.json:/ucu-bank/gateway_config.json:ro
+      - /ucu-bank/logs
+    depends_on:
+      - bin-auth
+      - bin-transaction
+      - bin-account
+      - bin-user
+    ports:
+      - 2020:2020
+  
+  auth-hash:
+    image: redis
+
+  mongo-db:
+    build: docker/mongo-db/
+    command: ["mongod", "--replSet", "r0", "--bind_ip", "localhost,mongo-db"]
+
+  postgres-db:
+    build: ./docker/postgres-db/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=transactions

@@ -1,0 +1,4 @@
+FROM mongo
+COPY ./init.sh ./init.js /my-init/
+RUN chmod +x /my-init/init.sh
+ENTRYPOINT [ "/my-init/init.sh" ]
