@@ -3,8 +3,7 @@
 #ifndef UCU_BANK_AUTH_CLIENT_HPP
 #define UCU_BANK_AUTH_CLIENT_HPP
 
-#include "basic/BasicMicroservice.hpp"
-#include "constants.hpp"
+#include "auth/constants.hpp"
 #include <rpc/client.h>
 #include <nlohmann/json.hpp>
 

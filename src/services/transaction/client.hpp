@@ -2,8 +2,8 @@
 #define UCU_BANK_TRANSACTION_CLIENT_HPP
 
 #include "transaction/constants.hpp"
-#include "basic/BasicMicroservice.hpp"
 #include <nlohmann/json.hpp>
+#include <rpc/client.h>
 
 namespace transaction {
     class Client {

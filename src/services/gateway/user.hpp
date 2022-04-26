@@ -4,7 +4,6 @@
 #include "gateway/api_utils.hpp"
 #include "user/client.h"
 #include "user/constants.h"
-#include "basic/BasicMicroservice.hpp"
 #include "auth/client.hpp"
 
 
