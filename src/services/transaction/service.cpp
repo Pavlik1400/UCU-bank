@@ -26,7 +26,7 @@ namespace transaction {
                     "dbname = " + db_config.at("dbname").get<const std::string>() +
                     " user = " + db_config.at("user").get<const std::string>() +
                     " password = " + db_config.at("password").get<const std::string>() +
-                    " hostaddr = " + db_config.at("hostaddr").get<const std::string>() +
+                    " host = " + db_config.at("host").get<const std::string>() +
                     " port = " + db_config.at("port").get<const std::string>()
             );
             if (pq_connection.value().is_open()) {
