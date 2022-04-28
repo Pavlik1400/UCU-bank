@@ -40,7 +40,7 @@ This project is a semester project for three courses: Software architecture (SWA
 
 
 ## Project structure
-![structure](media/arch.png)
+![structure](media/ArchitectureBank.png)
 
 ## Tools and frameworks
 
@@ -49,21 +49,32 @@ Base language - python 3.8. For front-end - ReactJS 17.0.2
 ### Base frameworks:
 
 #### Backend:
-- Database - most likely - MongoDB
-	- Is Document-Oriented, which makes it easy to use - just like ordinary dictionary
-	- Supports distributed systems
-	- Has good documentation and convenient python binding
-- FastAPI
-	- Is quite fast and supports async code
-	- Easy to write code
+- NoSQL Database - MongoDB
+    - Is Document-Oriented, which makes it easy to use - just like ordinary dictionary
+    - Supports distributed systems
+    - Has good documentation and convenient python binding
+- Relational DataBase - PostgreSQL
+  - Good documentation
+  - Open source
+- Drogon
+  - Is highly asynchronous
+  - Supports REST API
+- Reddis
+  - Simple and highly effective distrubuted map
+- AWS SES
+  - Used for double verification
 - Kafka
-	- Fast
-	- Makes it really easy to create distributed system and maintain dataflow
-	- Many examples of real usage
-	- Easily can become a message broker between microservices
+    - Fast
+    - Makes it really easy to create distributed system and maintain dataflow
+    - Many examples of real usage
+    - Easily can become a message broker between microservices
+- rpclib + msgpack
+  - used for communication between services
+  - Simple and effective
+  - Can be async
 - Safety:
-	- bcrypt library - for password hashing
-	- pyotp - 2 - factor authentication
+    - bcrypt library - for password hashing
+    - pyotp - 2 - factor authentication
 
 #### Frontend:
 - MaterialUI
@@ -79,24 +90,27 @@ Base language - python 3.8. For front-end - ReactJS 17.0.2
     ```bash
     sudo pacman -S postgresql mysql hiredis util-linux-libs openssl zlib
 	```
-1. Install other dependencies (submodules): 
-```bash
-./configure.sh
-```
+
 
 ## Usage
-> Devs Only :)
-- To configure project and install dependencies
-	```bash
-	python3 setup.py
-	```
+
+[//]: # (> Devs Only :&#41;)
+[//]: # (- To configure project and install dependencies)
+[//]: # (	```bash[//]: # &#40;1. Install other dependencies &#40;submodules&#41;: &#41;)
+[//]: # (```bash)
+[//]: # (./configure.sh)
+[//]: # (```)
+[//]: # ()
+[//]: # (	python3 setup.py)
+
+[//]: # (	```)
 - To build project 
 	```bash
 	python3 build.py <build-preset> [--clean|-c]
 	```
 - To run app
 	```bash
-	bin/<app>
+	./bin/<app>
 	```
 
 ## Contributors
