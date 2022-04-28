@@ -2,23 +2,33 @@
 
 namespace user {
     status Client::create(const user_t &user) {
-        return client.call("create", user).as<status>();
+        return ver_connection(
+            [&, this]() { return client->call("create", user).as<status>(); }
+        );
     }
 
     std::pair<status, user_t> Client::get(const std::string &phoneNo) {
-        return client.call("get", phoneNo).as<std::pair<status, user_t>>();
+        return ver_connection(
+            [&, this]() { return client->call("get", phoneNo).as<std::pair<status, user_t>>(); }
+        );
     }
 
     status Client::remove(const std::string &phoneNo) {
-        return client.call("remove", phoneNo).as<status>();
+        return ver_connection(
+            [&, this]() { return client->call("remove", phoneNo).as<status>(); }
+        );
     }
 
     status Client::exists(const std::string &phoneNo) {
-        return client.call("exists", phoneNo).as<status>();
+        return ver_connection(
+            [&, this]() { return client->call("exists", phoneNo).as<status>(); }
+        );
     }
 
     status Client::valid_id(const std::string &id) {
-        return client.call("valid_id", id).as<status>();
+        return ver_connection(
+            [&, this]() { return client->call("valid_id", id).as<status>(); }
+        );
     }
 }
 

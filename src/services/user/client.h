@@ -2,16 +2,24 @@
 #define UCU_BANK_USER_CLIENT_H
 
 #include <rpc/client.h>
+#include <rpc/config.h>
 #include "user/constants.h"
+#include "client/client.hpp"
 
 namespace user {
-    class Client {
-    private:
-        rpc::client client;
+    class Client: public client::BasicClient {
     public:
-        Client(const std::string &addr, int port) : client(addr, port) {};
+        Client(std::string &&addr, int port)
+            : client::BasicClient(std::move(addr)
+                , port
+                , "USER"
+            ) {};
 
-        explicit Client(const std::string &addr) : client(addr, rpc::constants::DEFAULT_PORT) {};
+        explicit Client(std::string &&addr)
+            : client::BasicClient(std::move(addr)
+                , rpc::constants::DEFAULT_PORT
+                , "USER"
+            ) {};
 
         status create(const user_t &user);
 

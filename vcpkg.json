@@ -7,7 +7,6 @@
             "features": [ "email" ]
         },
         "drogon",
-        "cppkafka",
         "mongo-cxx-driver",
         "libpqxx",
         "serdepp",

@@ -2,13 +2,12 @@
 #define UCU_BANK_TRANSACTION_CLIENT_HPP
 
 #include "transaction/constants.hpp"
-#include "basic/BasicMicroservice.hpp"
 #include <nlohmann/json.hpp>
+#include <rpc/client.h>
+#include "client/client.hpp"
 
 namespace transaction {
-    class Client {
-    private:
-        rpc::client client;
+    class Client: public client::BasicClient {
     public:
         explicit Client(const nlohmann::json &cnf);
         transaction::status create(const transaction_t &tran);

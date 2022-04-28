@@ -1,0 +1,22 @@
+FROM fedora:36
+
+RUN dnf install -y git curl zip unzip tar cmake make g++ perl autoconf
+ENV VCPKG_ROOT=/ucu-bank/vcpkg
+RUN mkdir /ucu-bank \
+    && mkdir ${VCPKG_ROOT}
+RUN git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT}
+RUN ${VCPKG_ROOT}/bootstrap-vcpkg.sh
+
+RUN ${VCPKG_ROOT}/vcpkg install boost-log
+RUN ${VCPKG_ROOT}/vcpkg install redis-plus-plus
+RUN ${VCPKG_ROOT}/vcpkg install nlohmann-json
+RUN ${VCPKG_ROOT}/vcpkg install serdepp
+RUN ${VCPKG_ROOT}/vcpkg install rpclib
+RUN ${VCPKG_ROOT}/vcpkg install mongo-cxx-driver
+RUN ${VCPKG_ROOT}/vcpkg install aws-sdk-cpp[email]
+RUN ${VCPKG_ROOT}/vcpkg install boost-uuid
+RUN ${VCPKG_ROOT}/vcpkg install libpqxx
+RUN ${VCPKG_ROOT}/vcpkg install drogon
+RUN ${VCPKG_ROOT}/vcpkg install boost-program-options
+
+WORKDIR /ucu-bank/

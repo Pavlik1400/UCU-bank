@@ -4,8 +4,7 @@
 #include "api_utils.hpp"
 #include "account/constants.h"
 #include "account/client.h"
-#include "basic/BasicMicroservice.hpp"
-
+#include <nlohmann/json.hpp>
 
 namespace ucubank_api::v1 {
 

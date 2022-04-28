@@ -2,7 +2,6 @@
 #define UCU_BANK_TRANSACTION_HPP
 
 #include "gateway/api_utils.hpp"
-#include "basic/BasicMicroservice.hpp"
 #include "transaction/client.hpp"
 #include "transaction/constants.hpp"
 

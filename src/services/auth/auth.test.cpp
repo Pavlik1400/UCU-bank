@@ -18,7 +18,7 @@ int main() {
         .gender="male",
         .joining_date="01.01.2022"
     };
-    user::Client("127.0.0.1", 45646).create(mak9su4roi);
+    user::Client("user", 45646).create(mak9su4roi);
 // 
     // email::MailSender sender;
 // 
