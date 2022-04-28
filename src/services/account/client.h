@@ -3,15 +3,24 @@
 
 #include <rpc/client.h>
 #include "account/constants.h"
+#include "client/client.hpp"
 
 namespace account {
-    class Client {
-    private:
-        rpc::client client;
+    class Client: public client::BasicClient{
     public:
-        Client(const std::string &addr, int port) : client(addr, port) {};
+        Client(std::string &&addr, int port)
+            : client::BasicClient(
+                std::move(addr),
+                port,
+                "ACCOUNT"
+            ) {};
 
-        explicit Client(const std::string &addr) : Client(addr, rpc::constants::DEFAULT_PORT) {};
+        explicit Client(std::string &&addr)
+            : client::BasicClient(
+                std::move(addr),
+                rpc::constants::DEFAULT_PORT,
+                "ACCOUNT"
+            ) {}
 
         account::status create(const std::string &user_id, const std::string &account_type);
 

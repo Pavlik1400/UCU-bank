@@ -6,10 +6,11 @@
 #include "auth/constants.hpp"
 #include <rpc/client.h>
 #include <nlohmann/json.hpp>
+#include "client/client.hpp"
 
 namespace auth {
 
-class Client {
+class Client: public client::BasicClient{
 public:
     Client(const nlohmann::json &cnf);
 
@@ -21,9 +22,6 @@ public:
     
     std::pair<auth::status, AuthDU>
     sess_info(const AuthDU & tk_n_info);
-
-private:
-    rpc::client client;
 };
 
 } //auth

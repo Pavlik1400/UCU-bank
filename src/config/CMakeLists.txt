@@ -10,7 +10,7 @@ find_package(rpclib CONFIG)
 #=========================================#
 set(AUTH_ROOT "${ROOT_}/auth")
 
-add_library(${AUTH}.client SHARED ${AUTH_ROOT}/client.cpp)
+add_library(${AUTH}.client SHARED ${AUTH_ROOT}/client.cpp "${ROOT_}/client/client.hpp")
 
 target_link_libraries(${AUTH}.client rpclib::rpc)
 
@@ -26,7 +26,7 @@ target_sources(${AUTH}.client INTERFACE ${AUTH_ROOT}/client.hpp
 # --------- ACCOUNT MICROSERVICE -------- #
 #=========================================#
 set(ACCOUNT_ROOT "${ROOT_}/account")
-add_library(${ACCOUNT}.client SHARED ${ACCOUNT_ROOT}/client.cpp
+add_library(${ACCOUNT}.client SHARED ${ACCOUNT_ROOT}/client.cpp "${ROOT_}/client/client.hpp"
     ${ACCOUNT_ROOT}/client.cpp
 )
 
@@ -44,7 +44,7 @@ target_sources(${ACCOUNT}.client INTERFACE ${ACCOUNT_ROOT}/client.h
 # --------- USER MICROSERVICE ----------- #
 #=========================================#
 set(USER_ROOT "${ROOT_}/user")
-add_library(${USER}.client SHARED ${USER_ROOT}/client.cpp)
+add_library(${USER}.client SHARED ${USER_ROOT}/client.cpp "${ROOT_}/client/client.hpp")
 
 target_link_libraries(${USER}.client rpclib::rpc)
 
@@ -60,7 +60,7 @@ target_sources(${USER}.client INTERFACE ${USER_ROOT}/client.h
 # ---------- TRANSACTION ---------------- #
 #=========================================#
 set(TRANSACTION_ROOT "${ROOT_}/transaction")
-add_library(${TRANSACTION}.client SHARED ${TRANSACTION_ROOT}/client.cpp
+add_library(${TRANSACTION}.client SHARED ${TRANSACTION_ROOT}/client.cpp "${ROOT_}/client/client.hpp"
     ${TRANSACTION_ROOT}/constants.cpp
 )
 
