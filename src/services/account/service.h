@@ -35,7 +35,8 @@ namespace account {
         const std::string OID = "$oid";
 
         mongocxx::instance instance{}; // This should be done only once.
-        mongocxx::uri uri{"mongodb://mongo-db:27017/?replicaSet=r0"};
+//        mongocxx::uri uri{"mongodb://mongo-db:27017/?replicaSet=r0"};
+        mongocxx::uri uri{"mongodb://localhost:27017/?replicaSet=rs0"};
         mongocxx::client client = mongocxx::client(uri);
         mongocxx::database db;
 

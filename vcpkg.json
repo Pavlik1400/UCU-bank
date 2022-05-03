@@ -11,6 +11,7 @@
         "libpqxx",
         "serdepp",
         "nlohmann-json",
+        "boost",
         "boost-uuid",
         "boost-log",
         "redis-plus-plus",

@@ -1,0 +1,37 @@
+{
+  "transaction": {
+    "db": {
+      "dbname": "transactions",
+      "user": "postgres",
+      "password": "postgres",
+      "host": "postgres-db",
+      "port": "5432"
+    },
+    "reddis_address": "transaction-hash",
+    "reddis_port": 6379,
+    "rpc_address": "bin-transaction",
+    "rpc_port": 54321
+  },
+
+  "account": {
+    "reddis_address": "account-hash",
+    "reddis_port": 6379,
+    "rpc_address": "bin-account",
+    "rpc_port": 54321
+  },
+
+  "user": {
+    "reddis_address": "user-hash",
+    "reddis_port": 6379,
+    "rpc_address": "bin-user",
+    "rpc_port": 54321
+  },
+
+  "auth": {
+    "reddis_address": "auth-hash",
+    "reddis_port": 6379,
+    "rpc_address": "bin-auth",
+    "rpc_port": 54321,
+    "mock_mail": false
+  }
+}

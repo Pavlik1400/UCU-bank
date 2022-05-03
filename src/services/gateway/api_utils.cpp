@@ -7,8 +7,8 @@ namespace ucubank_api::v1 {
         if (!req_json_ptr) {
             auto resp_json = new Json::Value;
             (*resp_json)["status"] = err_status;
-            (*resp_json)["message"] = "Error while parsing json: " + req->getJsonError();
-            return {std::make_shared<Json::Value>(resp_json), false};
+            (*resp_json)["message"] = "Request error: " + req->getJsonError();
+            return {std::make_shared<Json::Value>(*resp_json), false};
         }
         (*req_json_ptr)["status"] = ok_status;
         return {req_json_ptr, true};
@@ -28,7 +28,7 @@ namespace ucubank_api::v1 {
     std::tuple<bool, Json::Value, Json::Value> prepare_json(const drogon::HttpRequestPtr &req) {
         auto resp_json = Json::Value{};
         auto [req_json_ptr, success] = getJsonObjectSafe(req);
-        if (!success) return {false, *req_json_ptr, {*req_json_ptr}};
+        if (!success) return {false, *req_json_ptr, *req_json_ptr};
         resp_json["status"] = 200;
         return {true, std::move(*req_json_ptr), std::move(resp_json)};
     }
