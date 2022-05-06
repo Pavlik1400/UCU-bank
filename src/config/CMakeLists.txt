@@ -4,6 +4,7 @@ set(ROOT_INCLUDE_DIRECTORIES "${ROOT_}" PARENT_SCOPE)
 find_package(serdepp CONFIG)
 find_package(nlohmann_json CONFIG)
 find_package(rpclib CONFIG)
+find_package(Threads REQUIRED)
 
 #=========================================#
 # --------- AUTH MICROSERVICE ----------- #
@@ -12,7 +13,7 @@ set(AUTH_ROOT "${ROOT_}/auth")
 
 add_library(${AUTH}.client SHARED ${AUTH_ROOT}/client.cpp "${ROOT_}/client/client.hpp")
 
-target_link_libraries(${AUTH}.client rpclib::rpc)
+target_link_libraries(${AUTH}.client rpclib::rpc Threads::Threads)
 
 target_include_directories(${AUTH}.client PUBLIC "${ROOT_}"
     ${RPCLIB_INCLUDE_DIR}
@@ -30,7 +31,7 @@ add_library(${ACCOUNT}.client SHARED ${ACCOUNT_ROOT}/client.cpp "${ROOT_}/client
     ${ACCOUNT_ROOT}/client.cpp
 )
 
-target_link_libraries(${ACCOUNT}.client rpclib::rpc)
+target_link_libraries(${ACCOUNT}.client rpclib::rpc Threads::Threads)
 
 target_include_directories(${ACCOUNT}.client PUBLIC "${ROOT_}"
     ${RPCLIB_INCLUDE_DIR}
@@ -46,7 +47,7 @@ target_sources(${ACCOUNT}.client INTERFACE ${ACCOUNT_ROOT}/client.h
 set(USER_ROOT "${ROOT_}/user")
 add_library(${USER}.client SHARED ${USER_ROOT}/client.cpp "${ROOT_}/client/client.hpp")
 
-target_link_libraries(${USER}.client rpclib::rpc)
+target_link_libraries(${USER}.client rpclib::rpc Threads::Threads)
 
 target_include_directories(${USER}.client PUBLIC "${ROOT_}"
     ${RPCLIB_INCLUDE_DIR}
@@ -64,7 +65,7 @@ add_library(${TRANSACTION}.client SHARED ${TRANSACTION_ROOT}/client.cpp "${ROOT_
     ${TRANSACTION_ROOT}/constants.cpp
 )
 
-target_link_libraries(${TRANSACTION}.client rpclib::rpc)
+target_link_libraries(${TRANSACTION}.client rpclib::rpc Threads::Threads)
 
 target_include_directories(${TRANSACTION}.client PUBLIC "${ROOT_}"
     ${RPCLIB_INCLUDE_DIR}
