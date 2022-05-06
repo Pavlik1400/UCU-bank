@@ -7,19 +7,12 @@
 #include "client/client.hpp"
 
 namespace user {
-    class Client: public client::BasicClient {
+    class Client : public client::BasicClient {
     public:
-        Client(std::string &&addr, int port)
-            : client::BasicClient(std::move(addr)
-                , port
-                , "USER"
-            ) {};
+        Client(std::string &&addr, int port) : client::BasicClient(std::move(addr), port, "USER") {};
 
-        explicit Client(std::string &&addr)
-            : client::BasicClient(std::move(addr)
-                , rpc::constants::DEFAULT_PORT
-                , "USER"
-            ) {};
+        explicit Client(std::string &&addr) : client::BasicClient(std::move(addr), rpc::constants::DEFAULT_PORT,
+                                                                  "USER") {};
 
         status create(const user_t &user);
 
@@ -30,6 +23,8 @@ namespace user {
         status exists(const std::string &phoneNo);
 
         status valid_id(const std::string &id);
+
+        status valid_password(const std::string &phoneNo, const std::string &password);
     };
 }
 

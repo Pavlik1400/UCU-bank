@@ -18,6 +18,10 @@ namespace user {
     const std::string GENDER = "gender";
     const std::string JOINING_DATE = "joiningDate";
 
+    namespace password {
+        const std::string SALT = "salt";
+    }
+
     enum status {
         OK = 0,
         INCOMPLETE_USER_IDENTITY = 1,
@@ -26,7 +30,8 @@ namespace user {
         GET_FAILED = 4,
         USER_EXISTS = 5,
         USER_DOESNT_EXIST = 6,
-        INVALID_USER_ID = 7
+        INVALID_USER_ID = 7,
+        INVALID_PASSWORD = 8,
     };
 
     inline std::string status_to_str(status s) {
@@ -38,6 +43,7 @@ namespace user {
             case GET_FAILED: return "GET_FAILED";
             case USER_EXISTS: return "USER_EXISTS";
             case USER_DOESNT_EXIST: return "USER_DOESNT_EXIST";
+            case INVALID_PASSWORD: return "INVALID_PASSWORD";
             default: return "DB ERROR";
         }
     }

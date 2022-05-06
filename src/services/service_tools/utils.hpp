@@ -13,6 +13,8 @@ std::string cur_time_str();
 
 std::string generate_current_datetime();
 
+std::string generate_random_string(size_t size);
+
 template<typename T>
 struct ucu_optional {
 public:

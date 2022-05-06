@@ -90,4 +90,4 @@ target_include_directories(${TOOLS} PUBLIC "${ROOT_}"
     ${RPCLIB_INCLUDE_DIR}
 )
 
-target_sources(${TOOLS} INTERFACE ${TOOLS_ROOT}/utils.hpp)
+target_sources(${TOOLS} INTERFACE ${TOOLS_ROOT}/utils.hpp ${TOOLS_ROOT}/sha512.hpp)

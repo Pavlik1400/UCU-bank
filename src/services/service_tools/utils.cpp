@@ -7,6 +7,7 @@
 #include <ctime>
 #include <iomanip>
 #include <string>
+#include <random>
 
 
 nlohmann::json load_json_config(const std::string &path) {
@@ -50,4 +51,15 @@ std::string generate_current_datetime() {
     std::ostringstream oss;
     oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
     return oss.str();
+}
+
+std::string generate_random_string(size_t size) {
+    std::uniform_int_distribution<int>d(' ', '~');
+
+    std::random_device rd(("/dev/urandom"));
+    std::vector<char> random_string{};
+    random_string.reserve(size);
+    for(size_t n = 0; n < size; ++n)
+        random_string.push_back(static_cast<char>(d(rd)));
+    return std::string{random_string.begin(), random_string.end()};
 }

@@ -15,11 +15,13 @@ int main() {
             .name="Bankrot",
             .password="0000",
             .date_of_birth="17.01.2002",
-            .phoneNo="+380(xx)xxxxx",
+            .phoneNo="+380(98)3928392",
             .email="bankrot@gmail.com",
             .address="Lviv, Ukraine",
             .gender="male",
             .joining_date="01.01.2022"
     };
-    client.create(mak9su4roi);
+//    std::cout << user::status_to_str(client.create(mak9su4roi)) << std::endl;
+
+    std::cout << user::status_to_str(client.valid_password(mak9su4roi.phoneNo, mak9su4roi.password)) << std::endl;
 }

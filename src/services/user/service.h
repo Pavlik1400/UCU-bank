@@ -41,6 +41,7 @@ namespace user {
 
         // collections in DB
         mongocxx::collection users;
+        mongocxx::collection password_salt;
         mongocxx::write_concern wc_majority{};
         mongocxx::read_concern rc_local{};
         mongocxx::read_preference rp_primary{};
@@ -67,6 +68,8 @@ namespace user {
         user::status exists(const std::string &phoneNo);
 
         user::status valid_id(const std::string &id);
+
+        user::status valid_password(const std::string &phoneNo, const std::string &password);
     };
 }
 
