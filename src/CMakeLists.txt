@@ -5,6 +5,7 @@ set(DIRECTORIES
         "services/gateway"
         "services/transaction"
         "services/auth"
+        "services/notification"
 )
 
 if (${MAKE_EXAMPLES})

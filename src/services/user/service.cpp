@@ -7,11 +7,8 @@
 namespace user {
 
     Service::Service(const nlohmann::json &cnf) : BasicMicroservice(cnf["user"]["rpc_port"].get<int>(), "tcp://" +
-                                                                                                        cnf["user"]["reddis_address"].get<std::string>() +
-                                                                                                        ":" +
-                                                                                                        std::to_string(
-                                                                                                                cnf["user"]["reddis_port"].get<int>())),
-                                                  cnf(cnf) {
+    cnf["user"]["reddis_address"].get<std::string>() + ":" + std::to_string(cnf["user"]["reddis_port"].get<int>())),
+    cnf(cnf) {
         db = client["bank"];
         users = db["users"];
         password_salt = db["password_salt"];
@@ -108,6 +105,7 @@ namespace user {
 
     user::status Service::exists(const std::string &phoneNo) {
         CUSTOM_LOG(lg, debug) << "Exists call";
+        notification_client.send("Exists call with number " + phoneNo);
         auto status = users.find_one(session, document{} << user::PHONE_NO << phoneNo << finalize);
         return status ? user::status::OK : user::status::USER_DOESNT_EXIST;
     }

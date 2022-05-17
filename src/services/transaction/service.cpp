@@ -8,8 +8,9 @@ namespace transaction {
             BasicMicroservice(cnf["transaction"]["rpc_port"].get<int>(),
                               "tcp://" + cnf["transaction"]["reddis_address"].get<std::string>() +
                               ":" + std::to_string(cnf["transaction"]["reddis_port"].get<int>())),
-            accountClient(cnf["account"]["rpc_address"].get<std::string>(),
-                          cnf["account"]["rpc_port"].get<int>()),
+            account_client(cnf["account"]["rpc_address"].get<std::string>(),
+                           cnf["account"]["rpc_port"].get<int>()),
+            notification_client(cnf["notification"]["broker_address"].get<std::string>() + ":" + cnf["notification"]["broker_port"].get<std::string>(), cnf["notification"]["topic"].get<std::string>()),
             cnf(cnf), pq_connection({}) {
         CUSTOM_LOG(lg, debug) << "Transaction service initialized";
         std::cerr << "Transaction service initialized" << std::endl;
@@ -66,17 +67,18 @@ namespace transaction {
             delete_transaction(entry_id);
             return status;
         }
-        auto tran_status = accountClient.transaction(tran.from_acc_number, tran.to_acc_number, tran.amount);
+        auto tran_status = account_client.transaction(tran.from_acc_number, tran.to_acc_number, tran.amount);
         if (tran_status != account::status::OK) {
             CUSTOM_LOG(lg, info) << "Transaction with id: " << entry_id << " failed in Account";
             delete_transaction(entry_id);
             return transaction::status::FAILED;
         }
         if ((status = update_transaction_status(entry_id, transaction::FINISHED)) != transaction::OK) {
-            accountClient.transaction(tran.from_acc_number, tran.to_acc_number, -tran.amount);  // return money
+            account_client.transaction(tran.from_acc_number, tran.to_acc_number, -tran.amount);  // return money
             delete_transaction(entry_id);
             return transaction::status::FAILED;
         }
+        notification_client.send(tran.from_acc_number + " -" + std::to_string(tran.amount) + "-> " + tran.to_acc_number);
         return transaction::status::OK;
     }
 
@@ -86,7 +88,7 @@ namespace transaction {
 //        return TransactionStatus::IS_NOT_LOGINED;
 //    }
         CUSTOM_LOG(lg, debug) << "Verifying transaction: " << tran;
-        auto [status, acc_info] = accountClient.get(tran.from_acc_number);
+        auto [status, acc_info] = account_client.get(tran.from_acc_number);
         if (status != account::status::OK) {
             switch (status) {
                 case account::status::INVALID_CARD_NUMBER:
@@ -95,7 +97,7 @@ namespace transaction {
                     return transaction::FAILED;
             }
         }
-        auto acc_resp = accountClient.get(tran.to_acc_number);
+        auto acc_resp = account_client.get(tran.to_acc_number);
         if (acc_resp.first != account::status::OK) {
             switch (acc_resp.first) {
                 case account::status::INVALID_CARD_NUMBER:

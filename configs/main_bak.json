@@ -13,6 +13,12 @@
     "rpc_port": 54321
   },
 
+  "notification": {
+    "broker_address": "localhost",
+    "broker_port": "9092",
+    "topic": "notification"
+  },
+
   "account": {
     "reddis_address": "account-hash",
     "reddis_port": 6379,

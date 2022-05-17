@@ -8,6 +8,7 @@ add_executable(${TRANSACTION} main.cpp
 )
 target_link_libraries(${TRANSACTION} ${BASIC} 
         ${ACCOUNT}.client
+        ${NOTIFICATION}.client
         ${TOOLS}
         libpqxx::pqxx
 )

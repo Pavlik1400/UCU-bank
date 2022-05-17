@@ -31,7 +31,7 @@
                 "AUTH": "auth",
                 "TRANSACTION": "transaction",
                 "GATEWAY": "gateway",
-
+                "NOTIFICATION": "notification",
                 "TOOLS": "service-tools"
             },
             "condition": {

@@ -5,6 +5,16 @@ find_package(serdepp CONFIG)
 find_package(nlohmann_json CONFIG)
 find_package(rpclib CONFIG)
 find_package(Threads REQUIRED)
+find_package(RdKafka REQUIRED)
+include(FindPackageHandleStandardArgs)
+include(SelectLibraryConfigurations)
+
+find_path(CPPKAFKA_INCLUDES NAMES cppkafka.h HINTS ${CURRENT_INSTALLED_DIR} PATH_SUFFIXES cppkafka)
+
+find_library(CPPKAFKA_LIBRARY_DEBUG NAMES cppkafka PATH_SUFFIXES lib PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}" NO_DEFAULT_PATH REQUIRED)
+find_library(CPPKAFKA_LIBRARY_RELEASE NAMES cppkafka PATH_SUFFIXES lib PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug" NO_DEFAULT_PATH REQUIRED)
+
+select_library_configurations(CPPKAFKA)
 
 #=========================================#
 # --------- AUTH MICROSERVICE ----------- #
@@ -74,6 +84,22 @@ target_include_directories(${TRANSACTION}.client PUBLIC "${ROOT_}"
 target_sources(${TRANSACTION}.client INTERFACE ${TRANSACTION_ROOT}/client.hpp
     ${TRANSACTION_ROOT}/constants.hpp
 )
+
+#=========================================#
+# ------ NOTIFICATION MICROSERVICE ------ #
+#=========================================#
+set(NOTIFICATION_ROOT "${ROOT_}/notification")
+add_library(${NOTIFICATION}.client SHARED ${NOTIFICATION_ROOT}/client.cpp)
+
+target_link_libraries(${NOTIFICATION}.client ${CPPKAFKA_LIBRARY} RdKafka::rdkafka++)
+
+target_include_directories(${NOTIFICATION}.client PUBLIC "${ROOT_}"
+        ${CPPKAFKA_INCLUDES}/..
+        )
+
+target_sources(${NOTIFICATION}.client INTERFACE ${NOTIFICATION_ROOT}/client.cpp ${NOTIFICATION_ROOT}/client.h
+        ${NOTIFICATION_ROOT}/constants.h
+        )
 
 #=========================================#
 # --------- SERVICE TOOLS --------------- #

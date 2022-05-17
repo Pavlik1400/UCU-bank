@@ -4,6 +4,7 @@
 #include "basic/BasicMicroservice.hpp"
 #include "constants.hpp"
 #include "account/client.h"
+#include "notification/client.h"
 #include <ostream>
 #include <pqxx/pqxx>
 
@@ -37,9 +38,10 @@ namespace transaction {
         void register_methods();
 
     private:
-        account::Client accountClient;
-        std::optional<pq::connection> pq_connection;
+        account::Client account_client;
+        notification::Client notification_client;
         const nlohmann::json &cnf;
+        std::optional<pq::connection> pq_connection;
     };
 }
 
