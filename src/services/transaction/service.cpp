@@ -54,6 +54,10 @@ namespace transaction {
 
     transaction::status Service::make_transaction(const transaction_t &tran) {
         CUSTOM_LOG(lg, debug) << "create " << tran;
+
+        std::stringstream ss; ss << tran;
+        notification_client.send(ss.str());
+
         auto [status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
         if (status != transaction::OK) return status;

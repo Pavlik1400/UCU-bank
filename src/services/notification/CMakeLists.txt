@@ -1,4 +1,7 @@
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(Boost COMPONENTS log REQUIRED)
+find_package(aws-cpp-sdk-email REQUIRED)
+find_package(ZLIB REQUIRED)
 find_package(rpclib CONFIG REQUIRED)
 find_package(RdKafka REQUIRED)
 include(FindPackageHandleStandardArgs)
@@ -12,13 +15,15 @@ find_library(CPPKAFKA_LIBRARY_RELEASE NAMES cppkafka PATH_SUFFIXES lib PATHS "${
 select_library_configurations(CPPKAFKA)
 
 
-set(SOURCES service.cpp)
-set(HEADERS service.h)
+set(SOURCES service.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../auth/email/MailSender.cpp)
+set(HEADERS service.h ${CMAKE_CURRENT_SOURCE_DIR}/../auth/email/MailSender.h)
 
 add_executable(${NOTIFICATION} notification.cpp
         ${SOURCES} ${HEADERS}
         )
-target_link_libraries(${NOTIFICATION} PRIVATE ${BASIC} ${CPPKAFKA_LIBRARY} RdKafka::rdkafka++ nlohmann_json::nlohmann_json
-
+target_link_libraries(${NOTIFICATION} PRIVATE ${BASIC} ${CPPKAFKA_LIBRARY}
+        RdKafka::rdkafka++
+        nlohmann_json::nlohmann_json
+        aws-cpp-sdk-email
         ${TOOLS}
         )

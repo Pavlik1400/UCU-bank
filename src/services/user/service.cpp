@@ -105,7 +105,7 @@ namespace user {
 
     user::status Service::exists(const std::string &phoneNo) {
         CUSTOM_LOG(lg, debug) << "Exists call";
-        notification_client.send("Exists call with number " + phoneNo);
+//        notification_client.send("Exists call with number " + phoneNo);
         auto status = users.find_one(session, document{} << user::PHONE_NO << phoneNo << finalize);
         return status ? user::status::OK : user::status::USER_DOESNT_EXIST;
     }

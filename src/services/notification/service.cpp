@@ -10,8 +10,10 @@ namespace notification {
                                                                                        cnf["notification"]["broker_port"].get<std::string>()},
                                                                 {"group.id",           "ucu"},
                                                                 {"enable.auto.commit", false}}), consumer(kafka_config),
+                                                  mock(cnf["auth"]["mock_mail"]), msender(mock),
                                                   builder(cnf["notification"]["topic"].get<std::string>()), cnf(cnf) {
         consumer.set_log_level(cppkafka::LogLevel::LogWarning);
+        logger::init();
 
 
     }
@@ -23,15 +25,16 @@ namespace notification {
         while (running) {
             cppkafka::Message msg = consumer.poll();
             if (msg) {
+                CUSTOM_LOG(lg, debug) << "Got message";
                 if (msg.get_error()) {
                     if (!msg.is_eof()) {
-                        std::cout << "[+] Received error notification: " << msg.get_error() << std::endl;
+                        CUSTOM_LOG(lg, error) << msg.get_error();
                     }
                 } else {
                     if (msg.get_key()) {
                         std::cout << msg.get_key() << " -> ";
                     }
-                    std::cout << msg.get_payload() << std::endl;
+                    process(msg.get_payload());
                     consumer.commit(msg);
                 }
             }
@@ -42,11 +45,23 @@ namespace notification {
     void Service::start() {
         signal(SIGINT, [](int) { running = false; });
         consumer.subscribe({builder.topic()});
+        msender.with_sender("ucu.bank.24@gmail.com").with_subject("Notification");
+        CUSTOM_LOG(lg, info) << "Notification service started";
 
     }
 
     void Service::stop() {
 
+
     }
 
+    void Service::process(const std::string &message) {
+        CUSTOM_LOG(lg, debug) << "Message content: " + message;
+        const auto&[email, body] = decompose(message);
+        msender.with_receiver(email).with_body(body).send();
+    }
+
+    std::pair<std::string, std::string> Service::decompose(const std::string &message) {
+        return {"user@email.com", message};
+    }
 }

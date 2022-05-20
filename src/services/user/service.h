@@ -35,7 +35,6 @@ namespace user {
 
         mongocxx::instance instance{}; // This should be done only once.
         mongocxx::uri uri{"mongodb://localhost:27017/?replicaSet=rs0"};
-//        mongocxx::uri uri{"mongodb://mongo-db:27017/?replicaSet=r0"};
         mongocxx::client client = mongocxx::client(uri);
         mongocxx::database db;
 
@@ -47,7 +46,6 @@ namespace user {
         mongocxx::read_preference rp_primary{};
         mongocxx::options::transaction sopts;
         mongocxx::client_session session = client.start_session();
-
         const nlohmann::json cnf;
 
         void register_methods();
