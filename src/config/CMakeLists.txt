@@ -21,6 +21,8 @@ select_library_configurations(CPPKAFKA)
 #=========================================#
 set(AUTH_ROOT "${ROOT_}/auth")
 
+set(AUTH_ROOT_INCLUDE_DIRECTORIES "${AUTH_ROOT}" PARENT_SCOPE)
+
 add_library(${AUTH}.client SHARED ${AUTH_ROOT}/client.cpp "${ROOT_}/client/client.hpp")
 
 target_link_libraries(${AUTH}.client rpclib::rpc Threads::Threads)

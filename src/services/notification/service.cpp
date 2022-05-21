@@ -9,9 +9,12 @@ namespace notification {
                                                                                        ":" +
                                                                                        cnf["notification"]["broker_port"].get<std::string>()},
                                                                 {"group.id",           "ucu"},
+                                                                {"allow.auto.create.topics", true},
                                                                 {"enable.auto.commit", false}}), consumer(kafka_config),
-                                                  mock(cnf["auth"]["mock_mail"]), msender(mock),
-                                                  builder(cnf["notification"]["topic"].get<std::string>()), cnf(cnf) {
+                                                  builder(cnf["notification"]["topic"].get<std::string>()),
+                                                  mock(cnf["auth"]["mock_mail"]),
+                                                  msender(mock),
+                                                  cnf(cnf) {
         consumer.set_log_level(cppkafka::LogLevel::LogWarning);
         logger::init();
 
@@ -62,6 +65,6 @@ namespace notification {
     }
 
     std::pair<std::string, std::string> Service::decompose(const std::string &message) {
-        return {"user@email.com", message};
+        return {"tsapiv@ucu.edu.ua", message};
     }
 }

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "client.h"
 #include "constants.h"
 
@@ -11,9 +12,14 @@ namespace notification {
     }
 
     void Client::send(const std::string &message) {
-        builder.payload(message);
-        producer.produce(builder);
-        producer.flush();
+        try {
+            builder.payload(message);
+            producer.produce(builder);
+            producer.flush();
+        } catch (cppkafka::HandleException &exception) {
+            std::cerr << exception.what() << std::endl;
+        }
+
     }
 
     void Client::send(const std::string &message, const std::string &topic) {

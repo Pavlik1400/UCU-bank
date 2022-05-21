@@ -29,5 +29,5 @@ target_link_libraries(${AUTH}.cli PRIVATE ${AUTH}.client
 
 #####
 
-add_executable(${AUTH}.test auth.test.cpp)
-target_link_libraries(${AUTH}.test PRIVATE ${USER}.client)
+add_executable(${AUTH}.test auth.test.cpp email/MailSender.cpp email/MailSender.h)
+target_link_libraries(${AUTH}.test PRIVATE ${USER}.client aws-cpp-sdk-email)
