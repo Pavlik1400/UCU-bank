@@ -126,12 +126,15 @@ namespace account {
         CUSTOM_LOG(lg, info) << "Service has finished";
     }
 
-    Service::Service(const nlohmann::json &cnf) :
-
-            BasicMicroservice(cnf["account"]["rpc_port"].get<int>(),
-                              "tcp://" + cnf["account"]["reddis_address"].get<std::string>() + ":" +
-                              std::to_string(cnf["account"]["reddis_port"].get<int>())),
-            userClient(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()), cnf(cnf) {
+    Service::Service(const nlohmann::json &cnf) 
+        : BasicMicroservice(cnf["account"]["rpc_port"].get<int>(),
+            "tcp://" + cnf["account"]["reddis_address"].get<std::string>() + ":"
+            + std::to_string(cnf["account"]["reddis_port"].get<int>()))
+            , userClient(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>())
+            , uri("mongodb://"+cnf["mongo"]["address"].get<std::string>() + ":"
+                + cnf["mongo"]["port"].get<std::string>()+"/?replicaSet=" 
+                + cnf["mongo"]["replicaSet"].get<std::string>())
+            , cnf(cnf) {
 
         db = client["bank"];
         accounts = db["accounts"];

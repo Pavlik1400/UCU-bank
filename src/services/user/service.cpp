@@ -6,9 +6,14 @@
 
 namespace user {
 
-    Service::Service(const nlohmann::json &cnf) : BasicMicroservice(cnf["user"]["rpc_port"].get<int>(), "tcp://" +
-    cnf["user"]["reddis_address"].get<std::string>() + ":" + std::to_string(cnf["user"]["reddis_port"].get<int>())),
-    cnf(cnf) {
+    Service::Service(const nlohmann::json &cnf)
+        : BasicMicroservice(cnf["user"]["rpc_port"].get<int>(), "tcp://"
+            + cnf["user"]["reddis_address"].get<std::string>() + ":" 
+            + std::to_string(cnf["user"]["reddis_port"].get<int>()))
+        , uri("mongodb://"+cnf["mongo"]["address"].get<std::string>() + ":"
+            + cnf["mongo"]["port"].get<std::string>()+"/?replicaSet=" 
+            + cnf["mongo"]["replicaSet"].get<std::string>())
+        , cnf(cnf) {
         db = client["bank"];
         users = db["users"];
         password_salt = db["password_salt"];
