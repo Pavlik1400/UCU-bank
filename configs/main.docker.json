@@ -14,7 +14,7 @@
   },
 
   "notification": {
-    "broker_address": "localhost",
+    "broker_address": "queue",
     "broker_port": "9092",
     "topic": "notification"
   },
@@ -38,6 +38,12 @@
     "reddis_port": 6379,
     "rpc_address": "bin-auth",
     "rpc_port": 54321,
-    "mock_mail": false
+    "mock_mail": true
+  },
+
+  "mongo": {
+    "address": "mongo-db",
+    "port": "27017",
+    "replicaSet": "rs0"
   }
 }

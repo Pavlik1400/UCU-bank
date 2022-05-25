@@ -39,5 +39,11 @@
     "rpc_address": "localhost",
     "rpc_port": 54324,
     "mock_mail": true
+  },
+
+  "mongo": {
+    "address": "localhost",
+    "port": "27017",
+    "replicaSet": "rs0"
   }
 }
