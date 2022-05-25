@@ -7,11 +7,25 @@
 #include <rpc/msgpack.hpp>
 
 namespace auth {
+    enum token_type {
+        OneTimePswd,
+        UserInfo
+    };
+
+    inline std::string token_type_to_str(token_type tt)
+    {
+        switch (tt) {
+        case OneTimePswd: return "<one_time_password>";
+        case UserInfo: return "<user_info>";
+        default: return "<xxx>";
+        }
+    }   
+
     enum status {
         OK = 0,
         INVALID_NAME_OR_PHONE = 1,
         INVALID_DB_RESPONSE = 2,
-        INVALID_USER_PASSWORD = 3,
+        INVALID_PASSWORD = 3,
 
         CREATION_FAILED = 4,
         INVALID_CARD_NUMBER = 5,
@@ -27,7 +41,7 @@ namespace auth {
             case OK: return "OK";
             case INVALID_NAME_OR_PHONE: return "INVALID_NAME_OR_PHONE";
             case INVALID_DB_RESPONSE: return "INVALID_DB_RESPONSE";
-            case INVALID_USER_PASSWORD: return "INVALID_USER_PASSWORD";
+            case INVALID_PASSWORD: return "INVALID_PASSWORD";
             case CREATION_FAILED: return "CREATION_FAILED";
             case INVALID_CARD_NUMBER: return "INVALID_CARD_NUMBER";
             case GET_FAILED: return "GET_FAILED";
@@ -38,10 +52,16 @@ namespace auth {
             default: return "UMKNOWN ERROR";
         }
     }
+    const char sep{':'};
 
     inline std::ostream &operator<<(std::ostream &os, const status &s)
     {
         return os << std::string{"auth::status::"+status_to_str(s)};
+    }
+
+    inline std::ostream &operator<<(std::ostream &os, const token_type &tt)
+    {
+        return os << token_type_to_str(tt);
     }
     
     struct AuthDU {
