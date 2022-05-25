@@ -13,7 +13,8 @@ public:
     BasicClient(std::string &&server_addr, int server_port, std::string &&client_name)
         : server_addr_{std::move(server_addr)}
         , server_port_{server_port}
-        , client_name_{client_name} {
+        , client_name_{client_name}
+    {
 
     }
 
@@ -32,6 +33,8 @@ protected:
                 }
                 try {
                     client = new rpc::client(server_addr_, server_port_);
+                    auto tm {client->get_timeout()};
+                    client->set_timeout(timeout_);
                     break;
                 } catch (...) {
                     std::cerr << "FAILED TO CONNECT TO " << client_name_ << " microservice :( " << std::endl;
@@ -45,6 +48,7 @@ private:
     const std::string server_addr_;
     const std::string client_name_;
     const int server_port_;
+    const unsigned timeout_{500};
 };
 
 }; //client
