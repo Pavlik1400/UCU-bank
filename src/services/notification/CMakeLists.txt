@@ -15,8 +15,8 @@ find_library(CPPKAFKA_LIBRARY_RELEASE NAMES cppkafka PATH_SUFFIXES lib PATHS "${
 select_library_configurations(CPPKAFKA)
 
 
-set(SOURCES service.cpp ${AUTH_ROOT_INCLUDE_DIRECTORIES}/email/MailSender.cpp)
-set(HEADERS service.h ${AUTH_ROOT_INCLUDE_DIRECTORIES}/email/MailSender.h)
+set(SOURCES service.cpp email/MailSender.cpp)
+set(HEADERS service.h email/MailSender.h)
 
 add_executable(${NOTIFICATION} notification.cpp
         ${SOURCES} ${HEADERS}

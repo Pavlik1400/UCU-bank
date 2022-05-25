@@ -5,7 +5,7 @@
 #include <cppkafka/consumer.h>
 #include <cppkafka/producer.h>
 #include <cppkafka/utils/consumer_dispatcher.h>
-#include "auth/email/MailSender.h"
+#include "notification/email/MailSender.h"
 #include "basic/logging.hpp"
 
 namespace notification {

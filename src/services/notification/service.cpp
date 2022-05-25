@@ -1,5 +1,6 @@
 #include <csignal>
 #include "basic/BasicMicroservice.hpp"
+#include "notification/constants.h"
 #include "service.h"
 
 namespace notification {
@@ -61,10 +62,12 @@ namespace notification {
     void Service::process(const std::string &message) {
         CUSTOM_LOG(lg, debug) << "Message content: " + message;
         const auto&[email, body] = decompose(message);
+        std::cout << email << "<>" << body << std::endl;
         msender.with_receiver(email).with_body(body).send();
     }
 
     std::pair<std::string, std::string> Service::decompose(const std::string &message) {
-        return {"tsapiv@ucu.edu.ua", message};
+        auto pos{message.find_first_of(email_sep)};
+        return {message.substr(0, pos), message.substr(pos+1)};
     }
 }
