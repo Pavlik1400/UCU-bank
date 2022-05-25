@@ -10,6 +10,7 @@ services:
         - PRESET=dev-posix
     volumes:
       - ./configs/:/ucu-bank/configs/:ro
+      - ./configs/main.docker.json:/ucu-bank/configs/main.json:ro
     depends_on:
       - mongo-db
 
@@ -22,6 +23,7 @@ services:
         - PRESET=dev-posix
     volumes:
       - ./configs/:/ucu-bank/configs/:ro
+      - ./configs/main.docker.json:/ucu-bank/configs/main.json:ro
     depends_on:
       - bin-user
 
@@ -34,9 +36,27 @@ services:
       dockerfile: ./docker/services/dockerfile
     volumes:
       - ./configs/:/ucu-bank/configs/:ro
+      - ./configs/main.docker.json:/ucu-bank/configs/main.json:ro
     depends_on:
       - postgres-db
       - bin-account
+      - queue
+
+  bin-notification:
+    build:
+      context: .
+      args:
+        - SERVICE=notification
+        - PRESET=dev-posix
+      dockerfile: ./docker/services/dockerfile
+    volumes:
+      - ./configs/:/ucu-bank/configs/:ro
+      - ./configs/main.docker.json:/ucu-bank/configs/main.json:ro
+      - ~/.aws:/root/.aws:ro
+    depends_on:
+      - postgres-db
+      - bin-account
+      - queue
 
   bin-auth:
     build:
@@ -47,7 +67,7 @@ services:
         - PRESET=dev-posix
     volumes:
       - ./configs/:/ucu-bank/configs/:ro
-      - ~/.aws:/root/.aws:ro
+      - ./configs/main.docker.json:/ucu-bank/configs/main.json:ro
     depends_on:
       - bin-user
       - auth-hash
@@ -61,6 +81,7 @@ services:
         - PRESET=dev-posix
     volumes:
       - ./configs/:/ucu-bank/configs/:ro
+      - ./configs/main.docker.json:/ucu-bank/configs/main.json:ro
       - ./configs/gateway/gateway_config.json:/ucu-bank/gateway_config.json:ro
       - /ucu-bank/logs
     depends_on:
@@ -76,7 +97,7 @@ services:
 
   mongo-db:
     build: docker/mongo-db/
-    command: ["mongod", "--replSet", "r0", "--bind_ip", "localhost,mongo-db"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip", "localhost,mongo-db"]
 
   postgres-db:
     build: ./docker/postgres-db/
@@ -84,3 +105,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=transactions
+  
+  queue:
+    build: ./docker/queue/
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=keeper:2181    
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - keeper
+
+  keeper:
+    image: bitnami/zookeeper:3.7
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes

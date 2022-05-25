@@ -1,0 +1,14 @@
+FROM bitnami/kafka:3.1
+
+USER root
+COPY ./create-topics.sh /docker-entrypoint-initdb.d/create-topics.sh 
+RUN chmod +x /docker-entrypoint-initdb.d/create-topics.sh
+
+COPY ./list-topics.sh /opt/bitnami/kafka/bin/list-topics.sh
+RUN chmod +x /opt/bitnami/kafka/bin/list-topics.sh
+
+COPY ./producer.sh /opt/bitnami/kafka/bin/producer.sh
+RUN chmod +x /opt/bitnami/kafka/bin/producer.sh
+
+COPY ./consumer.sh /opt/bitnami/kafka/bin/consumer.sh
+RUN chmod +x /opt/bitnami/kafka/bin/consumer.sh
