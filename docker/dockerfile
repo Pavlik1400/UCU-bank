@@ -18,5 +18,6 @@ RUN ${VCPKG_ROOT}/vcpkg install boost-uuid
 RUN ${VCPKG_ROOT}/vcpkg install libpqxx
 RUN ${VCPKG_ROOT}/vcpkg install drogon
 RUN ${VCPKG_ROOT}/vcpkg install boost-program-options
+RUN ${VCPKG_ROOT}/vcpkg install cppkafka
 
 WORKDIR /ucu-bank/

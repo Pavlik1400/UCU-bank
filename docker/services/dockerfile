@@ -3,10 +3,9 @@ FROM mak9su4roi/dev:v1.0
 ARG SERVICE=NONE
 ARG PRESET=NONE
 ENV SERVICE=${SERVICE}
-COPY . /ucu-bank/
-
-RUN cmake --preset ${PRESET} && cmake --build --preset ${PRESET} --target ${SERVICE}
-
 WORKDIR /ucu-bank/
 ENTRYPOINT [ "bash" ]
 CMD ["-c", "x=1; while [[ x -ne 0 ]]; do bin/${SERVICE}; x=$?; sleep 1; done"]
+
+COPY . /ucu-bank/
+RUN cmake --preset ${PRESET} && cmake --build --preset ${PRESET} --target ${SERVICE}
