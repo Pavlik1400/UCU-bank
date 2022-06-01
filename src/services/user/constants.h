@@ -7,6 +7,17 @@
 
 namespace user {
 
+    namespace method {
+        const std::string CREATE = "create";
+        const std::string REMOVE = "remove";
+        const std::string GET_BY_UID = "get_by_uid";
+        const std::string GET_BY_EMAIL= "get_by_email";
+        const std::string GET_BY_PHONE_NO= "get_by_phone_no";
+        const std::string EXISTS= "exists";
+        const std::string VALID_ID= "valid_id";
+        const std::string VALID_PASSWORD= "valid_password";
+    }
+
     const std::string ID = "_id";
     const std::string TYPE = "type";
     const std::string NAME = "name";
@@ -33,6 +44,15 @@ namespace user {
         INVALID_USER_ID = 7,
         INVALID_PASSWORD = 8,
     };
+    namespace {
+        enum by {
+            ID = 0,
+            PHONE_NO = 1,
+            EMAIL = 2,
+
+        };
+    }
+
 
     inline std::string status_to_str(status s) {
         switch (s) {
@@ -62,7 +82,7 @@ struct user_t {
     std::string address;
     std::string gender;
     std::string joining_date;
-    MSGPACK_DEFINE (id, type, name, password, date_of_birth, phoneNo, email, address, gender, joining_date);
+    MSGPACK_DEFINE(id, type, name, password, date_of_birth, phoneNo, email, address, gender, joining_date);
 };
 
 inline std::ostream &operator<<(std::ostream &os, const user_t &account) {

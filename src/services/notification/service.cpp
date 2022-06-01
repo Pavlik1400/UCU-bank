@@ -1,25 +1,30 @@
 #include <csignal>
-#include "basic/BasicMicroservice.hpp"
+//#include <msgpack.hpp>
 #include "notification/constants.h"
 #include "service.h"
+//#include <msgpack.hpp>
+
 
 namespace notification {
 
     Service::Service(const nlohmann::json &cnf) : kafka_config({{"metadata.broker.list",
-                                                                                       cnf["notification"]["broker_address"].get<std::string>() +
-                                                                                       ":" +
-                                                                                       cnf["notification"]["broker_port"].get<std::string>()},
-                                                                {"group.id",           "ucu"},
+                                                                                             cnf["notification"]["broker_address"].get<std::string>() +
+                                                                                             ":" +
+                                                                                             cnf["notification"]["broker_port"].get<std::string>()},
+                                                                {"group.id",                 "ucu"},
                                                                 {"allow.auto.create.topics", true},
-                                                                {"enable.auto.commit", false}}), consumer(kafka_config),
+                                                                {"enable.auto.commit",       false}}),
+                                                  consumer(kafka_config),
                                                   builder(cnf["notification"]["topic"].get<std::string>()),
                                                   mock(cnf["auth"]["mock_mail"]),
                                                   msender(mock),
+                                                  account(cnf["account"]["rpc_address"].get<std::string>(),
+                                                          cnf["account"]["rpc_port"].get<int>()),
+                                                  user(cnf["account"]["rpc_address"].get<std::string>(),
+                                                       cnf["account"]["rpc_port"].get<int>()),
                                                   cnf(cnf) {
         consumer.set_log_level(cppkafka::LogLevel::LogWarning);
         logger::init();
-
-
     }
 
     bool Service::running = true;
@@ -61,13 +66,35 @@ namespace notification {
 
     void Service::process(const std::string &message) {
         CUSTOM_LOG(lg, debug) << "Message content: " + message;
-        const auto&[email, body] = decompose(message);
+        const auto &[email, body] = decompose(message);
         std::cout << email << "<>" << body << std::endl;
         msender.with_receiver(email).with_body(body).send();
     }
 
     std::pair<std::string, std::string> Service::decompose(const std::string &message) {
-        auto pos{message.find_first_of(email_sep)};
-        return {message.substr(0, pos), message.substr(pos+1)};
+//        clmdep_msgpack::unpa()
+        auto notification = clmdep_msgpack::unpack(message.data(), message.size()).get().as<notification_t>();
+        return {resolve(notification.identifier, notification.type), notification.payload};
     }
+
+    std::string Service::resolve_with_email(const std::string &identifier) {
+        return identifier;
+    }
+
+    std::string Service::resolve_with_user_id(const std::string &identifier) {
+        return identifier;
+    }
+
+    std::string Service::resolve_with_phone_number(const std::string &identifier) {
+        return identifier;
+    }
+
+    std::string Service::resolve_with_card_number(const std::string &identifier) {
+        return identifier;
+    }
+
+    std::string Service::resolve(const std::string &identifier, const identifier_type &type) {
+        return (this->*handlers[type])(identifier);
+    }
+
 }

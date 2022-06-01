@@ -1,7 +1,7 @@
 {
   "transaction": {
     "db": {
-      "dbname": "transactions", 
+      "dbname": "postgres",
       "user": "postgres",
       "password": "postgres",
       "host": "localhost",
@@ -15,7 +15,7 @@
 
   "notification": {
     "broker_address": "localhost",
-    "broker_port": "29092",
+    "broker_port": "9092",
     "topic": "notification"
   },
 

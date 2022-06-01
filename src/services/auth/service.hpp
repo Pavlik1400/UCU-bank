@@ -37,8 +37,9 @@ constexpr size_t value_ttl()
 template<typename T, size_t N>
 inline std::string str_array_to_string(const std::array<T, N> & a) 
 {
-    if (!a.size()) return {};
-    auto oss {std::ostringstream{} << a[0]};
+    if (a.empty()) return {};
+    std::ostringstream oss;
+    oss << a[0];
     auto end{a.end()};
     for(auto el{a.begin()+1}; el!=end; ++el) oss << "," << *el;
     oss << "]";
@@ -54,11 +55,11 @@ inline std::ostream &operator<<(std::ostream &os, const std::array<T, N> & a)
 
 class Service: public BasicMicroservice {
 public:
-    Service(const nlohmann::json &cnf);
+    explicit Service(const nlohmann::json &cnf);
 
     void start() override;
     void finish() override;
-    virtual ~Service();
+    ~Service() override;
 
     std::pair<auth::status, AuthDU> tfa_req_otp(const AuthDU & id_n_pwd);
     std::pair<auth::status, AuthDU> tfa_ver_otp(const AuthDU & id_n_otp);
@@ -73,7 +74,8 @@ private:
     {
         CUSTOM_LOG(lg, info) << LOG_FUNC(Service::hash_store, T, key);
         CUSTOM_LOG(lg, info) << str_array_to_string(vals);
-        auto oss{std::ostringstream{} << vals[0]};
+        std::ostringstream oss;
+        oss << vals[0];
         auto end{vals.end()};
         for (auto val{vals.begin()+1}; val!=end; ++val) oss << sep << *val;
         std::cerr << "STORED: {" << oss.str() << "}" << std::endl;

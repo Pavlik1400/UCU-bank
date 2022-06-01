@@ -16,6 +16,7 @@
         "boost-log",
         "redis-plus-plus",
         "rpclib",
-        "cppkafka"
+        "cppkafka",
+        "msgpack"
     ]
 }

@@ -59,7 +59,10 @@ namespace user {
 
         user::status create(const user_t &user);
 
-        std::pair<user::status, user_t> get(const std::string &phoneNo);
+        template<by filter>
+        std::pair<user::status, user_t> get(const std::string &identifier);
+
+//        std::pair<user::status, user_t> get(const std::string &phoneNo);
 
         user::status remove(const std::string &phoneNo);
 
@@ -69,7 +72,46 @@ namespace user {
 
         user::status valid_password(const std::string &phoneNo, const std::string &password);
     };
+
+    template<by filter>
+    constexpr auto map_to_field()
+    {
+        switch(filter) {
+            case by::ID:   return user::ID;
+            case by::EMAIL: return user::EMAIL;
+            case by::PHONE_NO:  return user::PHONE_NO;
+        }
+    }
+
+    template<by filter>
+    std::pair<user::status, user_t> Service::get(const std::string &identifier) {
+        CUSTOM_LOG(lg, debug) << "Get call";
+        auto result = users.find_one(session, document{} << map_to_field<filter>() << identifier << finalize);
+        user_t user;
+
+        if (result) {
+            try {
+                auto content = result->view();
+                user.id = content[user::ID].get_oid().value.to_string();
+                user.type = content[user::TYPE].get_utf8().value.to_string();
+                user.name = content[user::NAME].get_utf8().value.to_string();
+                user.password = content[user::PASSWORD].get_utf8().value.to_string();
+                user.date_of_birth = content[user::DATE_OF_BIRTH].get_utf8().value.to_string();
+                user.phoneNo = content[user::PHONE_NO].get_utf8().value.to_string();
+                user.email = content[user::EMAIL].get_utf8().value.to_string();
+                user.address = content[user::ADDRESS].get_utf8().value.to_string();
+                user.gender = content[user::GENDER].get_utf8().value.to_string();
+                user.joining_date = content[user::JOINING_DATE].get_utf8().value.to_string();
+            } catch (...) {
+                return {user::status::GET_FAILED, {}};
+            }
+
+        }
+        return {result ? user::status::OK : user::status::USER_DOESNT_EXIST, user};
+    }
 }
+
+
 
 
 

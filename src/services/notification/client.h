@@ -5,6 +5,7 @@
 #include <cppkafka/consumer.h>
 #include <cppkafka/producer.h>
 #include <cppkafka/utils/consumer_dispatcher.h>
+#include "constants.h"
 
 namespace notification {
     class Client {
@@ -14,11 +15,14 @@ namespace notification {
         cppkafka::MessageBuilder builder;
         std::string default_topic;
 
+    private:
+        static std::string convert(const notification_t &notification);
+
 
     public:
         Client(const std::string &broker, const std::string &topic);
-        void send(const std::string &message);
-        void send(const std::string &message, const std::string &topic);
+        void send(const notification_t &notification);
+        void send(const notification_t &notification, const std::string &topic);
 
     };
 }

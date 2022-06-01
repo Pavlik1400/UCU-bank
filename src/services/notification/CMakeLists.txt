@@ -3,6 +3,7 @@ find_package(Boost COMPONENTS log REQUIRED)
 find_package(aws-cpp-sdk-email REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(rpclib CONFIG REQUIRED)
+find_package(msgpack CONFIG REQUIRED)
 find_package(RdKafka REQUIRED)
 include(FindPackageHandleStandardArgs)
 include(SelectLibraryConfigurations)
@@ -25,5 +26,6 @@ target_link_libraries(${NOTIFICATION} PRIVATE ${BASIC} ${CPPKAFKA_LIBRARY}
         RdKafka::rdkafka++
         nlohmann_json::nlohmann_json
         aws-cpp-sdk-email
+#        msgpackc
         ${TOOLS}
         )

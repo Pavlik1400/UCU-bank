@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <vector>
 #include <boost/program_options.hpp>
-#include <istream>
 #include <ostream>
 
 namespace po = boost::program_options;
@@ -18,9 +17,9 @@ enum rpc_funcs {
 inline std::string rpc_funcs_to_str(rpc_funcs f) noexcept(false)
 {
     switch (f) {
-        case tfa_pwd: return std::string("tfa_pwd");
-        case tfa_otp: return std::string("tfa_otp");
-        case sess_info: return std::string("sess_info");
+        case tfa_pwd: return "tfa_pwd";
+        case tfa_otp: return "tfa_otp";
+        case sess_info: return "sess_info";
         default: throw std::runtime_error("wrong_type");
     }
 }

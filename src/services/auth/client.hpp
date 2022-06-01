@@ -12,7 +12,7 @@ namespace auth {
 
 class Client: public client::BasicClient{
 public:
-    Client(const nlohmann::json &cnf);
+    explicit Client(const nlohmann::json &cnf);
 
     std::pair<auth::status, AuthDU>
     tfa_pwd(const AuthDU & id_n_pwd);

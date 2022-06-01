@@ -1,8 +1,5 @@
 #include "auth/client.hpp"
 #include <nlohmann/json.hpp>
-#include <rpc/client.h>
-#include <rpc/config.h>
-#include <chrono>
 #include <thread>
 
 namespace auth {

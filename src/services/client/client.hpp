@@ -4,7 +4,9 @@
 #define UCU_BANK_CLIENT_HPP
 
 #include <rpc/client.h>
+#include <rpc/msgpack.hpp>
 #include <iostream>
+#include <msgpack/x3_unpack.hpp>
 
 namespace client {
 

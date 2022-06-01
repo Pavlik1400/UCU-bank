@@ -13,7 +13,6 @@ namespace transaction {
             notification_client(cnf["notification"]["broker_address"].get<std::string>() + ":" + cnf["notification"]["broker_port"].get<std::string>(), cnf["notification"]["topic"].get<std::string>()),
             cnf(cnf), pq_connection({}) {
         CUSTOM_LOG(lg, debug) << "Transaction service initialized";
-        std::cerr << "Transaction service initialized" << std::endl;
     }
 
 
@@ -31,7 +30,7 @@ namespace transaction {
                     " port = " + db_config.at("port").get<const std::string>()
             );
             if (pq_connection.value().is_open()) {
-                CUSTOM_LOG(lg, info) << "Opened db " << pq_connection.value().dbname() << " successfully" << std::endl;
+                CUSTOM_LOG(lg, info) << "Opened db " << pq_connection.value().dbname() << " successfully";
             } else {
                 throw std::runtime_error{"Can't open database"};
             }
@@ -56,7 +55,9 @@ namespace transaction {
         CUSTOM_LOG(lg, debug) << "create " << tran;
 
         std::stringstream ss; ss << tran;
-        notification_client.send(ss.str());
+        notification_client.send(notification_t{.identifier=tran.from_acc_number,
+                                                .payload=ss.str(),
+                                                .type=identifier_type::CARD_NUMBER});
 
         auto [status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
@@ -82,7 +83,6 @@ namespace transaction {
             delete_transaction(entry_id);
             return transaction::status::FAILED;
         }
-        notification_client.send(tran.from_acc_number + " -" + std::to_string(tran.amount) + "-> " + tran.to_acc_number);
         return transaction::status::OK;
     }
 

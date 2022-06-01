@@ -1,6 +1,6 @@
 #include <iostream>
+//#include <msgpack.hpp>
 #include "client.h"
-#include "constants.h"
 
 namespace notification {
 
@@ -11,8 +11,9 @@ namespace notification {
 
     }
 
-    void Client::send(const std::string &message) {
+    void Client::send(const notification_t &notification) {
         try {
+            auto message = convert(notification);
             builder.payload(message);
             producer.produce(builder);
             producer.flush();
@@ -22,9 +23,15 @@ namespace notification {
 
     }
 
-    void Client::send(const std::string &message, const std::string &topic) {
+    void Client::send(const notification_t &notification, const std::string &topic) {
         builder.topic(topic);
-        send(message);
+        send(notification);
         builder.topic(default_topic);
+    }
+
+    std::string Client::convert(const notification_t &notification) {
+        std::stringstream buffer{};
+        clmdep_msgpack::pack(buffer, notification);
+        return buffer.str();
     }
 }
