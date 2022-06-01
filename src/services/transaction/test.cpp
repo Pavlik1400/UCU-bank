@@ -31,7 +31,7 @@ int main() {
     transaction_t tran{
             "0",
             "6390721926535760",
-            "9822957320297810",
+            "9573202978162608",
             "za pivo",
             10.0,
             transaction::CARD_TRANSFER

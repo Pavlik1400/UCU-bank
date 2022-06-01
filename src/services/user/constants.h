@@ -11,11 +11,11 @@ namespace user {
         const std::string CREATE = "create";
         const std::string REMOVE = "remove";
         const std::string GET_BY_UID = "get_by_uid";
-        const std::string GET_BY_EMAIL= "get_by_email";
-        const std::string GET_BY_PHONE_NO= "get_by_phone_no";
-        const std::string EXISTS= "exists";
-        const std::string VALID_ID= "valid_id";
-        const std::string VALID_PASSWORD= "valid_password";
+        const std::string GET_BY_EMAIL = "get_by_email";
+        const std::string GET_BY_PHONE_NO = "get_by_phone_no";
+        const std::string EXISTS = "exists";
+        const std::string VALID_ID = "valid_id";
+        const std::string VALID_PASSWORD = "valid_password";
     }
 
     const std::string ID = "_id";
@@ -56,15 +56,24 @@ namespace user {
 
     inline std::string status_to_str(status s) {
         switch (s) {
-            case OK: return "OK";
-            case INCOMPLETE_USER_IDENTITY: return "INCOMPLETE_USER_IDENTITY";
-            case CREATION_FAILED: return "CREATION_FAILED";
-            case MISSING_PASSWORD: return "MISSING_PASSWORD";
-            case GET_FAILED: return "GET_FAILED";
-            case USER_EXISTS: return "USER_EXISTS";
-            case USER_DOESNT_EXIST: return "USER_DOESNT_EXIST";
-            case INVALID_PASSWORD: return "INVALID_PASSWORD";
-            default: return "DB ERROR";
+            case OK:
+                return "OK";
+            case INCOMPLETE_USER_IDENTITY:
+                return "INCOMPLETE_USER_IDENTITY";
+            case CREATION_FAILED:
+                return "CREATION_FAILED";
+            case MISSING_PASSWORD:
+                return "MISSING_PASSWORD";
+            case GET_FAILED:
+                return "GET_FAILED";
+            case USER_EXISTS:
+                return "USER_EXISTS";
+            case USER_DOESNT_EXIST:
+                return "USER_DOESNT_EXIST";
+            case INVALID_PASSWORD:
+                return "INVALID_PASSWORD";
+            default:
+                return "DB ERROR";
         }
     }
 }
@@ -82,11 +91,21 @@ struct user_t {
     std::string address;
     std::string gender;
     std::string joining_date;
-    MSGPACK_DEFINE(id, type, name, password, date_of_birth, phoneNo, email, address, gender, joining_date);
+    MSGPACK_DEFINE (id, type, name, password, date_of_birth, phoneNo, email, address, gender, joining_date);
 };
 
-inline std::ostream &operator<<(std::ostream &os, const user_t &account) {
-    os << "{\n" << "}\n";
+inline std::ostream &operator<<(std::ostream &os, const user_t &user_) {
+    os << "{\n\t" << user::ID << " : " << user_.id << ",\n\t"
+       << user::TYPE << " : " << user_.type << ",\n\t"
+       << user::NAME << " : " << user_.name << ",\n\t"
+       << user::PASSWORD << " : " << user_.password << ",\n\t"
+       << user::DATE_OF_BIRTH << " : " << user_.date_of_birth << ",\n\t"
+       << user::PHONE_NO << " : " << user_.phoneNo << ",\n\t"
+       << user::EMAIL << " : " << user_.email << ",\n\t"
+       << user::ADDRESS << " : " << user_.address << ",\n\t"
+       << user::GENDER << " : " << user_.gender << ",\n\t"
+       << user::JOINING_DATE << " : " << user_.joining_date << "\n"
+       << "}\n";
     return os;
 }
 

@@ -26,6 +26,7 @@ target_link_libraries(${NOTIFICATION} PRIVATE ${BASIC} ${CPPKAFKA_LIBRARY}
         RdKafka::rdkafka++
         nlohmann_json::nlohmann_json
         aws-cpp-sdk-email
-#        msgpackc
+        ${ACCOUNT}.client
+        ${USER}.client
         ${TOOLS}
         )

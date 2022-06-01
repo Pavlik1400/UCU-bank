@@ -1,8 +1,6 @@
 #ifndef UCU_BANK_USER_CLIENT_H
 #define UCU_BANK_USER_CLIENT_H
 
-//#include <rpc/client.h>
-//#include <rpc/config.h>
 #include "user/constants.h"
 #include "client/client.hpp"
 

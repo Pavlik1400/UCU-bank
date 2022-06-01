@@ -86,7 +86,12 @@ namespace user {
     template<by filter>
     std::pair<user::status, user_t> Service::get(const std::string &identifier) {
         CUSTOM_LOG(lg, debug) << "Get call";
-        auto result = users.find_one(session, document{} << map_to_field<filter>() << identifier << finalize);
+        bsoncxx::stdx::optional<bsoncxx::document::value> result;
+        if constexpr(filter == user::by::ID) {
+            result = users.find_one(session, document{} << map_to_field<filter>() << bsoncxx::oid{bsoncxx::stdx::string_view{identifier}} << finalize);
+        } else {
+            result = users.find_one(session, document{} << map_to_field<filter>() << identifier << finalize);
+        }
         user_t user;
 
         if (result) {

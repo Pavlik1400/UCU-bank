@@ -20,8 +20,8 @@ namespace notification {
                                                   msender(mock),
                                                   account(cnf["account"]["rpc_address"].get<std::string>(),
                                                           cnf["account"]["rpc_port"].get<int>()),
-                                                  user(cnf["account"]["rpc_address"].get<std::string>(),
-                                                       cnf["account"]["rpc_port"].get<int>()),
+                                                  user(cnf["user"]["rpc_address"].get<std::string>(),
+                                                       cnf["user"]["rpc_port"].get<int>()),
                                                   cnf(cnf) {
         consumer.set_log_level(cppkafka::LogLevel::LogWarning);
         logger::init();
@@ -82,15 +82,19 @@ namespace notification {
     }
 
     std::string Service::resolve_with_user_id(const std::string &identifier) {
-        return identifier;
+        const auto &[status, info] = user.get<user::by::ID>(identifier);
+        return info.email;
     }
 
     std::string Service::resolve_with_phone_number(const std::string &identifier) {
-        return identifier;
+        const auto &[status, info] = user.get<user::by::PHONE_NO>(identifier);
+        return info.email;
     }
 
     std::string Service::resolve_with_card_number(const std::string &identifier) {
-        return identifier;
+        const auto &[status1, info1] = account.get(identifier);
+        const auto &[status2, info2] = user.get<user::by::ID>(info1.user_id);
+        return info2.email;
     }
 
     std::string Service::resolve(const std::string &identifier, const identifier_type &type) {
