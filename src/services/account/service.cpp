@@ -12,7 +12,7 @@ namespace account {
 
     account::status Service::create(const std::string &user_id, const std::string &account_type, const auth::AuthDU &ctrl) {
         CUSTOM_LOG(lg, debug) << "Create call";
-        if (user_id != ctrl.cred && ctrl.data != user::privilege::ADMIN && ctrl.data != user::privilege::SUPER) {
+        if (user_id != ctrl.cred && ctrl.data != user::privilege::SUPER) {
             return account::status::NOT_ENOUGH_PRIVILEGES;
         }
         if (userClient.valid_id(user_id) == user::status::USER_DOESNT_EXIST) {
@@ -55,7 +55,7 @@ namespace account {
     }
 
     account::status Service::remove(const std::string &card, const auth::AuthDU &ctrl) {
-        if (ctrl.data != user::privilege::ADMIN && ctrl.data != user::privilege::SUPER) {
+        if (ctrl.data != user::privilege::SUPER) {
             return account::status::NOT_ENOUGH_PRIVILEGES;
         }
         CUSTOM_LOG(lg, debug) << "Remove call";
@@ -106,8 +106,9 @@ namespace account {
     }
 
     void Service::register_methods() {
-        rpc_server.bind(method::CREATE, [&](const std::string &user_id, const std::string &account_type) {
-            return create(user_id, account_type);
+        rpc_server.bind(method::CREATE, [&](const std::string &user_id, const std::string &account_type,
+                const auth::AuthDU &ctrl) {
+            return create(user_id, account_type, ctrl);
         });
         rpc_server.bind(method::GET,
                         [&](const std::string &card, const auth::AuthDU &ctrl) { return get(card, ctrl); });

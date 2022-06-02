@@ -8,13 +8,13 @@
 
 namespace ucubank_api::v1 {
 
-    Json::Value serialize_account_t(const account_t &acc_info, bool detailed=true);
+    Json::Value serialize_account_t(const account_t &acc_info);
 
     class Account : public drogon::HttpController<Account, false> {
     public:
         METHOD_LIST_BEGIN
             METHOD_ADD(Account::create, "/create/", drg::Post);
-            METHOD_ADD(Account::info, "/info/{account_number}", drg::Get);
+            METHOD_ADD(Account::info, "/info/{account_number}", drg::Post);
             METHOD_ADD(Account::remove, "/remove/{account_number}", drg::Delete);
             METHOD_ADD(Account::get_accs, "/get_accounts/{user_id}", drg::Post);
         METHOD_LIST_END
@@ -38,6 +38,7 @@ namespace ucubank_api::v1 {
 //        src::severity_logger<logging::trivial::severity_level> logger;
         GateWayLogger logger;
         account::Client account_client;
+        auth::Client auth_client;
     };
 } // namespace api::v1
 

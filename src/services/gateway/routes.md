@@ -19,7 +19,7 @@ Reponse:
 }
 ```
 
-- `GET http://localhost:2020/ucubank_api/v1/account/info/{number}`
+- `POST http://localhost:2020/ucubank_api/v1/account/info/{number}`
 
 Reponse:
 
