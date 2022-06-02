@@ -39,8 +39,8 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
                                        const std::string &account_number) {
 
     logger.debug("GET /ucubank_api/v1/account/info/");
-    auto [success, req_json, resp_json] = prepare_json(req);
-    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+    Json::Value resp_json{};
+    resp_json["status"] = 200;
 
     DEBUG_TRY
         auto[status, acc_info] = account_client.get(account_number);

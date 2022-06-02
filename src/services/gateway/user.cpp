@@ -12,6 +12,7 @@ void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
 
     logger.debug("GET /ucubank_api/v1/user/info/");
     auto [success, req_json, resp_json] = prepare_json(req);
+//    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
     DEBUG_TRY
