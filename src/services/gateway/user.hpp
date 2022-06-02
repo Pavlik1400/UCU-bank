@@ -9,7 +9,7 @@
 
 namespace ucubank_api::v1 {
 
-    Json::Value serialized_user_t(const user_t &user_info, bool detailed=true);
+    Json::Value serialized_user_t(const user_t &user_info);
     user_t deserialize_user_t(const Json::Value &json);
 
     class User : public drogon::HttpController<User, false> {
@@ -22,7 +22,6 @@ namespace ucubank_api::v1 {
             METHOD_ADD(User::remove, "/remove/", drg::Delete);
         METHOD_LIST_END
 
-        //your declaration of processing function maybe like this:
         void info(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
         void login1(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
@@ -41,8 +40,7 @@ namespace ucubank_api::v1 {
         user::Client user_client;
         auth::Client auth_client;
 
-//        const std::vector<std::string> login_fields{"name", "phone_num", "hashed_password"};
-        const std::vector<std::string> info_fields{"name", "phone_num", "hashed_password"};
+        const std::vector<std::string> info_fields{"name", "phone_num", "password"};
         const std::vector<std::string> register_fields{
                 "type",
                 "name",

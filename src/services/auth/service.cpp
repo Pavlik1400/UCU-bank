@@ -91,7 +91,9 @@ namespace auth {
     Service::tfa_req_otp(const AuthDU &id_n_pwd) {
         CUSTOM_LOG(lg, info) << LOG_FUNC(Service::tfa_req_otp, id_n_pwd);
         auto &[phoneNo, password] = id_n_pwd;
-        switch (user.valid_password(phoneNo, password)) {
+        auto st = user.valid_password(phoneNo, password);
+        std::cout << st << std::endl;
+        switch (st) {
             case user::status::OK:
                 break;
             case user::status::INVALID_PASSWORD:

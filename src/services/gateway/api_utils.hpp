@@ -3,12 +3,21 @@
 
 #include <drogon/HttpController.h>
 #include <tuple>
+#include "auth/client.hpp"
+
 
 using str = std::string;
 
 namespace drg = drogon;
 
 namespace ucubank_api::v1 {
+    struct parsed_request_t {
+        bool status;
+        Json::Value req_json;
+        Json::Value resp_json;
+        auth::AuthDU privileges;
+    };
+
     std::pair<std::shared_ptr<Json::Value>, bool>
     getJsonObjectSafe(const drogon::HttpRequestPtr &req, int err_status = 400,
                       int ok_status = 200);
@@ -19,6 +28,9 @@ namespace ucubank_api::v1 {
                        Json::Value &resp_json, int status = 400);
 
     std::tuple<bool, Json::Value, Json::Value> prepare_json(const drogon::HttpRequestPtr &req);
+
+    parsed_request_t prepare_json_auth(const drogon::HttpRequestPtr &req, auth::Client &auth_client);
+
 }
 
 class GateWayLogger {

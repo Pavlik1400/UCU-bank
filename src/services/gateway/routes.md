@@ -103,7 +103,7 @@ Response:
 ```json
 {
   "phone_num": "+390961234567",
-  "hashed_password": "password"
+  "password": "password"
 }
 ```
 
@@ -164,7 +164,7 @@ Response:
 ```json
 {
     "phoneNo": "+381235431256",
-    "hashed_password": "123"
+    "password": "123"
 }
 ```
 

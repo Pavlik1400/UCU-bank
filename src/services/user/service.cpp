@@ -73,7 +73,7 @@ namespace user {
 
     user::status Service::remove(const std::string &phoneNo, const auth::AuthDU &ctrl) {
         CUSTOM_LOG(lg, debug) << "Remove call";
-        if (ctrl.data != privilege::ADMIN || ctrl.data != privilege::SUPER) {
+        if (ctrl.data != user::privilege::SUPER) {
             return user::status::NOT_ENOUGH_PRIVILEGES;
         }
         auto status = users.delete_one(session, document{} << user::PHONE_NO << phoneNo << finalize);
