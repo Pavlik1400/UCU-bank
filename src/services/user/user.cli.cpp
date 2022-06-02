@@ -24,6 +24,6 @@ int main() {
 //    std::cout << user::status_to_str(client.create(mak9su4roi)) << std::endl;
 
 //    std::cout << user::status_to_str(client.valid_password(mak9su4roi.phoneNo, mak9su4roi.password)) << std::endl;
-    std::cout << client.get<user::by::ID>("625fbadb4baea65e95093e92").second << std::endl;
+    std::cout << client.get<user::by::ID>("625fbadb4baea65e95093e92", {.data=user::privilege::SUPER}).second << std::endl;
 
 }

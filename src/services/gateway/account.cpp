@@ -1,5 +1,6 @@
 #include "gateway/account.hpp"
 #include "basic/MessageSerializer.hpp"
+#include "user/constants.h"
 
 ucubank_api::v1::Account::Account(const nlohmann::json &cnf) :
         account_client(cnf["account"]["rpc_address"].get<std::string>(), cnf["account"]["rpc_port"].get<int>()) {
@@ -43,7 +44,7 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
-        auto[status, acc_info] = account_client.get(account_number);
+        auto[status, acc_info] = account_client.get(account_number, {.data=user::privilege::SUPER});
         if (status != account::OK) {
             if (status == account::GET_FAILED)
                 return fail_response("db error", callback, resp_json, 500);
@@ -63,7 +64,7 @@ void ucubank_api::v1::Account::remove(const drogon::HttpRequestPtr &req,
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
-        auto status = account_client.remove(account_number);
+        auto status = account_client.remove(account_number, {.data=user::privilege::SUPER});
         if (status != account::OK) {
             return fail_response(account::status_to_str(status), callback, resp_json);
         }
@@ -79,7 +80,7 @@ void ucubank_api::v1::Account::get_accs(const drogon::HttpRequestPtr &req,
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
-        auto [status, accs] = account_client.get_all(user_id);
+        auto [status, accs] = account_client.get_all(user_id, {.data=user::privilege::SUPER});
         if (status != account::OK) {
             return fail_response(account::status_to_str(status), callback, resp_json);
         }

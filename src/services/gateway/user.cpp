@@ -19,7 +19,7 @@ void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
         auto phone_number = req_json["phone_num"].as<std::string>();
-        auto [status, user_info] = user_client.get<user::by::PHONE_NO>(phone_number);
+        auto [status, user_info] = user_client.get<user::by::PHONE_NO>(phone_number, {.data=user::privilege::SUPER});
         if (status != user::OK) {
             if (status == user::GET_FAILED) return fail_response("db error", callback, resp_json, 500);
             return fail_response(user::status_to_str(status), callback, resp_json);
@@ -114,11 +114,11 @@ void ucubank_api::v1::User::remove(const drogon::HttpRequestPtr &req,
         auto hashed_password = req_json["hashed_password"].as<std::string>();
 
         // TODO: use auth to verify password
-        auto [get_status, user_info] = user_client.get<user::by::PHONE_NO>(phoneNo);
+        auto [get_status, user_info] = user_client.get<user::by::PHONE_NO>(phoneNo, {.data=user::privilege::SUPER});
         if (get_status != user::OK) return fail_response(user::status_to_str(get_status), callback, resp_json);
         if (user_info.password != hashed_password) return fail_response("Incorrect password", callback, resp_json, 403);
 
-        auto remove_status = user_client.remove(phoneNo);
+        auto remove_status = user_client.remove(phoneNo, {.data=user::privilege::SUPER});
         if (remove_status != user::OK) return fail_response(user::status_to_str(remove_status), callback, resp_json);
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH

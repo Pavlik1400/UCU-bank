@@ -33,6 +33,12 @@ namespace user {
         const std::string SALT = "salt";
     }
 
+    namespace privilege {
+        const std::string REGULAR = "regular";
+        const std::string ADMIN = "admin";
+        const std::string SUPER = "super";
+    }
+
     enum status {
         OK = 0,
         INCOMPLETE_USER_IDENTITY = 1,
@@ -43,6 +49,7 @@ namespace user {
         USER_DOESNT_EXIST = 6,
         INVALID_USER_ID = 7,
         INVALID_PASSWORD = 8,
+        NOT_ENOUGH_PRIVILEGES = 9
     };
     namespace {
         enum by {
@@ -72,6 +79,8 @@ namespace user {
                 return "USER_DOESNT_EXIST";
             case INVALID_PASSWORD:
                 return "INVALID_PASSWORD";
+            case NOT_ENOUGH_PRIVILEGES:
+                return "NOT_ENOUGH_PRIVILEGES";
             default:
                 return "DB ERROR";
         }

@@ -15,6 +15,16 @@ namespace account {
     const std::string ACTIVE = "active";
     const std::string BALANCE = "balance";
 
+    namespace method {
+        const std::string CREATE = "create";
+        const std::string REMOVE = "remove";
+        const std::string GET = "get";
+        const std::string GET_ALL = "get_all";
+        const std::string TRANSACTION = "transaction";
+        const std::string EXISTS = "exists";
+
+    }
+
     enum status {
         OK = 0,
         INVALID_USER_ID = 1,
@@ -22,6 +32,7 @@ namespace account {
         INVALID_CARD_NUMBER = 3,
         GET_FAILED = 4,
         TRANSACTION_FAILED = 5,
+        NOT_ENOUGH_PRIVILEGES = 6
     };
 
     inline std::string status_to_str(status s) {
@@ -32,10 +43,10 @@ namespace account {
             case INVALID_CARD_NUMBER: return "INVALID_CARD_NUMBER";
             case GET_FAILED: return "GET_FAILED";
             case TRANSACTION_FAILED: return "TRANSACTION_FAILED";
+            case NOT_ENOUGH_PRIVILEGES: return "NOT_ENOUGH_PRIVILEGES";
             default: return "DB ERROR";
         }
     }
-
 }
 
 MSGPACK_ADD_ENUM(account::status)
