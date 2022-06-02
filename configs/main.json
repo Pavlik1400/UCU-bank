@@ -1,7 +1,7 @@
 {
   "transaction": {
     "db": {
-      "dbname": "postgres",
+      "dbname": "transactions",
       "user": "postgres",
       "password": "postgres",
       "host": "localhost",
