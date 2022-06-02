@@ -1,5 +1,6 @@
 #include "account/client.h"
 #include "service_tools/utils.hpp"
+#include "user/constants.h"
 
 
 int main() {
@@ -8,7 +9,7 @@ int main() {
                                   cnf["account"]["rpc_port"].get<int>()};
 //    client.create("625f1fbcc33b376b0c2954e2", "regular");
 
-    auto[status, accounts] = client.get_all("625f1fbcc33b376b0c2954e2");
+    auto[status, accounts] = client.get_all("625f1fbcc33b376b0c2954e2", {.data=user::privilege::SUPER});
 
     for (auto& account: accounts) {
         std::cout << account << std::endl;

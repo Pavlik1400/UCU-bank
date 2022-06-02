@@ -99,7 +99,7 @@ namespace auth {
             default:
                 return {auth::status::GET_FAILED, {}};
         }
-        auto [status, table]{user.get<user::by::PHONE_NO>(phoneNo)};
+        auto [status, table]{user.get<user::by::PHONE_NO>(phoneNo, {.data=user::privilege::SUPER})};
         if (status != user::status::OK) return {auth::status::GET_FAILED, {}};
         auto otp{boost::uuids::to_string(uuid_gen())};
         auto otp_tk{send_otp(otp, table.email)};

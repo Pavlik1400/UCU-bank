@@ -1,6 +1,7 @@
 #include "transaction/service.hpp"
 #include "account/constants.h"
 #include "service_tools/utils.hpp"
+#include "user/constants.h"
 #include <sstream>
 
 namespace transaction {
@@ -58,6 +59,9 @@ namespace transaction {
         notification_client.send(notification_t{.identifier=tran.from_acc_number,
                                                 .payload=ss.str(),
                                                 .type=identifier_type::CARD_NUMBER});
+        notification_client.send(notification_t{.identifier=tran.to_acc_number,
+                                                .payload=ss.str(),
+                                                .type=identifier_type::CARD_NUMBER});
 
         auto [status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
@@ -92,7 +96,7 @@ namespace transaction {
 //        return TransactionStatus::IS_NOT_LOGINED;
 //    }
         CUSTOM_LOG(lg, debug) << "Verifying transaction: " << tran;
-        auto [status, acc_info] = account_client.get(tran.from_acc_number);
+        auto [status, acc_info] = account_client.get(tran.from_acc_number, {.data=user::privilege::SUPER});
         if (status != account::status::OK) {
             switch (status) {
                 case account::status::INVALID_CARD_NUMBER:
@@ -101,7 +105,7 @@ namespace transaction {
                     return transaction::FAILED;
             }
         }
-        auto acc_resp = account_client.get(tran.to_acc_number);
+        auto acc_resp = account_client.get(tran.to_acc_number, {.data=user::privilege::SUPER});
         if (acc_resp.first != account::status::OK) {
             switch (acc_resp.first) {
                 case account::status::INVALID_CARD_NUMBER:

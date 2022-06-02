@@ -52,6 +52,8 @@ namespace account {
         const nlohmann::json cnf;
         user::Client userClient;
 
+        static account_t deserialize(const bsoncxx::document::view &info, const auth::AuthDU &ctrl);
+
     public:
         explicit Service(const nlohmann::json &cnf);
 
@@ -61,11 +63,11 @@ namespace account {
 
         account::status create(const std::string &user_id, const std::string &account_type);
 
-        std::pair<account::status, account_t> get(const std::string &card);
+        std::pair<account::status, account_t> get(const std::string &card, const auth::AuthDU &ctrl);
 
-        std::pair<account::status, std::vector<account_t>> get_all(const std::string &user_id);
+        std::pair<account::status, std::vector<account_t>> get_all(const std::string &user_id, const auth::AuthDU &ctrl);
 
-        account::status remove(const std::string &card);
+        account::status remove(const std::string &card, const auth::AuthDU &ctrl);
 
         account::status transaction(const std::string &from, const std::string &to, double amount);
 

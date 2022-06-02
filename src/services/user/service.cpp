@@ -71,40 +71,13 @@ namespace user {
         return aux_status ? user::status::OK : user::status::CREATION_FAILED;
     }
 
-
-//    std::pair<user::status, user_t> Service::get(const std::string &phoneNo) {
-//        CUSTOM_LOG(lg, debug) << "Get call";
-//        auto result = users.find_one(session, document{} << user::PHONE_NO << phoneNo << finalize);
-//        user_t user;
-//
-//        if (result) {
-//            try {
-//                auto content = result->view();
-//                user.id = content[user::ID].get_oid().value.to_string();
-//                user.type = content[user::TYPE].get_utf8().value.to_string();
-//                user.name = content[user::NAME].get_utf8().value.to_string();
-//                user.password = content[user::PASSWORD].get_utf8().value.to_string();
-//                user.date_of_birth = content[user::DATE_OF_BIRTH].get_utf8().value.to_string();
-//                user.phoneNo = content[user::PHONE_NO].get_utf8().value.to_string();
-//                user.email = content[user::EMAIL].get_utf8().value.to_string();
-//                user.address = content[user::ADDRESS].get_utf8().value.to_string();
-//                user.gender = content[user::GENDER].get_utf8().value.to_string();
-//                user.joining_date = content[user::JOINING_DATE].get_utf8().value.to_string();
-//            } catch (...) {
-//                return {user::status::GET_FAILED, {}};
-//            }
-//
-//        }
-//
-//        return {result ? user::status::OK : user::status::USER_DOESNT_EXIST, user};
-
-//    }
-
-    user::status Service::remove(const std::string &phoneNo) {
+    user::status Service::remove(const std::string &phoneNo, const auth::AuthDU &ctrl) {
         CUSTOM_LOG(lg, debug) << "Remove call";
+        if (ctrl.data != privilege::ADMIN || ctrl.data != privilege::SUPER) {
+            return user::status::NOT_ENOUGH_PRIVILEGES;
+        }
         auto status = users.delete_one(session, document{} << user::PHONE_NO << phoneNo << finalize);
         return status ? user::status::OK : user::status::USER_DOESNT_EXIST;
-
     }
 
 
@@ -128,7 +101,7 @@ namespace user {
     }
 
     user::status Service::valid_password(const std::string &phoneNo, const std::string &password) {
-        const auto &[status, user] = get<by::PHONE_NO>(phoneNo);
+        const auto &[status, user] = get<by::PHONE_NO>(phoneNo, {.data=privilege::SUPER});
         if (status != user::status::OK) return status;
         auto oid = bsoncxx::oid{bsoncxx::stdx::string_view{user.id}};
         auto salt_status = password_salt.find_one(session, document{} << user::ID << oid << finalize);
@@ -147,12 +120,12 @@ namespace user {
 
     void Service::register_methods() {
         rpc_server.bind(method::CREATE, [&](const user_t &user) { return create(user); });
-        rpc_server.bind(method::GET_BY_UID, [&](const std::string &identifier) { return get<by::ID>(identifier); });
+        rpc_server.bind(method::GET_BY_UID, [&](const std::string &identifier, const auth::AuthDU &ctrl) { return get<by::ID>(identifier, ctrl); });
         rpc_server.bind(method::GET_BY_EMAIL,
-                        [&](const std::string &identifier) { return get<by::EMAIL>(identifier); });
+                        [&](const std::string &identifier, const auth::AuthDU &ctrl) { return get<by::EMAIL>(identifier, ctrl); });
         rpc_server.bind(method::GET_BY_PHONE_NO,
-                        [&](const std::string &identifier) { return get<by::PHONE_NO>(identifier); });
-        rpc_server.bind(method::REMOVE, [&](const std::string &phoneNo) { return remove(phoneNo); });
+                        [&](const std::string &identifier, const auth::AuthDU &ctrl) { return get<by::PHONE_NO>(identifier, ctrl); });
+        rpc_server.bind(method::REMOVE, [&](const std::string &phoneNo, const auth::AuthDU &ctrl) { return remove(phoneNo, ctrl); });
         rpc_server.bind(method::EXISTS, [&](const std::string &phoneNo) { return exists(phoneNo); });
         rpc_server.bind(method::VALID_ID, [&](const std::string &id) { return valid_id(id); });
         rpc_server.bind(method::VALID_PASSWORD, [&](const std::string &phoneNo, const std::string &password) {

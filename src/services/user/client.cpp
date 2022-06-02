@@ -5,8 +5,8 @@ namespace user {
         return ver_connection([&, this]() { return client->call(method::CREATE, user).as<status>(); });
     }
 
-    status Client::remove(const std::string &phoneNo) {
-        return ver_connection([&, this]() { return client->call(method::REMOVE, phoneNo).as<status>(); });
+    status Client::remove(const std::string &phoneNo, const auth::AuthDU &ctrl) {
+        return ver_connection([&, this]() { return client->call(method::REMOVE, phoneNo, ctrl).as<status>(); });
     }
 
     status Client::exists(const std::string &phoneNo) {

@@ -12,6 +12,7 @@
 #include <bsoncxx/builder/stream/array.hpp>
 #include "basic/BasicMicroservice.hpp"
 #include "user/constants.h"
+#include "auth/constants.hpp"
 
 namespace user {
     using bsoncxx::builder::stream::close_array;
@@ -60,11 +61,11 @@ namespace user {
         user::status create(const user_t &user);
 
         template<by filter>
-        std::pair<user::status, user_t> get(const std::string &identifier);
+        std::pair<user::status, user_t> get(const std::string &identifier, const auth::AuthDU &ctrl);
 
 //        std::pair<user::status, user_t> get(const std::string &phoneNo);
 
-        user::status remove(const std::string &phoneNo);
+        user::status remove(const std::string &phoneNo, const auth::AuthDU &ctrl);
 
         user::status exists(const std::string &phoneNo);
 
@@ -84,7 +85,7 @@ namespace user {
     }
 
     template<by filter>
-    std::pair<user::status, user_t> Service::get(const std::string &identifier) {
+    std::pair<user::status, user_t> Service::get(const std::string &identifier, const auth::AuthDU &ctrl) {
         CUSTOM_LOG(lg, debug) << "Get call";
         bsoncxx::stdx::optional<bsoncxx::document::value> result;
         if constexpr(filter == user::by::ID) {
@@ -92,21 +93,42 @@ namespace user {
         } else {
             result = users.find_one(session, document{} << map_to_field<filter>() << identifier << finalize);
         }
-        user_t user;
+        user_t user{};
 
         if (result) {
             try {
                 auto content = result->view();
-                user.id = content[user::ID].get_oid().value.to_string();
-                user.type = content[user::TYPE].get_utf8().value.to_string();
+                auto id = content[user::ID].get_oid().value.to_string();
+
                 user.name = content[user::NAME].get_utf8().value.to_string();
-                user.password = content[user::PASSWORD].get_utf8().value.to_string();
-                user.date_of_birth = content[user::DATE_OF_BIRTH].get_utf8().value.to_string();
-                user.phoneNo = content[user::PHONE_NO].get_utf8().value.to_string();
                 user.email = content[user::EMAIL].get_utf8().value.to_string();
-                user.address = content[user::ADDRESS].get_utf8().value.to_string();
-                user.gender = content[user::GENDER].get_utf8().value.to_string();
-                user.joining_date = content[user::JOINING_DATE].get_utf8().value.to_string();
+                user.type = content[user::TYPE].get_utf8().value.to_string();
+
+                if(ctrl.cred == id || ctrl.data == privilege::ADMIN || ctrl.data == privilege::SUPER) {
+                    user.id = id;
+                    user.date_of_birth = content[user::DATE_OF_BIRTH].get_utf8().value.to_string();
+                    user.phoneNo = content[user::PHONE_NO].get_utf8().value.to_string();
+                    user.address = content[user::ADDRESS].get_utf8().value.to_string();
+                    user.gender = content[user::GENDER].get_utf8().value.to_string();
+                    user.joining_date = content[user::JOINING_DATE].get_utf8().value.to_string();
+                }
+
+                if (ctrl.data == privilege::SUPER) {
+                    user.password = content[user::PASSWORD].get_utf8().value.to_string();
+                }
+
+
+//                auto content = result->view();
+//                user.id = content[user::ID].get_oid().value.to_string();
+//                user.type = content[user::TYPE].get_utf8().value.to_string();
+//                user.name = content[user::NAME].get_utf8().value.to_string();
+//                user.password = content[user::PASSWORD].get_utf8().value.to_string();
+//                user.date_of_birth = content[user::DATE_OF_BIRTH].get_utf8().value.to_string();
+//                user.phoneNo = content[user::PHONE_NO].get_utf8().value.to_string();
+//                user.email = content[user::EMAIL].get_utf8().value.to_string();
+//                user.address = content[user::ADDRESS].get_utf8().value.to_string();
+//                user.gender = content[user::GENDER].get_utf8().value.to_string();
+//                user.joining_date = content[user::JOINING_DATE].get_utf8().value.to_string();
             } catch (...) {
                 return {user::status::GET_FAILED, {}};
             }

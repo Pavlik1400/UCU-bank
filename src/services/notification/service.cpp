@@ -72,7 +72,6 @@ namespace notification {
     }
 
     std::pair<std::string, std::string> Service::decompose(const std::string &message) {
-//        clmdep_msgpack::unpa()
         auto notification = clmdep_msgpack::unpack(message.data(), message.size()).get().as<notification_t>();
         return {resolve(notification.identifier, notification.type), notification.payload};
     }
@@ -82,18 +81,18 @@ namespace notification {
     }
 
     std::string Service::resolve_with_user_id(const std::string &identifier) {
-        const auto &[status, info] = user.get<user::by::ID>(identifier);
+        const auto &[status, info] = user.get<user::by::ID>(identifier, {.data=user::privilege::SUPER});
         return info.email;
     }
 
     std::string Service::resolve_with_phone_number(const std::string &identifier) {
-        const auto &[status, info] = user.get<user::by::PHONE_NO>(identifier);
+        const auto &[status, info] = user.get<user::by::PHONE_NO>(identifier, {.data=user::privilege::SUPER});
         return info.email;
     }
 
     std::string Service::resolve_with_card_number(const std::string &identifier) {
-        const auto &[status1, info1] = account.get(identifier);
-        const auto &[status2, info2] = user.get<user::by::ID>(info1.user_id);
+        const auto &[status1, info1] = account.get(identifier, {.data=user::privilege::SUPER});
+        const auto &[status2, info2] = user.get<user::by::ID>(info1.user_id, {.data=user::privilege::SUPER});
         return info2.email;
     }
 

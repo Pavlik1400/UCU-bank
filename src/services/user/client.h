@@ -3,6 +3,7 @@
 
 #include "user/constants.h"
 #include "client/client.hpp"
+#include "auth/constants.hpp"
 
 namespace user {
     class Client : public client::BasicClient {
@@ -15,9 +16,9 @@ namespace user {
         status create(const user_t &user);
 
         template<by filter>
-        std::pair<status, user_t> get(const std::string &identifier);
+        std::pair<status, user_t> get(const std::string &identifier, const auth::AuthDU &ctrl);
 
-        status remove(const std::string &phoneNo);
+        status remove(const std::string &phoneNo, const auth::AuthDU &ctrl);
 
         status exists(const std::string &phoneNo);
 
@@ -39,9 +40,9 @@ namespace user {
     }
 
     template<by filter>
-    std::pair<status, user_t> Client::get(const std::string &identifier) {
+    std::pair<status, user_t> Client::get(const std::string &identifier, const auth::AuthDU &ctrl) {
         return ver_connection([&, this]() {
-            return client->call(map_to_method<filter>(), identifier).template as<std::pair<status, user_t>>();
+            return client->call(map_to_method<filter>(), identifier, ctrl).template as<std::pair<status, user_t>>();
         });
     }
 }
