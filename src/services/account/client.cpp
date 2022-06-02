@@ -1,9 +1,9 @@
 #include "account/client.h"
 
 namespace account {
-    account::status Client::create(const std::string &user_id, const std::string &account_type) {
+    account::status Client::create(const std::string &user_id, const std::string &account_type, const auth::AuthDU &ctrl) {
         return ver_connection(
-            [&, this](){ return client->call(method::CREATE, user_id, account_type).as<account::status>(); }
+            [&, this](){ return client->call(method::CREATE, user_id, account_type, ctrl).as<account::status>(); }
         );
     }
 

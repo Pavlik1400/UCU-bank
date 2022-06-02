@@ -23,7 +23,7 @@ namespace account {
                 "ACCOUNT"
             ) {}
 
-        account::status create(const std::string &user_id, const std::string &account_type);
+        account::status create(const std::string &user_id, const std::string &account_type, const auth::AuthDU &ctrl);
 
         std::pair<account::status, account_t> get(const std::string &card, const auth::AuthDU &ctrl);
 
