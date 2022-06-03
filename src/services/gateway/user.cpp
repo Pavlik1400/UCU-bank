@@ -48,7 +48,8 @@ void ucubank_api::v1::User::login1(const drogon::HttpRequestPtr &req,
         auto password = req_json["password"].as<std::string>();
         std::cout << "num: " << phone_num << ", password: " << password << std::endl;
         auto [status, key_secret] = auth_client.tfa_pwd({phone_num, password});
-        std::cout << "Status: " << status << ", key_secret: " << key_secret.cred << ", " << key_secret.data << std::endl;
+        std::cout << "Status: " << status << ", key_secret: " << key_secret.cred << ", " << key_secret.data
+                  << std::endl;
         if (status != auth::OK) {
             return fail_response(auth::status_to_str(status), callback, resp_json);
         }
@@ -117,7 +118,6 @@ void ucubank_api::v1::User::register_(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::User::remove(const drogon::HttpRequestPtr &req,
                                    std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("DELETE /ucubank_api/v1/user/remove/");
-//    auto [success, req_json, resp_json] = prepare_json(req);
     auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
@@ -125,10 +125,22 @@ void ucubank_api::v1::User::remove(const drogon::HttpRequestPtr &req,
         if (!verify_fields_present(req_json, resp_json, {"phoneNo"}))
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
         auto phoneNo = req_json["phoneNo"].as<std::string>();
-//        auto [get_status, user_info] = user_client.get<user::by::PHONE_NO>(phoneNo, privilege);
-//        if (get_status != user::OK) return fail_response(user::status_to_str(get_status), callback, resp_json);
         auto remove_status = user_client.remove(phoneNo, privilege);
         if (remove_status != user::OK) return fail_response(user::status_to_str(remove_status), callback, resp_json);
+        callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+    DEBUG_CATCH
+
+}
+
+void ucubank_api::v1::User::logout(const drogon::HttpRequestPtr &req,
+                                   std::function<void(const drg::HttpResponsePtr &)> &&callback) {
+    logger.debug("DELETE /ucubank_api/v1/user/remove/");
+    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+
+    DEBUG_TRY
+//        auto invalidate_status = auth_client.invalidate(privilege.data);
+//        if (invalidate_status != auth::OK) return fail_response(auth::status_to_str(invalidate_status), callback, resp_json);
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
 

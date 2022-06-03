@@ -20,6 +20,7 @@ namespace ucubank_api::v1 {
             METHOD_ADD(User::login2, "/login2/", drg::Post);
             METHOD_ADD(User::register_, "/register/", drg::Post);
             METHOD_ADD(User::remove, "/remove/", drg::Delete);
+            METHOD_ADD(User::logout, "/logout/", drg::Post);
         METHOD_LIST_END
 
         void info(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
@@ -31,6 +32,8 @@ namespace ucubank_api::v1 {
         void register_(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
         void remove(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
+
+        void logout(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
     public:
         explicit User(const nlohmann::json &cnf);
