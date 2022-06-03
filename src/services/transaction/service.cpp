@@ -120,7 +120,7 @@ namespace transaction {
             return transaction::FORBIDEN;
         }
         // check if account has enough money
-        if (acc_info.balance < tran.amount) {
+        if (acc_info.balance < tran.amount && privilege.data != user::privilege::SUPER) {
             return transaction::NOT_ENOUGH_MONEY;
         }
 
