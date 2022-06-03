@@ -1,6 +1,7 @@
 #include "transaction/client.hpp"
 #include "service_tools/utils.hpp"
 #include <iostream>
+#include "user/constants.h"
 
 
 int main() {
@@ -36,7 +37,7 @@ int main() {
             10.0,
             transaction::CARD_TRANSFER
     };
-    auto status = tclient.create(tran);
+    auto status = tclient.create(tran, {.data=user::privilege::SUPER});
     std::cout << "create status: " << static_cast<std::underlying_type_t<transaction::status>>(status) << std::endl;
 
 

@@ -32,6 +32,7 @@ namespace ucubank_api::v1 {
 //        src::severity_logger<logging::trivial::severity_level> logger;
         GateWayLogger logger;
         transaction::Client transaction_client;
+        auth::Client auth_client;
 
     };
 }

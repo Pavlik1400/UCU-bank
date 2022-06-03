@@ -7,6 +7,8 @@
 #include "notification/client.h"
 #include <ostream>
 #include <pqxx/pqxx>
+#include "auth/constants.hpp"
+
 
 namespace pq = pqxx;
 
@@ -22,12 +24,12 @@ namespace transaction {
         ~Service() override;
 
     public:
-        transaction::status make_transaction(const transaction_t &tran);
+        transaction::status make_transaction(const transaction_t &tran, const auth::AuthDU &privilege);
 
         tran_query_res get_transaction(const trans_filter &filter);
 
     private:
-        transaction::status verify_transaction(const transaction_t &tran);
+        transaction::status verify_transaction(const transaction_t &tran, const auth::AuthDU &privilege);
 
         add_transaction_res add_transaction_to_db(const transaction_t &tran, transaction::db_entry_status status);
 

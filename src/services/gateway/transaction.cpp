@@ -1,6 +1,6 @@
 #include "transaction.hpp"
 
-ucubank_api::v1::Transaction::Transaction(const nlohmann::json &cnf) : transaction_client(cnf) {
+ucubank_api::v1::Transaction::Transaction(const nlohmann::json &cnf) : transaction_client(cnf), auth_client(cnf) {
     logger.info("Transaction service initialized");
 }
 
@@ -8,14 +8,15 @@ ucubank_api::v1::Transaction::Transaction(const nlohmann::json &cnf) : transacti
 void ucubank_api::v1::Transaction::create(const drogon::HttpRequestPtr &req,
                                           std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("POST /ucubank_api/v1/transaction/create/");
-    auto [success, req_json, resp_json] = prepare_json(req);
+//    auto [success, req_json, resp_json] = prepare_json(req);
+    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
         if (!verify_fields_present(req_json, resp_json, {"user_id", "from_acc_number", "to_acc_number",
                                                          "description", "amount", "category"}))
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
-        auto status = transaction_client.create(deserialize_transaction_t(req_json));
+        auto status = transaction_client.create(deserialize_transaction_t(req_json), privilege);
         if (status != transaction::OK) {
             return fail_response(transaction::status_to_str(status), callback, resp_json);
         }

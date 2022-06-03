@@ -52,7 +52,7 @@ namespace transaction {
         CUSTOM_LOG(lg, info) << "Transcation service finished";
     }
 
-    transaction::status Service::make_transaction(const transaction_t &tran) {
+    transaction::status Service::make_transaction(const transaction_t &tran, const auth::AuthDU &privilege) {
         CUSTOM_LOG(lg, debug) << "create " << tran;
 
         std::stringstream ss; ss << tran;
@@ -66,7 +66,7 @@ namespace transaction {
         auto [status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
         if (status != transaction::OK) return status;
-        if ((status = verify_transaction(tran)) != transaction::OK) {
+        if ((status = verify_transaction(tran, privilege)) != transaction::OK) {
             CUSTOM_LOG(lg, info) << "Transaction with id: " << entry_id << " is not verified with status "
                                  << status_to_str(status);
             delete_transaction(entry_id);
@@ -90,13 +90,13 @@ namespace transaction {
         return transaction::status::OK;
     }
 
-    transaction::status Service::verify_transaction(const transaction_t &tran) {
+    transaction::status Service::verify_transaction(const transaction_t &tran, const auth::AuthDU &privilege) {
         // TODO: check if user is loggined - Auth serice
 //    if (!auth_rpc.is_logined(tran.user_id)) {
 //        return TransactionStatus::IS_NOT_LOGINED;
 //    }
         CUSTOM_LOG(lg, debug) << "Verifying transaction: " << tran;
-        auto [status, acc_info] = account_client.get(tran.from_acc_number, {.data=user::privilege::SUPER});
+        auto [status, acc_info] = account_client.get(tran.from_acc_number, {.data=user::privilege::ADMIN});
         if (status != account::status::OK) {
             switch (status) {
                 case account::status::INVALID_CARD_NUMBER:
@@ -105,7 +105,7 @@ namespace transaction {
                     return transaction::FAILED;
             }
         }
-        auto acc_resp = account_client.get(tran.to_acc_number, {.data=user::privilege::SUPER});
+        auto acc_resp = account_client.get(tran.to_acc_number, {.data=user::privilege::ADMIN});
         if (acc_resp.first != account::status::OK) {
             switch (acc_resp.first) {
                 case account::status::INVALID_CARD_NUMBER:
@@ -116,7 +116,7 @@ namespace transaction {
         }
 
         // check if user has access to this card
-        if (acc_info.user_id != tran.user_id) {
+        if (acc_info.user_id != tran.user_id && privilege.data != user::privilege::SUPER) {
             return transaction::FORBIDEN;
         }
         // check if account has enough money
@@ -136,19 +136,21 @@ namespace transaction {
             return {transaction::BAD_CATEGORY, -1};
         }
         try {
+            std::cout << "Add transaction: from_n = " << tran.from_acc_number << ", to_n = " << tran.to_acc_number << std::endl;
             pq::work work(pq_connection.value());
             auto sql =
                     "INSERT INTO " + transaction::tables::money_transfer +
                     " (from_acc_number, to_acc_number, amount, date, status, description, category) values"
                     " (" +
-                    work.esc(tran.from_acc_number) + "," +
-                    work.esc(tran.to_acc_number) + "," +
+                    + "'" + work.esc(tran.from_acc_number) + "'," +
+                    + "'" + work.esc(tran.to_acc_number) + "'," +
                     work.esc(std::to_string(tran.amount)) + ",'" +
                     work.esc(cur_time_str()) + "'," +
                     work.esc(std::to_string(status)) + ",'" +
                     work.esc(tran.description) + "'," +
                     work.esc(std::to_string(tran.category)) +
                     ") RETURNING id";
+            std::cout << "SQL: " << sql << std::endl;
             pq::result insert_res(work.exec(sql));
             entry_id = insert_res.begin()[0].as<unsigned long long>();
             work.commit();
@@ -233,7 +235,7 @@ namespace transaction {
 
     void Service::register_methods() {
         rpc_server.bind("get", [&](const trans_filter &filter) { return get_transaction(filter); });
-        rpc_server.bind("create", [&](const transaction_t &tran) { return make_transaction(tran); });
+        rpc_server.bind("create", [&](const transaction_t &tran, const auth::AuthDU &priv) { return make_transaction(tran, priv); });
     }
 
     Service::~Service() = default;

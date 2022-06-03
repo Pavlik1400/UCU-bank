@@ -9,9 +9,9 @@ namespace transaction {
             ) {
     }
 
-    status Client::create(const transaction_t &tran) {
+    status Client::create(const transaction_t &tran, const auth::AuthDU &priv) {
         return ver_connection(
-            [&, this]() { return client->call("create", tran).as<transaction::status>(); }
+            [&, this]() { return client->call("create", tran, priv).as<transaction::status>(); }
         );
     }
 
