@@ -6,6 +6,7 @@
 
 ```json
 {
+  "token": "123",
   "user_id": "6255cbdb2890ea6b33749a52",
   "account_type": "sexy"
 }
@@ -21,7 +22,13 @@ Reponse:
 
 - `POST http://localhost:2020/ucubank_api/v1/account/info/{number}`
 
-Reponse:
+```json
+{
+  "token": "123"
+}
+```
+
+Reponse if user is owner of account:
 
 ```json
 {
@@ -39,9 +46,29 @@ Reponse:
 }
 ```
 
+Response if user is not a owner of an account:
+
+```json
+{
+    "info": {
+        "active": true,
+        "balance": 0.0,
+        "number": "6744440301848953"
+    },
+    "status": 200
+}
+```
+
 
 - `DELETE http://localhost:2020/ucubank_api/v1/account/remove/{number}`
-  if number exists, response:
+
+```json
+{
+  "token": "123"
+}
+```
+
+  if number exists, response, and user is SUPER:
 
 ```json
 {
@@ -51,7 +78,13 @@ Reponse:
 
 - `POST http://localhost:2020/ucubank_api/v1/account/get_accounts/{user_id}`
 
-Response: 
+```json
+{
+  "token": "token"
+}
+```
+
+Response if user is an owner of the account: 
 
 ```json
 {
@@ -59,15 +92,36 @@ Response:
     {
       "active": true,
       "balance": 0.0,
-      "cvv": "727",
-      "id": "",
-      "number": "1784059466298605",
-      "opening_date": "24-04-2022 14-42-10",
-      "type": "sex",
-      "user_id": "6255cbdb2890ea6b33749a53"
+      "number": "5637677951177198",
+      "opening_date": "02-06-2022 22-31-19",
+      "type": "sexy",
+      "user_id": "629902cebe1eb222c26ef0c2"
+    },
+    {
+      "active": true,
+      "balance": 3029.3200000000002,
+      "number": "0588093921849362",
+      "opening_date": "02-06-2022 22-56-20",
+      "type": "sexy2",
+      "user_id": "629902cebe1eb222c26ef0c2"
     }
   ],
   "status": 200
+}
+```
+
+Response if user is not an owner of an account:
+
+```json
+{
+    "accounts": [
+        {
+            "active": true,
+            "balance": 0.0,
+            "number": "6744440301848953"
+        }
+    ],
+    "status": 200
 }
 ```
 ## User API
@@ -76,28 +130,43 @@ Response:
 
 ```json
 {
+  "token": "token",
   "phone_num": "+390961234567"
 }
 ```
 
-Response:
+Response if user is asking info about him/her/it self:
 
 ```json
 {
   "info": {
-    "address": "toilet",
-    "date_of_birth": "2945-05-08",
-    "email": "m.halilei@ucu.edu.ua",
-    "gender": "tractor",
-    "id": "6255cbdb2890ea6b33749a53",
-    "joining_date ": "12-04-2022 21-58-35",
-    "name": "Masha",
-    "phoneNo": "+390961234567",
-    "type": "alpha female"
+    "address": "home",
+    "date_of_birth": "2002-02-02",
+    "email": "pasha@gmail.com",
+    "gender": "airbus 777",
+    "id": "629902cebe1eb222c26ef0c2",
+    "joining_date": "02-06-2022 21-34-54",
+    "name": "pasha",
+    "phoneNo": "123",
+    "type": "regular"
   },
   "status": 200
 }
 ```
+
+Response if user is asking info about other user:
+
+```json
+{
+    "info": {
+        "email": "pasha@gmail.com",
+        "name": "pasha",
+        "type": "super"
+    },
+    "status": 200
+}
+```
+
 - `POST http://localhost:2020/ucubank_api/v1/user/login1/`
 
 ```json
@@ -161,10 +230,13 @@ Response:
 ```
 
 - `DELETE http://localhost:2020/ucubank_api/v1/user/remove/`
+
+*Only super can remove users*
 ```json
 {
     "phoneNo": "+381235431256",
-    "password": "123"
+    "password": "123",
+    "token": "123"
 }
 ```
 
@@ -187,7 +259,8 @@ Response:
   "to_acc_number": "0344745254739653",
   "description": "pizza2",
   "amount": 20.0,
-  "category": 9
+  "category": 9,
+  "token": "123"
 }
 ```
 
@@ -211,7 +284,8 @@ Reponse:
   "category": 0,
   "from_date": "2022-01-01",
   "to_date": "2022-04-22",
-  "limit": 100
+  "limit": 100,
+  "token": "123"
 }
 ```
 

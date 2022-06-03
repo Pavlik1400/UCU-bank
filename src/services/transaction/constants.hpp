@@ -27,6 +27,7 @@ namespace transaction {
         BAD_CATEGORY = 7,
         FROM_ACCOUNT_DOESNT_EXISTS = 8,
         TO_ACCOUNT_DOESNT_EXISTS = 9,
+        DB_ERROR = 10,
     };
 
     enum db_entry_status {

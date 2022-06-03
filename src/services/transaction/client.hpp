@@ -12,7 +12,7 @@ namespace transaction {
     public:
         explicit Client(const nlohmann::json &cnf);
         transaction::status create(const transaction_t &tran, const auth::AuthDU &priv);
-        tran_query_res get(const trans_filter &filter);
+        tran_query_res get(const trans_filter &filter, const auth::AuthDU &priv);
     };
 }
 

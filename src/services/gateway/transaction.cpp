@@ -29,7 +29,8 @@ void ucubank_api::v1::Transaction::get(const drogon::HttpRequestPtr &req,
                                        const std::string &account_number) {
 
     logger.debug("GET /ucubank_api/v1/transaction/get/");
-    auto [success, req_json, resp_json] = prepare_json(req);
+//    auto [success, req_json, resp_json] = prepare_json(req);
+    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -40,7 +41,7 @@ void ucubank_api::v1::Transaction::get(const drogon::HttpRequestPtr &req,
             return fail_response(transaction::status_to_str(parse_status), callback, resp_json);
         }
 
-        auto [status, ts] = transaction_client.get(filter);
+        auto [status, ts] = transaction_client.get(filter, privilege);
         if (status != transaction::OK) {
             return fail_response(transaction::status_to_str(status), callback, resp_json);
         }

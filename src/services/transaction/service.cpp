@@ -11,7 +11,9 @@ namespace transaction {
                               ":" + std::to_string(cnf["transaction"]["reddis_port"].get<int>())),
             account_client(cnf["account"]["rpc_address"].get<std::string>(),
                            cnf["account"]["rpc_port"].get<int>()),
-            notification_client(cnf["notification"]["broker_address"].get<std::string>() + ":" + cnf["notification"]["broker_port"].get<std::string>(), cnf["notification"]["topic"].get<std::string>()),
+            notification_client(cnf["notification"]["broker_address"].get<std::string>() + ":" +
+                                cnf["notification"]["broker_port"].get<std::string>(),
+                                cnf["notification"]["topic"].get<std::string>()),
             cnf(cnf), pq_connection({}) {
         CUSTOM_LOG(lg, debug) << "Transaction service initialized";
     }
@@ -55,13 +57,14 @@ namespace transaction {
     transaction::status Service::make_transaction(const transaction_t &tran, const auth::AuthDU &privilege) {
         CUSTOM_LOG(lg, debug) << "create " << tran;
 
-        std::stringstream ss; ss << tran;
+        std::stringstream ss;
+        ss << tran;
         notification_client.send(notification_t{.identifier=tran.from_acc_number,
-                                                .payload=ss.str(),
-                                                .type=identifier_type::CARD_NUMBER});
+                .payload=ss.str(),
+                .type=identifier_type::CARD_NUMBER});
         notification_client.send(notification_t{.identifier=tran.to_acc_number,
-                                                .payload=ss.str(),
-                                                .type=identifier_type::CARD_NUMBER});
+                .payload=ss.str(),
+                .type=identifier_type::CARD_NUMBER});
 
         auto [status, entry_id] = add_transaction_to_db(tran, transaction::JUST_ADDED);
         CUSTOM_LOG(lg, debug) << "Transaction " << tran << " has id " << entry_id;
@@ -136,14 +139,15 @@ namespace transaction {
             return {transaction::BAD_CATEGORY, -1};
         }
         try {
-            std::cout << "Add transaction: from_n = " << tran.from_acc_number << ", to_n = " << tran.to_acc_number << std::endl;
+            std::cout << "Add transaction: from_n = " << tran.from_acc_number << ", to_n = " << tran.to_acc_number
+                      << std::endl;
             pq::work work(pq_connection.value());
             auto sql =
                     "INSERT INTO " + transaction::tables::money_transfer +
                     " (from_acc_number, to_acc_number, amount, date, status, description, category) values"
                     " (" +
-                    + "'" + work.esc(tran.from_acc_number) + "'," +
-                    + "'" + work.esc(tran.to_acc_number) + "'," +
+                    +"'" + work.esc(tran.from_acc_number) + "'," +
+                    +"'" + work.esc(tran.to_acc_number) + "'," +
                     work.esc(std::to_string(tran.amount)) + ",'" +
                     work.esc(cur_time_str()) + "'," +
                     work.esc(std::to_string(status)) + ",'" +
@@ -195,7 +199,7 @@ namespace transaction {
         return transaction::OK;
     }
 
-    tran_query_res Service::get_transaction(const trans_filter &filter) {
+    tran_query_res Service::get_transaction(const trans_filter &filter, const auth::AuthDU &privilege) {
         CUSTOM_LOG(lg, info) << "Get call with filter: " << filter;
         auto status = transaction::status::OK;
         auto limit = filter.limit;
@@ -203,6 +207,19 @@ namespace transaction {
             status = transaction::status::FILTER_LIMIT_EXCEEDED;
             limit = transaction::select_query_max_limit;
         }
+        auto [acc_status, acc_info] = account_client.get(filter.acc_number, {.data=user::privilege::ADMIN});
+        if (acc_status != account::status::OK) {
+            CUSTOM_LOG(lg, error) << "Error while getting info about account: " << static_cast<int> (acc_status)
+                                  << "\n";
+            return {transaction::FAILED, {}};
+        }
+
+        if (acc_info.user_id != privilege.cred && privilege.data == user::privilege::REGULAR) {
+            CUSTOM_LOG(lg, info) << "User with user id " << privilege.cred <<
+                                 " tried to get info about account " << filter.acc_number << "\n";
+            return {transaction::FORBIDEN, {}};
+        }
+
         std::vector<transaction_t> query_result;
         query_result.reserve(limit);
         try {
@@ -228,14 +245,18 @@ namespace transaction {
 
         } catch (const std::exception &exc) {
             CUSTOM_LOG(lg, error) << "Error in select query: \n" << exc.what();
-            return {transaction::FAILED, {}};
+            return {transaction::DB_ERROR, {}};
         }
         return {status, query_result};
     }
 
     void Service::register_methods() {
-        rpc_server.bind("get", [&](const trans_filter &filter) { return get_transaction(filter); });
-        rpc_server.bind("create", [&](const transaction_t &tran, const auth::AuthDU &priv) { return make_transaction(tran, priv); });
+        rpc_server.bind("get", [&](const trans_filter &filter, const auth::AuthDU &priv) {
+            return get_transaction(filter, priv);
+        });
+        rpc_server.bind("create", [&](const transaction_t &tran, const auth::AuthDU &priv) {
+            return make_transaction(tran, priv);
+        });
     }
 
     Service::~Service() = default;

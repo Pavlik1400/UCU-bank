@@ -16,7 +16,7 @@ int main() {
             std::string("2001-09-10")
     };
 
-    auto transactions = tclient.get(filter);
+    auto transactions = tclient.get(filter, {.data=user::privilege::SUPER});
     if (transactions.first == transaction::OK) {
         std::cout << "status - OK" << std::endl;
         for (const auto &t: transactions.second) {

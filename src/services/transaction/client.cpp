@@ -15,9 +15,9 @@ namespace transaction {
         );
     }
 
-    tran_query_res Client::get(const trans_filter &filter) {
+    tran_query_res Client::get(const trans_filter &filter, const auth::AuthDU &priv) {
         return ver_connection(
-            [&, this]() { return client->call("get", filter).as<tran_query_res>(); }
+            [&, this]() { return client->call("get", filter, priv).as<tran_query_res>(); }
         );
     }
 }

@@ -26,7 +26,7 @@ namespace transaction {
     public:
         transaction::status make_transaction(const transaction_t &tran, const auth::AuthDU &privilege);
 
-        tran_query_res get_transaction(const trans_filter &filter);
+        tran_query_res get_transaction(const trans_filter &filter, const auth::AuthDU &privilege);
 
     private:
         transaction::status verify_transaction(const transaction_t &tran, const auth::AuthDU &privilege);
