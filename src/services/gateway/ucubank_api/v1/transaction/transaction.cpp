@@ -8,8 +8,7 @@ ucubank_api::v1::Transaction::Transaction(const nlohmann::json &cnf) : transacti
 void ucubank_api::v1::Transaction::create(const drogon::HttpRequestPtr &req,
                                           std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("POST /ucubank_api/v1/transaction/create/");
-//    auto [success, req_json, resp_json] = prepare_json(req);
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -30,7 +29,7 @@ void ucubank_api::v1::Transaction::get(const drogon::HttpRequestPtr &req,
 
     logger.debug("GET /ucubank_api/v1/transaction/get/");
 //    auto [success, req_json, resp_json] = prepare_json(req);
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY

@@ -39,7 +39,7 @@ namespace user {
         const std::string SUPER = "super";
     }
 
-    namespace super_duper_secret {
+    namespace super_secret {
         const std::string KEY = "super-duper-secret";
         const std::string VALUE = "4694944920569279849376435242991721996950851627475313791297870890";
     }

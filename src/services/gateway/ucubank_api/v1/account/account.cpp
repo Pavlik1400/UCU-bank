@@ -1,6 +1,8 @@
-#include "gateway/account.hpp"
+#include "account.hpp"
 #include "basic/MessageSerializer.hpp"
 #include "user/constants.h"
+#include "ucubank_api/helpers.hpp"
+
 
 ucubank_api::v1::Account::Account(const nlohmann::json &cnf) :
         account_client(cnf["account"]["rpc_address"].get<std::string>(), cnf["account"]["rpc_port"].get<int>()),
@@ -15,7 +17,7 @@ void ucubank_api::v1::Account::create(
         std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("POST /ucubank_api/v1/account/create/");
 //    auto [success, req_json, resp_json] = prepare_json(req);
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -42,7 +44,7 @@ void ucubank_api::v1::Account::info(const drogon::HttpRequestPtr &req,
                                        const std::string &account_number) {
 
     logger.debug("POST /ucubank_api/v1/account/info/");
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -62,7 +64,7 @@ void ucubank_api::v1::Account::remove(const drogon::HttpRequestPtr &req,
                                          std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                          const std::string &account_number) {
     logger.debug("DELETE /ucubank_api/v1/account/remove/");
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -78,7 +80,7 @@ void ucubank_api::v1::Account::get_accs(const drogon::HttpRequestPtr &req,
                                         std::function<void(const drg::HttpResponsePtr &)> &&callback,
                                         const std::string &user_id) {
     logger.debug("POST /ucubank_api/v1/account/get_accounts/");
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY

@@ -1,7 +1,7 @@
 #ifndef UCU_BANK_USERAPI_H
 #define UCU_BANK_USERAPI_H
 
-#include "gateway/api_utils.hpp"
+#include "ucubank_api/api_utils.hpp"
 #include "user/client.h"
 #include "user/constants.h"
 #include "auth/client.hpp"
@@ -16,7 +16,7 @@ namespace ucubank_api::v1 {
     public:
         METHOD_LIST_BEGIN
             METHOD_ADD(User::info, "/info/", drg::Post);
-            METHOD_ADD(User::login1, "/login1/", drg::Post);
+            METHOD_ADD(User::login1, "/login1/", "VerifyJsonBodyFilter", drg::Post);
             METHOD_ADD(User::login2, "/login2/", drg::Post);
             METHOD_ADD(User::register_, "/register/", drg::Post);
             METHOD_ADD(User::remove, "/remove/", drg::Delete);

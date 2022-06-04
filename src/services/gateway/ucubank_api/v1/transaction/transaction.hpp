@@ -1,7 +1,7 @@
 #ifndef UCU_BANK_TRANSACTION_HPP
 #define UCU_BANK_TRANSACTION_HPP
 
-#include "gateway/api_utils.hpp"
+#include "ucubank_api/api_utils.hpp"
 #include "transaction/client.hpp"
 #include "transaction/constants.hpp"
 

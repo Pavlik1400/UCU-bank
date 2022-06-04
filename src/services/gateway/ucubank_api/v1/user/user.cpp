@@ -1,5 +1,6 @@
-#include "gateway/user.hpp"
+#include "user.hpp"
 #include "auth/constants.hpp"
+#include "ucubank_api/helpers.hpp"
 
 ucubank_api::v1::User::User(const nlohmann::json &cnf) :
         user_client(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()),
@@ -10,10 +11,8 @@ ucubank_api::v1::User::User(const nlohmann::json &cnf) :
 void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
                                  std::function<void(const drg::HttpResponsePtr &)> &&callback) {
 
-    logger.debug("GET /ucubank_api/v1/user/info/");
-//    auto [success, req_json, resp_json] = prepare_json(req);
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
-    std::cout << "success: " << success << std::endl;
+    IFDEBUG(logger.debug("GET /ucubank_api/v1/user/info/"))
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -27,7 +26,6 @@ void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
             return fail_response(user::status_to_str(status), callback, resp_json);
         }
 
-        // TODO: verify if user is allowed to get all info
         resp_json["info"] = serialized_user_t(user_info);
         callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
     DEBUG_CATCH
@@ -36,8 +34,8 @@ void ucubank_api::v1::User::info(const drogon::HttpRequestPtr &req,
 
 void ucubank_api::v1::User::login1(const drogon::HttpRequestPtr &req,
                                    std::function<void(const drg::HttpResponsePtr &)> &&callback) {
-    logger.debug("GET /ucubank_api/v1/user/login1/");
-    auto [success, req_json, resp_json] = prepare_json(req);
+    IFDEBUG(logger.debug("GET /ucubank_api/v1/user/login1/"))
+    auto [success, req_json, resp_json, _] = parse_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -67,7 +65,7 @@ void ucubank_api::v1::User::login1(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::User::login2(const drogon::HttpRequestPtr &req,
                                    std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("GET /ucubank_api/v1/user/login2/");
-    auto [success, req_json, resp_json] = prepare_json(req);
+    auto [success, req_json, resp_json, _] = parse_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(req_json));
 
     DEBUG_TRY
@@ -91,7 +89,7 @@ void ucubank_api::v1::User::login2(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::User::register_(const drogon::HttpRequestPtr &req,
                                       std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("GET /ucubank_api/v1/user/register/");
-    auto [success, req_json, resp_json] = prepare_json(req);
+    auto [success, req_json, resp_json, _] = parse_json(req);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -101,10 +99,10 @@ void ucubank_api::v1::User::register_(const drogon::HttpRequestPtr &req,
             return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
         auto user = deserialize_user_t(req_json);
         if (user.type != user::privilege::REGULAR) {
-            if (req_json[user::super_duper_secret::KEY].empty()) {
+            if (req_json[user::super_secret::KEY].empty()) {
                 return fail_response("Not allowed to create any user type expect 'regular'", callback, resp_json, 403);
             }
-            if (req_json[user::super_duper_secret::KEY].as<std::string>() != user::super_duper_secret::VALUE) {
+            if (req_json[user::super_secret::KEY].as<std::string>() != user::super_secret::VALUE) {
                 return fail_response("FBI is coming for you...", callback, resp_json, 403);
             }
         }
@@ -118,7 +116,7 @@ void ucubank_api::v1::User::register_(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::User::remove(const drogon::HttpRequestPtr &req,
                                    std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("DELETE /ucubank_api/v1/user/remove/");
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY
@@ -135,7 +133,7 @@ void ucubank_api::v1::User::remove(const drogon::HttpRequestPtr &req,
 void ucubank_api::v1::User::logout(const drogon::HttpRequestPtr &req,
                                    std::function<void(const drg::HttpResponsePtr &)> &&callback) {
     logger.debug("DELETE /ucubank_api/v1/user/remove/");
-    auto [success, req_json, resp_json, privilege] = prepare_json_auth(req, auth_client);
+    auto [success, req_json, resp_json, privilege] = parse_json(req, auth_client);
     if (!success) return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
 
     DEBUG_TRY

@@ -20,13 +20,6 @@ nlohmann::json load_json_config(const std::string &path) {
     return nlohmann::json::parse(content);
 }
 
-//std::string cur_time_str() {
-//    std::stringstream ss;
-//    auto time = std::chrono::system_clock::now();
-//    ss << time;
-//    return ss.str();
-//}
-
 std::string cur_time_str() {
     // get current time
     auto now = std::chrono::system_clock::now();

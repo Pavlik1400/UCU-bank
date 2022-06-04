@@ -1,7 +1,7 @@
-#ifndef UCU_BANK_ACCOUNT_API_HPP
-#define UCU_BANK_ACCOUNT_API_HPP
+#ifndef UCU_BANK_ACCOUNT_API_HPP2
+#define UCU_BANK_ACCOUNT_API_HPP2
 
-#include "api_utils.hpp"
+#include "ucubank_api/api_utils.hpp"
 #include "account/constants.h"
 #include "account/client.h"
 #include <nlohmann/json.hpp>
@@ -42,4 +42,4 @@ namespace ucubank_api::v1 {
     };
 } // namespace api::v1
 
-#endif //UCU_BANK_ACCOUNT_API_HPP
+#endif //UCU_BANK_ACCOUNT_API_HPP2

@@ -1,32 +1,9 @@
-#include "gateway/api_utils.hpp"
+#include "api_utils.hpp"
+
+#include <utility>
 #include "auth/constants.hpp"
 
-namespace ucubank_api::v1 {
-//    std::pair<std::shared_ptr<Json::Value>, bool> getJsonObjectSafe(const drg::HttpRequestPtr &req, int err_status,
-//                                                                    int ok_status) {
-//        auto req_json_ptr = req->getJsonObject();
-//        if (!req_json_ptr) {
-//            auto resp_json = new Json::Value;
-//            (*resp_json)["status"] = err_status;
-//            (*resp_json)["message"] = "Request error: " + req->getJsonError();
-//            return {std::make_shared<Json::Value>(*resp_json), false};
-//        }
-//        (*req_json_ptr)["status"] = ok_status;
-//        return {req_json_ptr, true};
-//    }
-    std::pair<std::shared_ptr<Json::Value>, bool> getJsonObjectSafe(const drg::HttpRequestPtr &req, int err_status,
-                                                                    int ok_status) {
-        auto req_json_ptr = req->getJsonObject();
-        if (!req_json_ptr) {
-            auto resp_json = new Json::Value;
-            (*resp_json)["status"] = err_status;
-            (*resp_json)["message"] = "Request error: " + req->getJsonError();
-            return {std::make_shared<Json::Value>(*resp_json), false};
-        }
-        (*req_json_ptr)["status"] = ok_status;
-        return {req_json_ptr, true};
-    }
-
+namespace ucubank_api {
     bool verify_fields_present(Json::Value &req_json, Json::Value &resp_json, const std::vector<std::string> &fields) {
         for (const auto &field: fields) {
             if (req_json[field].empty()) {
@@ -38,17 +15,16 @@ namespace ucubank_api::v1 {
         return true;
     }
 
-    std::tuple<bool, Json::Value, Json::Value> prepare_json(const drogon::HttpRequestPtr &req) {
+    parsed_request_t parse_json(const drogon::HttpRequestPtr &req) {
         auto resp_json = Json::Value{};
-        auto [req_json_ptr, success] = getJsonObjectSafe(req);
-        if (!success) return {false, *req_json_ptr, *req_json_ptr};
+        auto req_json_ptr = req->getJsonObject();
         resp_json["status"] = 200;
         return {true, std::move(*req_json_ptr), std::move(resp_json)};
     }
 
-    parsed_request_t prepare_json_auth(const drogon::HttpRequestPtr &req, auth::Client &auth_client) {
+    parsed_request_t parse_json(const drogon::HttpRequestPtr &req, auth::Client &auth_client) {
         // 1. Parse json body from request
-        auto [success, req_json, resp_json] = prepare_json(req);
+        auto [success, req_json, resp_json, _] = parse_json(req);
         if (req_json["token"].empty()) {
             resp_json["status"] = 401;
             resp_json["message"] = "token is required";
@@ -56,7 +32,8 @@ namespace ucubank_api::v1 {
         }
         // 2. get user priveleges
         auto [status, auth_resp] = auth_client.sess_info({req_json["token"].as<std::string>(), ""});
-        std::cout << "Auth sess_info status: " << status << ", auth response: " << auth_resp.cred << ", " << auth_resp.data << std::endl;
+        std::cout << "Auth sess_info status: " << status << ", auth response: " << auth_resp.cred << ", "
+                  << auth_resp.data << std::endl;
         if (status != auth::status::OK) {
             resp_json["status"] = 403;
             resp_json["message"] = (status == auth::status::GET_FAILED) ? "Invalid token" : auth::status_to_str(status);
@@ -70,6 +47,12 @@ namespace ucubank_api::v1 {
         resp_json["status"] = status;
         resp_json["message"] = msg;
         return callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+    }
+
+    jsonv fail(const str &msg, jsonv &resp_json, int status){
+        resp_json["status"] = status;
+        resp_json["message"] = msg;
+        return resp_json;
     }
 }
 
