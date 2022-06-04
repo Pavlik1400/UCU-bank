@@ -34,6 +34,12 @@ namespace sinks = boost::log::sinks;
          (::boost::log::keywords::severity = (boost::log::trivial::sev)) \
    )
 
+#define CUSTOM_LOG_SAFE(logger, sev) \
+   BOOST_LOG_STREAM_WITH_PARAMS( \
+      (logger), \
+         (::boost::log::keywords::severity = (boost::log::trivial::sev)) \
+   )
+
 template<typename ValueType>
 ValueType set_get_attrib(const char* name, ValueType value) {
     auto attr = logging::attribute_cast<attrs::mutable_constant<ValueType>>(logging::core::get()->get_thread_attributes()[name]);

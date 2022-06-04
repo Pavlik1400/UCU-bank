@@ -32,6 +32,7 @@
                 "TRANSACTION": "transaction",
                 "GATEWAY": "gateway",
                 "NOTIFICATION": "notification",
+                "CREDIT": "credit",
                 "TOOLS": "service-tools"
             },
             "condition": {
