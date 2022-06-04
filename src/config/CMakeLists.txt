@@ -104,6 +104,23 @@ target_sources(${NOTIFICATION}.client INTERFACE ${NOTIFICATION_ROOT}/client.cpp 
         )
 
 #=========================================#
+# -------- CREDIT MICROSERVICE ---------- #
+#=========================================#
+set(CREDIT_ROOT "${ROOT_}/credit")
+add_library(${CREDIT}.client SHARED ${CREDIT_ROOT}/client.cpp "${ROOT_}/client/client.hpp")
+
+target_link_libraries(${CREDIT}.client rpclib::rpc Threads::Threads)
+
+target_include_directories(${CREDIT}.client PUBLIC "${ROOT_}"
+        ${RPCLIB_INCLUDE_DIR}
+        )
+
+target_sources(${CREDIT}.client INTERFACE ${CREDIT_ROOT}/client.h
+        ${CREDIT_ROOT}/constants.h
+        )
+
+
+#=========================================#
 # --------- SERVICE TOOLS --------------- #
 #=========================================#
 set(TOOLS_ROOT "${ROOT_}/service_tools")
