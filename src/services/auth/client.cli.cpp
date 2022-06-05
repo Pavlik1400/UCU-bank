@@ -12,7 +12,8 @@ namespace po = boost::program_options;
 enum rpc_funcs {
     tfa_pwd,
     tfa_otp,
-    sess_info
+    sess_info,
+    sess_end
 };
 inline std::string rpc_funcs_to_str(rpc_funcs f) noexcept(false)
 {
@@ -20,6 +21,7 @@ inline std::string rpc_funcs_to_str(rpc_funcs f) noexcept(false)
         case tfa_pwd: return "tfa_pwd";
         case tfa_otp: return "tfa_otp";
         case sess_info: return "sess_info";
+        case sess_end: return "sess_end";
         default: throw std::runtime_error("wrong_type");
     }
 }
@@ -31,6 +33,7 @@ std::istream& operator>> (std::istream &is, rpc_funcs &func) noexcept(false)
     if      (tk == rpc_funcs_to_str(tfa_pwd))   func = tfa_pwd;
     else if ( tk == rpc_funcs_to_str(tfa_otp))  func = tfa_otp;
     else if (tk == rpc_funcs_to_str(sess_info)) func = sess_info;
+    else if (tk == rpc_funcs_to_str(sess_end)) func = sess_end;
     else    throw po::validation_error(po::validation_error::invalid_option_value);
     return is;
 };
@@ -71,6 +74,10 @@ int main(int argc, char * argv[]) {
 
     case sess_info:
         rsp = client.sess_info(adu);
+        break;
+
+    case sess_end:
+        rsp = client.sess_end(adu);
         break;
     }
 

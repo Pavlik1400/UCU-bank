@@ -33,4 +33,12 @@ Client::sess_info(const AuthDU & tk_n_info)
     );
 }
 
+std::pair<auth::status, AuthDU>
+Client::sess_end(const AuthDU & tk_n_info)
+{
+    return ver_connection(
+        [&, this] () {return client->call("sess_end", tk_n_info).as<std::pair<auth::status, AuthDU>>();}
+    );
+}
+
 } //auth

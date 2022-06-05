@@ -64,6 +64,7 @@ public:
     std::pair<auth::status, AuthDU> tfa_req_otp(const AuthDU & id_n_pwd);
     std::pair<auth::status, AuthDU> tfa_ver_otp(const AuthDU & id_n_otp);
     std::pair<auth::status, AuthDU> sess_info(const AuthDU & tk_n_info);
+    std::pair<auth::status, AuthDU> sess_end(const AuthDU &tk_);
 
 private:
     void register_methods();
@@ -88,6 +89,7 @@ private:
         if (!value_size<T>()) return {};
         auto val{redis_client.get(token_type_to_str(T) + key)};
         if (!val) return {};
+        redis_client.expire(token_type_to_str(T) + key, value_ttl<T>());
         std::vector<std::string> v;
         std::array<std::string, value_size<T>()> a;
         boost::split(v, *val, [](char c){return c == sep;});

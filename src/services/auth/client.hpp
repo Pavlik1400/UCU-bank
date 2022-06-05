@@ -22,6 +22,10 @@ public:
     
     std::pair<auth::status, AuthDU>
     sess_info(const AuthDU & tk_n_info);
+
+
+    std::pair<auth::status, AuthDU>
+    sess_end(const AuthDU & tk_n_info);
 };
 
 } //auth

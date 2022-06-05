@@ -157,12 +157,21 @@ namespace auth {
         return {status::OK, {uid, upriv}};
     }
 
+    std::pair<auth::status, AuthDU>
+    Service::sess_end(const AuthDU &tk_) {
+        CUSTOM_LOG(lg, info) << LOG_FUNC(Service::sess_end, tk_);
+        auto &[tk, _]{tk_};
+        hash_del<token_type::UserInfo>(tk);
+        return {status::OK, {}};
+    }
+
 
     void Service::register_methods() {
         CUSTOM_LOG(lg, info) << LOG_FUNC(Service::register_methods);
         rpc_server.bind("tfa_pwd", [&](const AuthDU &id_n_pwd) { return tfa_req_otp(id_n_pwd); });
         rpc_server.bind("tfa_otp", [&](const AuthDU &id_n_otp) { return tfa_ver_otp(id_n_otp); });
         rpc_server.bind("sess_info", [&](const AuthDU &tk_n_info) { return sess_info(tk_n_info); });
+        rpc_server.bind("sess_end", [&](const AuthDU &tk_n_info) { return sess_end(tk_n_info); });
     }
 
     void Service::finish() {
