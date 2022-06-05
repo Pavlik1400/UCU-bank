@@ -8,6 +8,7 @@
 #include "ucubank_api/v2/account/account.hpp"
 #include "ucubank_api/v2/transaction/transaction.hpp"
 #include "ucubank_api/v2/transaction_stats/transaction_stats.hpp"
+#include "ucubank_api/v2/credit/credit.hpp"
 
 namespace api = ucubank_api::v1;
 namespace api2 = ucubank_api::v2;
@@ -27,6 +28,7 @@ int main() {
     auto AccpountAPIPtr_v2 = std::make_shared<api2::Account>(cnf);
     auto TransactionAPIPtr_v2 = std::make_shared<api2::Transaction>(cnf);
     auto TransactionStatsAPiPtr_v2 = std::make_shared<api2::TransactionStats>(cnf);
+    auto CreditAPIPtr_v2 = std::make_shared<api2::Credit>(cnf);
 
     drg::app().loadConfigFile("./configs/gateway/gateway_config.json");
     drg::app().registerController(AccountAPIPtr);
@@ -36,6 +38,8 @@ int main() {
     drg::app().registerController(AccpountAPIPtr_v2);
     drg::app().registerController(TransactionAPIPtr_v2);
     drg::app().registerController(TransactionStatsAPiPtr_v2);
+    drg::app().registerController(CreditAPIPtr_v2);
+
 
     // CORS
     drg::app().registerPostHandlingAdvice(
