@@ -47,6 +47,7 @@ namespace transaction {
         GASOLINE,
         ENTERTAINMENT,
         CARD_TRANSFER,
+        CREDIT_TRANSACTION,
         Count,
     };
 

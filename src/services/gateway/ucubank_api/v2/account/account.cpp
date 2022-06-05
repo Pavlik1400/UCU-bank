@@ -1,6 +1,7 @@
 #include "account.hpp"
 #include "basic/MessageSerializer.hpp"
 #include "ucubank_api/helpers.hpp"
+#include "ucubank_api/v2/user/user.hpp"
 
 
 namespace ucubank_api::v2 {
@@ -53,6 +54,16 @@ namespace ucubank_api::v2 {
         resp_json["accounts"] = Json::Value{Json::arrayValue};
         for (auto const &acc: accs)
             resp_json["accounts"].append(serialize_account_t(acc));
+        return resp_json;
+    }
+
+    jsonv Account::user_info_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
+        auto acc_number = req_json["account_number"].as<str>();
+
+//        auto [status, user_info] = account_client.get_user_info(acc_number, privilege);
+//        if (status != account::OK)
+//            return fail(account::status_to_str(status), resp_json);
+//        resp_json["info"] = serialized_user_t(user_info);
         return resp_json;
     }
 

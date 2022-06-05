@@ -24,6 +24,7 @@ namespace ucubank_api::v2 {
             METHOD_ADD(Account::info, "/info/", drg::Post, drg::Options);
             METHOD_ADD(Account::remove, "/remove/", drg::Delete, drg::Options);
             METHOD_ADD(Account::get_accs, "/get_accounts/", drg::Post, drg::Options);
+            METHOD_ADD(Account::user_info, "/user_info/", drg::Post, drg::Options);
         METHOD_LIST_END
 
         ADD_ROUTE_HANDLER_AUTH(create, LIST("user_id", "account_type"),
@@ -34,6 +35,9 @@ namespace ucubank_api::v2 {
         ADD_ROUTE_HANDLER_AUTH(remove, LIST("account_number"), "POST /ucubank_api/v2/account/remove/")
 
         ADD_ROUTE_HANDLER_AUTH(get_accs, LIST("user_id"), "POST /ucubank_api/v2/account/get_accounts/")
+
+        ADD_ROUTE_HANDLER_AUTH(user_info, LIST("account_number"), "POST /ucubank_api/v2/account/user_info/")
+
     };
 } // namespace api::v1
 
