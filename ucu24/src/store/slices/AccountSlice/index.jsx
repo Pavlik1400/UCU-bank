@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 import fetchWithTimeout from '../fetcher'
+import { BASIC_ROOT } from '../../../constants';
 
 
 export const createAccount = createAsyncThunk('account/createAccount', async (auth_data) => {
@@ -9,7 +10,7 @@ export const createAccount = createAsyncThunk('account/createAccount', async (au
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(auth_data)
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/account/create/', requestOptions)
+    const response = await fetchWithTimeout(BASIC_ROOT + '/account/create/', requestOptions)
     return response
 })
 
@@ -19,7 +20,7 @@ export const getAccountInfo = createAsyncThunk('account/getAccountInfo', async (
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(auth_data)
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/account/info/', requestOptions)
+    const response = await fetchWithTimeout(BASIC_ROOT + '/account/info/', requestOptions)
     return response
 })
 
@@ -29,7 +30,7 @@ export const getUserAccounts = createAsyncThunk('account/getUserAccounts', async
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(auth_data),
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/account/get_accounts/', requestOptions)
+    const response = await fetchWithTimeout(BASIC_ROOT + '/account/get_accounts/', requestOptions)
     return response
 })
 

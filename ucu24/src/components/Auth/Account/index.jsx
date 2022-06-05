@@ -2,15 +2,21 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableRow from '@mui/material/TableRow';
+import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import { useDispatch, useSelector } from 'react-redux'
 import { exit, getUserData } from '../../../store/slices/AuthSlice'
-import { Paper, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Container, Typography } from '@mui/material';
+import { Logout } from '../../../store/slices/AllOtherAPI';
+
+
+const adaptAny = (smthg) => {return smthg}
+const adaptDate = (str_date) => {
+    if (str_date) return str_date.split("T")[0]
+    return str_date
+}
 
 
 const Account = ({ openAccountFunc }) => {
@@ -39,43 +45,40 @@ const Account = ({ openAccountFunc }) => {
         }
     }, [logined, phone_num, dispatch, sessionToken]);
 
+
+    const aceptedKeys = {
+        "Name": ["name", adaptAny], 
+        "Birthday": ["date_of_birth", adaptDate],
+        "Email": ["email", adaptAny],
+        "Gender": ["gender", adaptAny],
+        "Phone": ["phone_num", adaptAny], 
+    };
+
     return (
       <Dialog open={open} onClose={handleClose}>
-        
-        <Box>
-        <Box sx={{
-            backgroundColor: 'primary.main'
-        }}>
-            <Typography variant="h4">
-                Account
-            </Typography>
-        </Box>
-
-        <Box>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableBody>
-                    {
-                        Object.keys(account_data).map((key, index) => ( 
-                        <TableRow
-                            key={index}
-                        >
-                        <TableCell component="th" scope="row">
-                            {key}
-                        </TableCell>
-                        <TableCell align="left">{account_data[key]}</TableCell>
-                        </TableRow>
-                        ))
-                    }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
-        </Box>
+        <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '300px' }}>
+            <CardHeader avatar={<Avatar src="/broken-image.jpg" sx={{ marginRight: 0 }} />}/>
+            <Typography variant="h6">User Profile</Typography>
+            <CardContent sx={{ minWidth: '280px' }}>
+                {
+                    Object.keys(aceptedKeys).map((key, index) => (
+                        <Container key={index} sx={{ display: 'flex', alignItems: 'center', justifyContent: "space-between" }}>
+                            <Typography variant="body1">
+                                {key}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {aceptedKeys[key][1](account_data[aceptedKeys[key][0]])}
+                            </Typography>
+                        </Container>
+                    ))
+                }
+            </CardContent>
+        </Card>
 
         <DialogActions>
           <Button onClick={() => {
               dispatch(exit());
+              Logout(sessionToken);
               handleClose();
           }}>Exit</Button>
         </DialogActions>

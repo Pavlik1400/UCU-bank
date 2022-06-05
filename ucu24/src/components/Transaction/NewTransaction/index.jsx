@@ -13,8 +13,9 @@ import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useDispatch, useSelector } from 'react-redux'
-import { getTransactions, createTransaction, clearStatus } from '../../../store/slices/TransactionSlice'
+import { getTransactions, clearStatus } from '../../../store/slices/TransactionSlice'
 import { Container } from '@mui/material';
+import NewTransactionConfirm from '../NewTransactionConfirm';
     
 
 const NewTransaction = ({ openTransactionFunc }) => {
@@ -69,6 +70,8 @@ const NewTransaction = ({ openTransactionFunc }) => {
     const handleFromAccountChange = (event) => {
         setFromAccount(event.target.value);
     };
+
+    const openNewTransactionConfirmFunc = React.useRef(null)
 
     return (
       <Dialog open={open} onClose={handleClose}>
@@ -136,7 +139,7 @@ const NewTransaction = ({ openTransactionFunc }) => {
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={() => {
-              dispatch(createTransaction({
+              openNewTransactionConfirmFunc.current({
                 "user_id": uid,
                 "from_acc_number": fromAccount,
                 "to_acc_number": toRef.current.value,
@@ -144,10 +147,10 @@ const NewTransaction = ({ openTransactionFunc }) => {
                 "amount": parseInt(amountRef.current.value),
                 "category": 9,
                 "token": sessionToken
-              }));
-              handleSetOperationStarted()
+              });
           }}>Transfer</Button>
         </DialogActions>
+        <NewTransactionConfirm openNewTransactionConfirmFunc={openNewTransactionConfirmFunc} closeParent={handleSetOperationStarted} />
         </Container>}
       </Dialog>
     );

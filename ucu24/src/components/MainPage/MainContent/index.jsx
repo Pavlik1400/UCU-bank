@@ -64,17 +64,17 @@ const MainContent = () => {
             mx: "7rem",
             height: "100vh",
         }}>
-        <Grid container spacing={20}>
+        <Grid container spacing={10}>
             <Grid item xs={2}></Grid>
             <Grid item xs>
                 <Paper sx={{ width: '100%', }}>
                     <Box sx={{ mt: 1, mx: 2 }} alignItems="center">
                         <Grid container >
                         <Grid item xs={2} sx={{ mt: 1 }}>
-                            <AccountBalanceWalletIcon sx={{ fontSize: 34, mt: 0.5 }} />
+                            <AccountBalanceWalletIcon sx={{ fontSize: 24, mt: 0.5 }} />
                         </Grid>
                         <Grid item xs sx={{ mt: 1 }}>
-                            <Typography variant="h4">
+                            <Typography variant="h5">
                                 Accounts
                             </Typography>
                         </Grid>
@@ -85,31 +85,23 @@ const MainContent = () => {
                             return (
                                 <Box sx={{ mt: 2.5, pb: 2.5 }} key={idx}>
                                     <Card sx={{ padding: "1rem" }}>
-                                    <CardActionArea>
-                                        <Grid container>
-                                        <Grid item xs={2}></Grid>
-                                        <Grid item xs>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                    <CardActionArea sx={{ display: 'flex', justifyContent: "space-around"  }}>
+                                        <Box sx={{ display: 'flex' }}>
                                             <CardContent sx={{ flex: '1 0 auto' }}>
-                                                <Typography component="div" variant="h5">
+                                                <Typography component="div" variant="h6">
                                                     *{value["number"].substring(12, 16)}
                                                 </Typography>
-                                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                                <Typography variant="subtitle2" color="text.secondary" component="div">
                                                 {value["balance"]}$
                                                 </Typography>
                                             </CardContent>
                                         </Box>
-                                        </Grid>
-
-                                        <Grid item xs={4}>
                                         <CardMedia
                                             component="img"
-                                            sx={{ width: 100 }}
+                                            sx={{ width: 60 }}
                                             image="https://d1nhio0ox7pgb.cloudfront.net/_img/g_collection_png/standard/512x512/credit_card.png"
                                             alt="credit_card"
                                         />
-                                        </Grid>
-                                        </Grid>
                                     </CardActionArea>
                                     </Card>
                                 </Box>
@@ -123,10 +115,10 @@ const MainContent = () => {
                     <Box sx={{ mt: 1, mx: 2 }} alignItems="center">
                         <Grid container >
                         <Grid item xs={2} sx={{ mt: 1 }}>
-                            <MoveDownIcon sx={{ fontSize: 34, mt: 0.5 }} />
+                            <MoveDownIcon sx={{ fontSize: 24, mt: 0.5 }} />
                         </Grid>
                         <Grid item xs sx={{ mt: 1 }}>
-                            <Typography variant="h4">
+                            <Typography variant="h5">
                                 Last Transactions
                             </Typography>
                         </Grid>
@@ -138,44 +130,34 @@ const MainContent = () => {
                             <Box key={idx}>
                             <Divider variant="middle" />
                             <Card>
-                            <CardActionArea>
-                                <Grid container>
-                                <Grid item xs={2}></Grid>
-                                <Grid item xs={2}>
+                            <CardActionArea sx={{ display: 'flex', justifyContent: "space-around"  }}>
                                 <CardMedia
                                     component="img"
-                                    sx={{ width: 60, pt: 3 }}
+                                    sx={{ width: 60 }}
                                     image="https://icons-for-free.com/download-icon-money+payment+successful+purchase+successful+transaction+transaction-1320166001861616386_512.png"
                                     alt="credit_card"
-
                                 />
-                                </Grid>
-                                <Grid item xs={1}></Grid>
-                                <Grid item xs>
                                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                    <CardContent sx={{ flex: '1 0 auto' }}>
-                                        <Typography component="div" variant="h5">
+                                    <CardContent>
+                                        <Typography component="div" variant="h6">
                                             {value["amount"]}$
                                         </Typography>
-                                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                                        <Typography variant="subtitle2" color="text.secondary" component="div">
                                         From: *{value["from_acc_number"].substring(12,16)}
                                         </Typography>
-                                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                                        <Typography variant="subtitle2" color="text.secondary" component="div">
                                         To: *{value["to_acc_number"].substring(12,16)}
                                         </Typography>
                                     </CardContent>
                                 </Box>
-                                </Grid>
-                                <Grid item xs>
                                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                    <CardContent sx={{ flex: '1 0 auto' }}>
-                                        <Typography variant="subtitle1" color="text.secondary" component="div">
-                                        {value["date"]}
+                                        <Typography variant="subtitle2" color="text.secondary" component="div">
+                                        {value["date"].split(' ')[0]}
                                         </Typography>
-                                    </CardContent>
+                                        <Typography variant="subtitle2" color="text.secondary" component="div">
+                                        {value["date"].split(' ')[1]}
+                                        </Typography>
                                 </Box>
-                                </Grid>
-                                </Grid>
                             </CardActionArea>
                             </Card>
                         </Box>

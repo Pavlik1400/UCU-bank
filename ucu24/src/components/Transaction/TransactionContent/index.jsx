@@ -19,6 +19,21 @@ import NewTransaction from '../NewTransaction'
 const adaptAny = (smthg) => {return smthg}
 const adaptAmount = (balance) => {return balance + "$"}
 
+const categories = [
+    "CAFE_AND_RESTAURANTS",
+    "SALARY",
+    "TECH_EQUIPMENT",
+    "HOUSEHOLD_EQUIPMENT",
+    "OTHER_INCOME",
+    "ATM",
+    "PRODUCTS",
+    "GASOLINE",
+    "ENTERTAINMENT",
+    "CARD_TRANSFER",
+    "CREDIT_TRANSACTION",
+]
+const adaptCategory = (category) => {return categories[category] }
+
 
 const Transaction = () => {
     const dispatch = useDispatch()
@@ -52,7 +67,7 @@ const Transaction = () => {
         "From": ["from_acc_number", adaptAny], 
         "To": ["to_acc_number", adaptAny],
         "Amount": ["amount", adaptAmount],
-        "Category": ["category", adaptAny],
+        "Category": ["category", adaptCategory],
         "Date": ["date", adaptAny], 
         "Description": ["description", adaptAny], 
     };
@@ -66,6 +81,7 @@ const Transaction = () => {
                 && t.category === value.category && t.date === value.date && t.description === value.description
             ))
         )
+        tmp.reverse()
         setFilteredTransactions(tmp)
     }, [last_transactions]);
 

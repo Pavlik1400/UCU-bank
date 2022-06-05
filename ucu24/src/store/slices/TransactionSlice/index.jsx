@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 import fetchWithTimeout from '../fetcher'
+import { BASIC_ROOT } from '../../../constants';
+
 
 export const createTransaction = createAsyncThunk('transaction/createTransaction', async (auth_data) => {
     const requestOptions = {
@@ -8,12 +10,12 @@ export const createTransaction = createAsyncThunk('transaction/createTransaction
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(auth_data)
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/transaction/create/', requestOptions)
+    const response = await fetchWithTimeout(BASIC_ROOT + '/transaction/create/', requestOptions)
     return response
 })
 
 export const getTransactions = createAsyncThunk('transaction/getTransactions', async (auth_data) => {
-    var results = await Promise.all(auth_data["account_numbers"].map(async (value) => await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/transaction/get/', {
+    var results = await Promise.all(auth_data["account_numbers"].map(async (value) => await fetchWithTimeout(BASIC_ROOT + '/transaction/get/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({...auth_data, account_number: value}),

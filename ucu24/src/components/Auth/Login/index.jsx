@@ -23,6 +23,7 @@ const Login = ({ openLoginFunc }) => {
     };
   
     const handleClose = () => {
+      setCaptchLoadReady(false);
       setOpen(false);
     };
 
@@ -39,6 +40,9 @@ const Login = ({ openLoginFunc }) => {
     const [captcha_load_ready, setCaptchLoadReady] = React.useState(false);
     const onVerify = e => {
       setVerified(true);
+    };
+    const onExpire = e => {
+      setVerified(false);
     };
     const onCaptchaLoad = e => {
       setCaptchLoadReady(true);
@@ -78,6 +82,7 @@ const Login = ({ openLoginFunc }) => {
             <Reaptcha
               sitekey="6LeUjv0fAAAAACGN58Lz8uHrDBrgqBfdVDuMESR0"
               onVerify={onVerify}
+              onExpire={onExpire}
               explicit
               ref={e => {setCaptchaInst(e)}}
               onLoad={onCaptchaLoad}
