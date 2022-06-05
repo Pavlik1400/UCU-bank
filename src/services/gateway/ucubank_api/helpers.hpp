@@ -46,6 +46,7 @@ callback(drg::HttpResponse::newHttpJsonResponse(resp_json));\
 
 #define DEBUG_TRY
 #define DEBUG_CATCH
+#define DEBUG_CATCH_(resp_json)
 #define IFDEBUG(code)
 
 #endif //DEBUG

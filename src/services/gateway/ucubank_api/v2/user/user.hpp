@@ -34,7 +34,7 @@ namespace ucubank_api::v2 {
 
         ADD_ROUTE_HANDLER(login2, LIST("one_time_passwd", "otp_key"), "POST ucubank_api/v2/usernew/login2/")
 
-        ADD_ROUTE_HANDLER_AUTH(
+        ADD_ROUTE_HANDLER(
                 reg,
                 LIST("type", "name", "password", "date_of_birth", "phoneNo", "email", "address", "gender"),
                 "POST ucubank_api/v2/usernew/register/")

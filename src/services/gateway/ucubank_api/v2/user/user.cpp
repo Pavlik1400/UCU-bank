@@ -36,7 +36,7 @@ namespace ucubank_api::v2 {
         return resp_json;
     }
 
-    jsonv User::reg_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
+    jsonv User::reg_h(const jsonv &req_json, jsonv &resp_json) {
         auto user = deserialize_user_t(req_json);
         if (user.type != user::privilege::REGULAR) {
             if (req_json[user::super_secret::KEY].empty())
