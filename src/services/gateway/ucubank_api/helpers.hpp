@@ -29,7 +29,7 @@ callback(drg::HttpResponse::newHttpJsonResponse(resp_json));\
 }
 
 
-#define DEBUG_CATCH_(resp_json) } catch (const std::exception &exc) {\
+#define DEBUG_CATCH_RESP(resp_json) } catch (const std::exception &exc) {\
 std::cerr << "Caught exception: " << exc.what() << std::endl;\
 resp_json["status"] = 500;\
 resp_json["message"] = std::string("Caught exception: ") + exc.what();\

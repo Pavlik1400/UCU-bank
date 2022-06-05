@@ -51,15 +51,14 @@ Response if user is not a owner of an account:
 
 ```json
 {
-    "info": {
-        "active": true,
-        "balance": 0.0,
-        "number": "6744440301848953"
-    },
-    "status": 200
+  "info": {
+    "active": true,
+    "balance": 0.0,
+    "number": "6744440301848953"
+  },
+  "status": 200
 }
 ```
-
 
 - `DELETE http://localhost:2020/ucubank_api/v2/account/remove/`
 
@@ -70,7 +69,7 @@ Response if user is not a owner of an account:
 }
 ```
 
-  if number exists, response, and user is SUPER:
+if number exists, response, and user is SUPER:
 
 ```json
 {
@@ -87,7 +86,7 @@ Response if user is not a owner of an account:
 }
 ```
 
-Response if user is an owner of the account: 
+Response if user is an owner of the account:
 
 ```json
 {
@@ -117,16 +116,17 @@ Response if user is not an owner of an account:
 
 ```json
 {
-    "accounts": [
-        {
-            "active": true,
-            "balance": 0.0,
-            "number": "6744440301848953"
-        }
-    ],
-    "status": 200
+  "accounts": [
+    {
+      "active": true,
+      "balance": 0.0,
+      "number": "6744440301848953"
+    }
+  ],
+  "status": 200
 }
 ```
+
 ## User API
 
 - `POST http://localhost:2020/ucubank_api/v2/user/info/`
@@ -161,12 +161,12 @@ Response if user is asking info about other user:
 
 ```json
 {
-    "info": {
-        "email": "pasha@gmail.com",
-        "name": "pasha",
-        "type": "super"
-    },
-    "status": 200
+  "info": {
+    "email": "pasha@gmail.com",
+    "name": "pasha",
+    "type": "super"
+  },
+  "status": 200
 }
 ```
 
@@ -182,6 +182,7 @@ Response if user is asking info about other user:
 Response:
 
 **NOTE**: one_time_passwd should come to email, only in a mock mode it is returned
+
 ```json
 {
   "one_time_passwd": "820de4fd-55c9-4dc9-a54b-1234c9b98d99",
@@ -235,19 +236,20 @@ Response:
 - `DELETE http://localhost:2020/ucubank_api/v2/user/remove/`
 
 *Only super can remove users*
+
 ```json
 {
-    "phone_num": "+381235431256",
-    "password": "123",
-    "token": "123"
+  "phone_num": "+381235431256",
+  "password": "123",
+  "token": "123"
 }
 ```
 
-Response: 
+Response:
 
 ```json
 {
-    "status": 200
+  "status": 200
 }
 ```
 
@@ -266,8 +268,6 @@ Reponse:
   "status": 200
 }
 ```
-
-
 
 ## Transaction API
 
@@ -294,7 +294,7 @@ Reponse:
 ```
 
 - `POST http://localhost:2020/ucubank_api/v2/transaction/get/`
-  
+
 **Required only 'account_number' and 'limit'**
 
 ```json
@@ -337,11 +337,91 @@ Reponse
 }
 ```
 
+## Credit API
+
+- `POST http://localhost:2020/ucubank_api/v2/credit/create/`
+
+```json
+{
+  "token": "b1c4808e-a564-4550-84b1-0c9a23b1ec23",
+  "card_number": "0588093921849362",
+  "type": 0,
+  "amount": 100
+}
+```
+
+Reponse:
+
+```json
+{
+  "status": 200
+}
+```
+
+- `POST http://localhost:2020/ucubank_api/v2/credit/get/`
+
+User_id is optional. If not provided, searches for credits of owner of token
+```json
+{
+    "token": "b1c4808e-a564-4550-84b1-0c9a23b1ec23",
+    "user_id": "629d11320d0a4e3fb90ad614"
+}
+```
+
+Response
+
+```json
+{
+    "credits": [
+        {
+            "active": false,
+            "card_number": "0588093921849362",
+            "current_balance": -1.4210854715202004e-14,
+            "id": "0639072192653570",
+            "opening_date": "05-06-2022 23-48-04",
+            "original_balance": 100.0,
+            "percent": 7.2000000000000002,
+            "period": 3,
+            "user_id": "629902cebe1eb222c26ef0c2"
+        },
+        {
+            "active": false,
+            "card_number": "0588093921849362",
+            "current_balance": -1.4210854715202004e-14,
+            "id": "2957320297816265",
+            "opening_date": "05-06-2022 23-49-32",
+            "original_balance": 100.0,
+            "percent": 7.2000000000000002,
+            "period": 3,
+            "user_id": "629902cebe1eb222c26ef0c2"
+        }
+    ],
+    "status": 200
+}
+```
+
+- `POST http://localhost:2020/ucubank_api/v2/credit/finish/`
+
+```json
+{
+    "token": "b1c4808e-a564-4550-84b1-0c9a23b1ec23",
+    "id": "8749139216379828"
+}
+```
+
+Response
+
+```json
+{
+    "status": 200
+}
+```
+
 ## TransactionStats API
 
-- `POST http://localhost:2020/ucubank_api/v1/transaction/create/`
+- `POST http://localhost:2020/ucubank_api/v2/transactionstats/create/`
 
 refere to Transaction API /create. The same but token is not required
 
-- `POST http://localhost:2020/ucubank_api/v2/transaction/get/`
+- `POST http://localhost:2020/ucubank_api/v2/transactionstats/get/`
   refere to Transaction API /get. The same but token is not required

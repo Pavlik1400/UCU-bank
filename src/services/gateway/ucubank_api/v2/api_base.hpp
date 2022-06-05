@@ -62,7 +62,7 @@ namespace ucubank_api::v2 {
                 else pj.resp_json = std::invoke(inner_handler, pj.req_json);
 
                 callback(drg::HttpResponse::newHttpJsonResponse(pj.resp_json));
-            DEBUG_CATCH_(pj.resp_json);
+            DEBUG_CATCH_RESP(pj.resp_json);
         }
     };
 }

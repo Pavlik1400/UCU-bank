@@ -16,6 +16,8 @@ set(HEADERS
         ${API_V2_ROUTE}/user/user.hpp
         ${API_V2_ROUTE}/account/account.hpp
         ${API_V2_ROUTE}/transaction/transaction.hpp
+        ${API_V2_ROUTE}/transaction_stats/transaction_stats.hpp
+        ${API_V2_ROUTE}/credit/credit.hpp
 
         ucubank_api/api_utils.hpp
         ../basic/MessageSerializer.hpp
@@ -23,7 +25,6 @@ set(HEADERS
 
         ucubank_api/v2/api_base.hpp
         ucubank_api/helpers.hpp
-        ucubank_api/v2/transaction_stats/transaction_stats.hpp
         )
 set(SOURCES
         ${API_V1_ROUTE}/user/user.cpp
@@ -32,14 +33,14 @@ set(SOURCES
         ${API_V2_ROUTE}/user/user.cpp
         ${API_V2_ROUTE}/account/account.cpp
         ${API_V2_ROUTE}/transaction/transaction.cpp
+        ${API_V2_ROUTE}/transaction_stats/transaction_stats.cpp
+        ${API_V2_ROUTE}/credit/credit.cpp
 
         ucubank_api/api_utils.cpp
         ../basic/MessageSerializer.cpp
         ../service_tools/utils.cpp
 
         ucubank_api/v2/api_base.cpp
-
-        ucubank_api/v2/transaction_stats/transaction_stats.cpp
         )
 
 add_executable(${GATEWAY} main.cpp ${SOURCES} ${HEADERS}
@@ -51,6 +52,7 @@ target_link_libraries(${GATEWAY} PRIVATE
         ${USER}.client 
         ${TRANSACTION}.client 
         ${AUTH}.client
+        ${CREDIT}.client
         ${TOOLS}
         rpclib::rpc
         serdepp::serdepp
