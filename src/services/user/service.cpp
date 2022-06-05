@@ -48,7 +48,7 @@ namespace user {
         }
 
         if (users.find_one(session,
-                           document{} << user::NAME << user.name << user::PHONE_NO << user.phoneNo << finalize)) {
+                           document{} << user::PHONE_NO << user.phoneNo << finalize)) {
             return user::USER_EXISTS;
         }
 
