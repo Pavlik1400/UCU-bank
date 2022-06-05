@@ -8,17 +8,16 @@ export const createTransaction = createAsyncThunk('transaction/createTransaction
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(auth_data)
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/transaction/create/', requestOptions)
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/transaction/create/', requestOptions)
     return response
 })
 
 export const getTransactions = createAsyncThunk('transaction/getTransactions', async (auth_data) => {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(auth_data),
-    };
-    var results = await Promise.all(auth_data["account_numbers"].map(async (value) => await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/transaction/get/' + value, requestOptions)));
+    var results = await Promise.all(auth_data["account_numbers"].map(async (value) => await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/transaction/get/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({...auth_data, account_number: value}),
+      })));
     let i = 0;
     var obj = results.reduce(function(o, val) { o[auth_data["account_numbers"][i]] = val["transactions"]; i = i + 1; return o; }, {});
     i = 0;

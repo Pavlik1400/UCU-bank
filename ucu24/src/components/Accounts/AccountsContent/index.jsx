@@ -24,16 +24,18 @@ const adaptAny = (smthg) => {return smthg}
 const AccountContent = () => {
     const dispatch = useDispatch()
     const logined = useSelector((state) => state.auth.logined)
+    const sessionToken = useSelector((state) => state.auth.sessionToken)
     const uid = useSelector((state) => state.auth.uid)
     const accounts = useSelector((state) => state.account.accounts)
 
     React.useEffect(() => {
         if (logined) {
             dispatch(getUserAccounts({
-                user_id: uid
+                user_id: uid,
+                token: sessionToken,
             }))
         }
-    }, [dispatch, logined, uid]);
+    }, [dispatch, logined, uid, sessionToken]);
 
     const openCreateAccountFunc = React.useRef(null)
 

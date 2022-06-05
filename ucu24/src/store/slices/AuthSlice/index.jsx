@@ -5,10 +5,10 @@ import fetchWithTimeout from '../fetcher'
 export const login1 = createAsyncThunk('auth/login1', async (auth_data) => {
   const requestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
     body: JSON.stringify(auth_data)
   };
-  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/user/login1/', requestOptions)
+  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/user/login1/', requestOptions)
   return response
 })
 
@@ -19,7 +19,7 @@ export const login2 = createAsyncThunk('auth/login2', async (auth_data) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(auth_data)
   };
-  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/user/login2/', requestOptions)
+  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/user/login2/', requestOptions)
   return response
 })
 
@@ -30,7 +30,7 @@ export const register = createAsyncThunk('auth/register', async (account_details
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(account_details)
   };
-  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/user/register/', requestOptions)
+  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/user/register/', requestOptions)
   return response
 })
 
@@ -41,7 +41,7 @@ export const getUserData = createAsyncThunk('auth/getUserData', async (user_data
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user_data)
   };
-  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/user/info/', requestOptions)
+  const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/user/info/', requestOptions)
   return response
 })
 

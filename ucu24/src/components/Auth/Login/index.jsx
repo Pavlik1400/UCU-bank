@@ -93,7 +93,7 @@ const Login = ({ openLoginFunc }) => {
                 }))
                 dispatch(login1({
                   phone_num: phoneRef.current.value, 
-                  hashed_password: passwordRef.current.value
+                  password: passwordRef.current.value
                 }));
                 openDuoFactorFunc.current();
               } else {

@@ -20,25 +20,28 @@ const MainContent = () => {
     const dispatch = useDispatch()
     const logined = useSelector((state) => state.auth.logined)
     const uid = useSelector((state) => state.auth.uid)
+    const sessionToken = useSelector((state) => state.auth.sessionToken)
     const last_transactions = useSelector((state) => state.transaction.last_transactions)
     const accounts = useSelector((state) => state.account.accounts)
 
     React.useEffect(() => {
         if (logined) {
             dispatch(getUserAccounts({
-                user_id: uid
+                user_id: uid,
+                token: sessionToken
             }))
         }
-    }, [dispatch, logined, uid]);
+    }, [dispatch, logined, uid, sessionToken]);
 
     React.useEffect(() => {
         if (logined) {
             dispatch(getTransactions({
                 account_numbers: accounts.map((account) => account["number"]),
                 limit: 100,
+                token: sessionToken
             }))
         }
-    }, [accounts, dispatch, logined]);
+    }, [accounts, dispatch, logined, sessionToken]);
 
     const [filteredTransactions, setFilteredTransactions] = React.useState([]);
     React.useEffect(() => {

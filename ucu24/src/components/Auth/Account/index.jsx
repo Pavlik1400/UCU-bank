@@ -18,6 +18,7 @@ const Account = ({ openAccountFunc }) => {
 
     const account_data = useSelector((state) => state.auth.account)
     const logined = useSelector((state) => state.auth.logined)
+    const sessionToken = useSelector((state) => state.auth.sessionToken)
     const phone_num = useSelector((state) => state.auth.phone_num)
 
     const [open, setOpen] = React.useState(false);
@@ -34,9 +35,9 @@ const Account = ({ openAccountFunc }) => {
 
     React.useEffect(() => {
         if (logined) {
-            dispatch(getUserData({"phone_num": phone_num}))
+            dispatch(getUserData({"phone_num": phone_num, token: sessionToken}))
         }
-    }, [logined, phone_num, dispatch]);
+    }, [logined, phone_num, dispatch, sessionToken]);
 
     return (
       <Dialog open={open} onClose={handleClose}>

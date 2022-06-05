@@ -22,6 +22,7 @@ const CreateAccount = ({openCreateAccountFunc}) => {
     const [open, setOpen] = React.useState(false);
 
     const uid = useSelector((state) => state.auth.uid)
+    const sessionToken = useSelector((state) => state.auth.sessionToken)
     const error = useSelector((state) => state.account.error)
     const status = useSelector((state) => state.account.status)
 
@@ -49,7 +50,8 @@ const CreateAccount = ({openCreateAccountFunc}) => {
     React.useEffect(() => {
       if (status !== "loading" && operationStarted) {
         dispatch(getUserAccounts({
-          user_id: uid
+          user_id: uid,
+          token: sessionToken
         }))
         handleClose()
         clearSetOperationStarted()
@@ -96,7 +98,8 @@ const CreateAccount = ({openCreateAccountFunc}) => {
           <Button onClick={() => {
               dispatch(createAccount({
                 "user_id": uid,
-                "account_type": accountType
+                "account_type": accountType,
+                "token": sessionToken
               }));
               handleSetOperationStarted()
           }}>Create Account</Button>

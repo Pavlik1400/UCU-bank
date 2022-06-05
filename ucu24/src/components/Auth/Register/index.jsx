@@ -146,11 +146,11 @@ const Register = ({ openRegisterFunc, closeParent }) => {
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={() => {
               dispatch(register({
-                "type": "1",
+                "type": "regular",
                 "name": nameRef.current.value,
                 "password": passwordRef.current.value,
                 "date_of_birth": birth,
-                "phoneNo": phoneRef.current.value,
+                "phone_num": phoneRef.current.value,
                 "email": emailRef.current.value,
                 "address": addressRef.current.value,
                 "gender": gender

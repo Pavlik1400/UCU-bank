@@ -9,16 +9,17 @@ export const createAccount = createAsyncThunk('account/createAccount', async (au
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(auth_data)
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/account/create/', requestOptions)
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/account/create/', requestOptions)
     return response
 })
 
 export const getAccountInfo = createAsyncThunk('account/getAccountInfo', async (auth_data) => {
     const requestOptions = {
-        method: 'GET',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(auth_data)
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/account/info/' + auth_data["number"], requestOptions)
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/account/info/', requestOptions)
     return response
 })
 
@@ -26,9 +27,9 @@ export const getUserAccounts = createAsyncThunk('account/getUserAccounts', async
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify(auth_data),
     };
-    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v1/account/get_accounts/' + auth_data["user_id"], requestOptions)
+    const response = await fetchWithTimeout('http://localhost:2020/ucubank_api/v2/account/get_accounts/', requestOptions)
     return response
 })
 

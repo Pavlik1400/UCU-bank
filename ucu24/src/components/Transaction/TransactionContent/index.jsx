@@ -24,6 +24,7 @@ const Transaction = () => {
     const dispatch = useDispatch()
     const accounts = useSelector((state) => state.account.accounts)
     const logined = useSelector((state) => state.auth.logined)
+    const sessionToken = useSelector((state) => state.auth.sessionToken)
     const uid = useSelector((state) => state.auth.uid)
     const last_transactions = useSelector((state) => state.transaction.last_transactions)
     const openTransactionFunc = React.useRef(null)
@@ -31,19 +32,21 @@ const Transaction = () => {
     React.useEffect(() => {
         if (logined) {
             dispatch(getUserAccounts({
-                user_id: uid
+                user_id: uid,
+                token: sessionToken,
             }))
         }
-    }, [dispatch, logined, uid]);
+    }, [dispatch, logined, uid, sessionToken]);
 
     React.useEffect(() => {
         if (logined) {
             dispatch(getTransactions({
                 account_numbers: accounts.map((account) => account["number"]),
                 limit: 100,
+                token: sessionToken,
             }))
         }
-    }, [accounts, dispatch, logined]);
+    }, [accounts, dispatch, logined, sessionToken]);
 
     const aceptedKeys = {
         "From": ["from_acc_number", adaptAny], 

@@ -20,6 +20,7 @@ import { Container } from '@mui/material';
 const NewTransaction = ({ openTransactionFunc }) => {
     const dispatch = useDispatch()
     const uid = useSelector((state) => state.auth.uid)
+    const sessionToken = useSelector((state) => state.auth.sessionToken)
     const accounts = useSelector((state) => state.account.accounts)
     const error = useSelector((state) => state.transaction.error)
     const status = useSelector((state) => state.transaction.status)
@@ -56,6 +57,7 @@ const NewTransaction = ({ openTransactionFunc }) => {
         dispatch(getTransactions({
             account_numbers: accounts.map((account) => account["number"]),
             limit: 100,
+            token: sessionToken,
         }))
         handleClose()
         clearSetOperationStarted()
@@ -140,7 +142,8 @@ const NewTransaction = ({ openTransactionFunc }) => {
                 "to_acc_number": toRef.current.value,
                 "description": descriptionRef.current.value,
                 "amount": parseInt(amountRef.current.value),
-                "category": 9
+                "category": 9,
+                "token": sessionToken
               }));
               handleSetOperationStarted()
           }}>Transfer</Button>
