@@ -20,7 +20,11 @@ set(HEADERS
         ucubank_api/api_utils.hpp
         ../basic/MessageSerializer.hpp
         ../service_tools/utils.hpp
-)
+
+        ucubank_api/v2/api_base.hpp
+        ucubank_api/helpers.hpp
+        ucubank_api/v2/transaction_stats/transaction_stats.hpp
+        )
 set(SOURCES
         ${API_V1_ROUTE}/user/user.cpp
         ${API_V1_ROUTE}/account/account.cpp
@@ -33,13 +37,9 @@ set(SOURCES
         ../basic/MessageSerializer.cpp
         ../service_tools/utils.cpp
 
-        ucubank_api/filter/verify_json_body.cpp
-        ucubank_api/filter/verify_json_body.hpp
-
         ucubank_api/v2/api_base.cpp
-        ucubank_api/v2/api_base.hpp
 
-        ucubank_api/helpers.hpp
+        ucubank_api/v2/transaction_stats/transaction_stats.cpp
         )
 
 add_executable(${GATEWAY} main.cpp ${SOURCES} ${HEADERS}
