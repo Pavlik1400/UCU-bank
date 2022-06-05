@@ -9,7 +9,7 @@
 namespace ucubank_api::v2 {
 
     std::pair<transaction::status, trans_filter> deserialize_trans_filter(
-            const Json::Value &req_json, const std::string &acc_number
+            const Json::Value &req_json, const str &acc_number
     );
 
     jsonv serialize_transaction_t(const transaction_t &tran);
