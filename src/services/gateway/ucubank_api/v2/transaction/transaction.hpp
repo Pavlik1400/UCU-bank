@@ -9,7 +9,7 @@
 namespace ucubank_api::v2 {
 
     std::pair<transaction::status, trans_filter> deserialize_trans_filter(
-            const Json::Value &req_json, const std::string &acc_number
+            const Json::Value &req_json, const str &acc_number
     );
 
     jsonv serialize_transaction_t(const transaction_t &tran);
@@ -34,11 +34,6 @@ namespace ucubank_api::v2 {
                                "POST /ucubank_api/v2/transaction/create/")
 
         ADD_ROUTE_HANDLER_AUTH(get, LIST("account_number", "limit"), "POST /ucubank_api/v2/transaction/get/")
-//        void create(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
-//
-//        void get(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback,
-//                 const std::string &account_number);
-
     };
 }
 

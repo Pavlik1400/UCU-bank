@@ -3,11 +3,11 @@
 namespace ucubank_api::v2 {
     User::User(const nlohmann::json &cnf) :
             APIBase(cnf),
-            user_client(cnf["user"]["rpc_address"].get<std::string>(), cnf["user"]["rpc_port"].get<int>()) {}
+            user_client(cnf["user"]["rpc_address"].get<str>(), cnf["user"]["rpc_port"].get<int>()) {}
 
     jsonv User::login1_h(const jsonv &req_json, jsonv &resp_json) {
-        auto phone_num = req_json["phone_num"].as<std::string>();
-        auto password = req_json["password"].as<std::string>();
+        auto phone_num = req_json["phone_num"].as<str>();
+        auto password = req_json["password"].as<str>();
 
         auto [status, key_secret] = auth_client.tfa_pwd({phone_num, password});
         if (status != auth::OK)
@@ -22,8 +22,8 @@ namespace ucubank_api::v2 {
     }
 
     jsonv User::login2_h(const jsonv &req_json, jsonv &resp_json) {
-        auto otp_key = req_json["otp_key"].as<std::string>();
-        auto otp = req_json["one_time_passwd"].as<std::string>();
+        auto otp_key = req_json["otp_key"].as<str>();
+        auto otp = req_json["one_time_passwd"].as<str>();
 
         auto [status, uid_tk] = auth_client.tfa_otp({otp_key, otp});
         if (status != auth::OK)
@@ -42,7 +42,7 @@ namespace ucubank_api::v2 {
             if (req_json[user::super_secret::KEY].empty())
                 return fail("Not allowed to create any user type expect 'regular'", resp_json, 403);
 
-            if (req_json[user::super_secret::KEY].as<std::string>() != user::super_secret::VALUE)
+            if (req_json[user::super_secret::KEY].as<str>() != user::super_secret::VALUE)
                 return fail("FBI is coming for you...", resp_json, 403);
         }
 
@@ -55,7 +55,7 @@ namespace ucubank_api::v2 {
     }
 
     jsonv User::info_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
-        auto phone_number = req_json["phone_num"].as<std::string>();
+        auto phone_number = req_json["phone_num"].as<str>();
         auto [status, user_info] = user_client.get<user::by::PHONE_NO>(phone_number, privilege);
         if (status != user::OK) {
             if (status == user::GET_FAILED) return fail("db error", resp_json, 500);
@@ -67,7 +67,7 @@ namespace ucubank_api::v2 {
     }
 
     jsonv User::remove_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
-        auto phone_num = req_json["phone_num"].as<std::string>();
+        auto phone_num = req_json["phone_num"].as<str>();
 
         auto remove_status = user_client.remove(phone_num, privilege);
         if (remove_status != user::OK)
@@ -77,10 +77,11 @@ namespace ucubank_api::v2 {
     }
 
     jsonv User::logout_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
-//        auto invalidate_status = auth_client.invalidate(privilege.data);
-//        if (invalidate_status != auth::OK) {
-//            return fail_response(auth::status_to_str(invalidate_status), resp_json);
-//        }
+        auto token = req_json["token"].as<str>();
+        auto [status, _] = auth_client.sess_end({.cred=token});
+        if (status != auth::OK) {
+            return fail(auth::status_to_str(status), resp_json);
+        }
         return resp_json;
     }
 }
@@ -105,14 +106,14 @@ namespace ucubank_api::v2 {
     user_t deserialize_user_t(const Json::Value &json) {
         return {
                 "",
-                json["type"].as<std::string>(),
-                json["name"].as<std::string>(),
-                json["password"].as<std::string>(),
-                json["date_of_birth"].as<std::string>(),
-                json["phone_num"].as<std::string>(),
-                json["email"].as<std::string>(),
-                json["address"].as<std::string>(),
-                json["gender"].as<std::string>(),
+                json["type"].as<str>(),
+                json["name"].as<str>(),
+                json["password"].as<str>(),
+                json["date_of_birth"].as<str>(),
+                json["phone_num"].as<str>(),
+                json["email"].as<str>(),
+                json["address"].as<str>(),
+                json["gender"].as<str>(),
         };
     }
 

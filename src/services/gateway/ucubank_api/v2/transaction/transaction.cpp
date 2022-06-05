@@ -40,17 +40,17 @@ namespace ucubank_api::v2 {
 
 
     std::pair<transaction::status, trans_filter> deserialize_trans_filter(
-            const Json::Value &req_json, const std::string &acc_number
+            const Json::Value &req_json, const str &acc_number
     ) {
         trans_filter filter{
                 acc_number,
                 static_cast<unsigned long long>(req_json["limit"].as<int>()),
         };
-        if (!req_json["from_date"].empty()) filter.from_date = req_json["from_date"].as<std::string>();
-        if (!req_json["to_date"].empty()) filter.to_date = req_json["to_date"].as<std::string>();
+        if (!req_json["from_date"].empty()) filter.from_date = req_json["from_date"].as<str>();
+        if (!req_json["to_date"].empty()) filter.to_date = req_json["to_date"].as<str>();
         if (!req_json["min_amount"].empty()) filter.min_amount = req_json["min_amount"].as<double>();
         if (!req_json["max_amount"].empty()) filter.max_amount = req_json["max_amount"].as<double>();
-        if (!req_json["description"].empty()) filter.description = req_json["description"].as<std::string>();
+        if (!req_json["description"].empty()) filter.description = req_json["description"].as<str>();
         if (!req_json["category"].empty()) {
             auto intcat = req_json["category"].as<int>();
             if (intcat < 0 || intcat > transaction::category::Count) {
@@ -77,10 +77,10 @@ namespace ucubank_api::v2 {
 
     transaction_t deserialize_transaction_t(const Json::Value &json) {
         return {
-                json["user_id"].as<std::string>(),
-                json["from_acc_number"].as<std::string>(),
-                json["to_acc_number"].as<std::string>(),
-                json["description"].as<std::string>(),
+                json["user_id"].as<str>(),
+                json["from_acc_number"].as<str>(),
+                json["to_acc_number"].as<str>(),
+                json["description"].as<str>(),
                 json["amount"].as<double>(),
                 static_cast<transaction::category>(json["category"].as<int>())
         };

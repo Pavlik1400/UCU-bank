@@ -4,7 +4,6 @@
 #include "ucubank_api/api_utils.hpp"
 #include "ucubank_api/v2/api_base.hpp"
 #include "ucubank_api/helpers.hpp"
-#include "ucubank_api/filter/verify_json_body.hpp"
 
 namespace ucubank_api::v2 {
 

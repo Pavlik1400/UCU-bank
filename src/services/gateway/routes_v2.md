@@ -318,3 +318,12 @@ Reponse
   ]
 }
 ```
+
+## TransactionStats API
+
+- `POST http://localhost:2020/ucubank_api/v1/transaction/create/`
+
+refere to Transaction API /create. The same but token is not required
+
+- `POST http://localhost:2020/ucubank_api/v2/transaction/get/`
+  refere to Transaction API /get. The same but token is not required
