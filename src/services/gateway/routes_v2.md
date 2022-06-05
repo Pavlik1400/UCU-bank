@@ -251,6 +251,24 @@ Response:
 }
 ```
 
+- `POST http://localhost:2020/ucubank_api/v2/user/logout/`
+
+```json
+{
+  "token": "123"
+}
+```
+
+Reponse:
+
+```json
+{
+  "status": 200
+}
+```
+
+
+
 ## Transaction API
 
 - `POST http://localhost:2020/ucubank_api/v1/transaction/create/`
