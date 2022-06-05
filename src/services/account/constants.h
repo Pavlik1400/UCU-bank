@@ -20,6 +20,7 @@ namespace account {
         const std::string REMOVE = "remove";
         const std::string GET = "get";
         const std::string GET_ALL = "get_all";
+        const std::string GET_USER = "get_user";
         const std::string TRANSACTION = "transaction";
         const std::string EXISTS = "exists";
 

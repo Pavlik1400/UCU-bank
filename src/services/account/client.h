@@ -5,6 +5,7 @@
 #include "account/constants.h"
 #include "client/client.hpp"
 #include "auth/constants.hpp"
+#include "user/constants.h"
 
 namespace account {
     class Client: public client::BasicClient{
@@ -26,6 +27,8 @@ namespace account {
         account::status create(const std::string &user_id, const std::string &account_type, const auth::AuthDU &ctrl);
 
         std::pair<account::status, account_t> get(const std::string &card, const auth::AuthDU &ctrl);
+
+        std::pair<account::status, user_t> get_user(const std::string &card, const auth::AuthDU &ctrl);
 
         account::status remove(const std::string &card, const auth::AuthDU &ctrl);
 

@@ -10,7 +10,8 @@ namespace account {
     }
 
 
-    account::status Service::create(const std::string &user_id, const std::string &account_type, const auth::AuthDU &ctrl) {
+    account::status
+    Service::create(const std::string &user_id, const std::string &account_type, const auth::AuthDU &ctrl) {
         CUSTOM_LOG(lg, debug) << "Create call";
         if (user_id != ctrl.cred && ctrl.data != user::privilege::SUPER) {
             return account::status::NOT_ENOUGH_PRIVILEGES;
@@ -107,13 +108,15 @@ namespace account {
 
     void Service::register_methods() {
         rpc_server.bind(method::CREATE, [&](const std::string &user_id, const std::string &account_type,
-                const auth::AuthDU &ctrl) {
+                                            const auth::AuthDU &ctrl) {
             return create(user_id, account_type, ctrl);
         });
         rpc_server.bind(method::GET,
                         [&](const std::string &card, const auth::AuthDU &ctrl) { return get(card, ctrl); });
         rpc_server.bind(method::GET_ALL,
                         [&](const std::string &user_id, const auth::AuthDU &ctrl) { return get_all(user_id, ctrl); });
+        rpc_server.bind(method::GET_USER,
+                        [&](const std::string &card, const auth::AuthDU &ctrl) { return get_user(card, ctrl); });
         rpc_server.bind(method::REMOVE,
                         [&](const std::string &card, const auth::AuthDU &ctrl) { return remove(card, ctrl); });
         rpc_server.bind(method::EXISTS, [&](const std::string &card) { return exists(card); });
@@ -189,6 +192,18 @@ namespace account {
             account.cvv = info[account::CVV].get_utf8().value.to_string();
         }
         return account;
+    }
+
+    std::pair<account::status, user_t> Service::get_user(const std::string &card, const auth::AuthDU &ctrl) {
+        const auto &[status, account] = get(card, {.data=user::privilege::SUPER});
+        if (status) {
+            return {status, {}};
+        }
+        const auto &[status1, user] = userClient.get<user::by::ID>(account.user_id, ctrl);
+        if (!status1) {
+            return {account::status::OK, user};
+        }
+        return {account::status::GET_FAILED, user};
     }
 }
 
