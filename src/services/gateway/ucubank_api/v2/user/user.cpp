@@ -67,9 +67,9 @@ namespace ucubank_api::v2 {
     }
 
     jsonv User::remove_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
-        auto phoneNo = req_json["phoneNo"].as<std::string>();
+        auto phone_num = req_json["phone_num"].as<std::string>();
 
-        auto remove_status = user_client.remove(phoneNo, privilege);
+        auto remove_status = user_client.remove(phone_num, privilege);
         if (remove_status != user::OK)
             return fail(user::status_to_str(remove_status), resp_json);
 
@@ -88,10 +88,9 @@ namespace ucubank_api::v2 {
 
 namespace ucubank_api::v2 {
     Json::Value serialized_user_t(const user_t &user_info) {
-        // TODO: find more clever way to serialize
         Json::Value result{};
         if (!user_info.date_of_birth.empty()) result["date_of_birth"] = user_info.date_of_birth;
-        if (!user_info.phoneNo.empty()) result["phoneNo"] = user_info.phoneNo;
+        if (!user_info.phoneNo.empty()) result["phone_num"] = user_info.phoneNo;
         if (!user_info.email.empty()) result["email"] = user_info.email;
         if (!user_info.address.empty()) result["address"] = user_info.address;
         if (!user_info.joining_date.empty()) result["joining_date"] = user_info.joining_date;
@@ -104,14 +103,13 @@ namespace ucubank_api::v2 {
     }
 
     user_t deserialize_user_t(const Json::Value &json) {
-        // TODO: find more clever way to deserealize
         return {
                 "",
                 json["type"].as<std::string>(),
                 json["name"].as<std::string>(),
                 json["password"].as<std::string>(),
                 json["date_of_birth"].as<std::string>(),
-                json["phoneNo"].as<std::string>(),
+                json["phone_num"].as<std::string>(),
                 json["email"].as<std::string>(),
                 json["address"].as<std::string>(),
                 json["gender"].as<std::string>(),

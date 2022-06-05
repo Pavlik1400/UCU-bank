@@ -144,6 +144,13 @@ void ucubank_api::v1::User::logout(const drogon::HttpRequestPtr &req,
 
 }
 
+void ucubank_api::v1::User::return200(const drogon::HttpRequestPtr &req,
+                                      std::function<void(const drg::HttpResponsePtr &)> &&callback) {
+    logger.debug("POST info options");
+    jsonv resp_json{};
+    callback(drg::HttpResponse::newHttpJsonResponse(resp_json));
+}
+
 Json::Value ucubank_api::v1::serialized_user_t(const user_t &user_info) {
     // TODO: find more clever way to serialize
     Json::Value result{};

@@ -29,6 +29,7 @@
             REQUIRED_FIELDS, PATH, req, std::move(callback));                                               \
     }
 
+//#define ADD_
 
 namespace ucubank_api::v2 {
     class APIBase {

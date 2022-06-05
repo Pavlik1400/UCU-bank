@@ -25,8 +25,8 @@ namespace ucubank_api::v2 {
 
     public:
         METHOD_LIST_BEGIN
-            METHOD_ADD(Transaction::create, "/create/", drg::Post);
-            METHOD_ADD(Transaction::get, "/get/{account_number}", drg::Post);
+            METHOD_ADD(Transaction::create, "/create/", drg::Post, drg::Options);
+            METHOD_ADD(Transaction::get, "/get/{account_number}", drg::Post, drg::Options);
         METHOD_LIST_END
 
         ADD_ROUTE_HANDLER_AUTH(create,

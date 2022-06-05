@@ -20,10 +20,10 @@ namespace ucubank_api::v2 {
 
     public:
         METHOD_LIST_BEGIN
-            METHOD_ADD(Account::create, "/create/", drg::Post);
-            METHOD_ADD(Account::info, "/info/", drg::Post);
-            METHOD_ADD(Account::remove, "/remove/", drg::Delete);
-            METHOD_ADD(Account::get_accs, "/get_accounts/", drg::Post);
+            METHOD_ADD(Account::create, "/create/", drg::Post, drg::Options);
+            METHOD_ADD(Account::info, "/info/", drg::Post, drg::Options);
+            METHOD_ADD(Account::remove, "/remove/", drg::Delete, drg::Options);
+            METHOD_ADD(Account::get_accs, "/get_accounts/", drg::Post, drg::Options);
         METHOD_LIST_END
 
         ADD_ROUTE_HANDLER_AUTH(create, LIST("user_id", "account_type"),

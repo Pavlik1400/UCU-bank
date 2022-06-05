@@ -21,29 +21,30 @@ namespace ucubank_api::v2 {
         user::Client user_client;
 
     public:
+
         METHOD_LIST_BEGIN
-            METHOD_ADD(User::login1, "/login1/", VERIFY_JSON_FILTER, drg::Post);
-            METHOD_ADD(User::login2, "/login2/", VERIFY_JSON_FILTER, drg::Post);
-            METHOD_ADD(User::reg, "/register/", VERIFY_JSON_FILTER, drg::Post);
-            METHOD_ADD(User::info, "/info/", VERIFY_JSON_FILTER, drg::Post);
-            METHOD_ADD(User::remove, "/remove/", VERIFY_JSON_FILTER, drg::Delete);
-            METHOD_ADD(User::logout, "/logout/", VERIFY_JSON_FILTER, drg::Post);
+            METHOD_ADD(User::login1, "/login1/", drg::Post, drg::Options);
+            METHOD_ADD(User::login2, "/login2/",  drg::Post, drg::Options);
+            METHOD_ADD(User::reg, "/register/", drg::Post, drg::Options);
+            METHOD_ADD(User::info, "/info/", drg::Post, drg::Options);
+            METHOD_ADD(User::remove, "/remove/", drg::Delete, drg::Options);
+            METHOD_ADD(User::logout, "/logout/", drg::Post, drg::Options);
         METHOD_LIST_END
 
-        ADD_ROUTE_HANDLER(login1, LIST("phone_num", "password"), "POST ucubank_api/v2/usernew/login1/")
+        ADD_ROUTE_HANDLER(login1, LIST("phone_num", "password"), "POST ucubank_api/v2/user/login1/")
 
-        ADD_ROUTE_HANDLER(login2, LIST("one_time_passwd", "otp_key"), "POST ucubank_api/v2/usernew/login2/")
+        ADD_ROUTE_HANDLER(login2, LIST("one_time_passwd", "otp_key"), "POST ucubank_api/v2/user/login2/")
 
         ADD_ROUTE_HANDLER(
                 reg,
-                LIST("type", "name", "password", "date_of_birth", "phoneNo", "email", "address", "gender"),
+                LIST("type", "name", "password", "date_of_birth", "phone_num", "email", "address", "gender"),
                 "POST ucubank_api/v2/usernew/register/")
 
-        ADD_ROUTE_HANDLER_AUTH(info, LIST("phone_num"), "POST ucubank_api/v2/usernew/info/")
+        ADD_ROUTE_HANDLER_AUTH(info, LIST("phone_num"), "POST ucubank_api/v2/user/info/")
 
-        ADD_ROUTE_HANDLER_AUTH(remove, LIST("phoneNo"), "DELETE ucubank_api/v2/usernew/remove/")
+        ADD_ROUTE_HANDLER_AUTH(remove, LIST("phone_num"), "DELETE ucubank_api/v2/user/remove/")
 
-        ADD_ROUTE_HANDLER_AUTH(logout, LIST(), "POST ucubank_api/v2/usernew/logout/")
+        ADD_ROUTE_HANDLER_AUTH(logout, LIST(), "POST ucubank_api/v2/user/logout/")
     };
 }
 

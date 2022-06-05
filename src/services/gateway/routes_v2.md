@@ -2,7 +2,7 @@
 
 ## Account API
 
-- `POST http://localhost:2020/ucubank_api/v1/account/create/`
+- `POST http://localhost:2020/ucubank_api/v2/account/create/`
 
 ```json
 {
@@ -20,7 +20,7 @@ Reponse:
 }
 ```
 
-- `POST http://localhost:2020/ucubank_api/v1/account/info/`
+- `POST http://localhost:2020/ucubank_api/v2/account/info/`
 
 ```json
 {
@@ -61,7 +61,7 @@ Response if user is not a owner of an account:
 ```
 
 
-- `DELETE http://localhost:2020/ucubank_api/v1/account/remove/`
+- `DELETE http://localhost:2020/ucubank_api/v2/account/remove/`
 
 ```json
 {
@@ -78,7 +78,7 @@ Response if user is not a owner of an account:
 }
 ```
 
-- `POST http://localhost:2020/ucubank_api/v1/account/get_accounts/
+- `POST http://localhost:2020/ucubank_api/v2/account/get_accounts/
 
 ```json
 {
@@ -129,7 +129,7 @@ Response if user is not an owner of an account:
 ```
 ## User API
 
-- `POST http://localhost:2020/ucubank_api/v1/user/info/`
+- `POST http://localhost:2020/ucubank_api/v2/user/info/`
 
 ```json
 {
@@ -150,7 +150,7 @@ Response if user is asking info about him/her/it self:
     "id": "629902cebe1eb222c26ef0c2",
     "joining_date": "02-06-2022 21-34-54",
     "name": "pasha",
-    "phoneNo": "123",
+    "phone_num": "123",
     "type": "regular"
   },
   "status": 200
@@ -170,7 +170,7 @@ Response if user is asking info about other user:
 }
 ```
 
-- `POST http://localhost:2020/ucubank_api/v1/user/login1/`
+- `POST http://localhost:2020/ucubank_api/v2/user/login1/`
 
 ```json
 {
@@ -190,7 +190,7 @@ Response:
 }
 ```
 
-- `POST http://localhost:2020/ucubank_api/v1/user/login2/`
+- `POST http://localhost:2020/ucubank_api/v2/user/login2/`
 
 ```json
 {
@@ -209,7 +209,7 @@ Response:
 }
 ```
 
-- `POST http://localhost:2020/ucubank_api/v1/user/register/`
+- `POST http://localhost:2020/ucubank_api/v2/user/register/`
 
 ```json
 {
@@ -217,7 +217,7 @@ Response:
   "name": "Kashaa",
   "password": "123",
   "date_of_birth": "2001-01-01",
-  "phoneNo": "+381235431256",
+  "phone_num": "+381235431256",
   "email": "kasha@gmail.com",
   "address": "11",
   "gender": "helicopter"
@@ -232,12 +232,12 @@ Response:
 }
 ```
 
-- `DELETE http://localhost:2020/ucubank_api/v1/user/remove/`
+- `DELETE http://localhost:2020/ucubank_api/v2/user/remove/`
 
 *Only super can remove users*
 ```json
 {
-    "phoneNo": "+381235431256",
+    "phone_num": "+381235431256",
     "password": "123",
     "token": "123"
 }
@@ -275,7 +275,7 @@ Reponse:
 }
 ```
 
-- `POST http://localhost:2020/ucubank_api/v1/transaction/get/`
+- `POST http://localhost:2020/ucubank_api/v2/transaction/get/`
   
 **Required only 'account_number' and 'limit'**
 

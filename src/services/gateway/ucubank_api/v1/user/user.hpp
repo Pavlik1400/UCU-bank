@@ -16,12 +16,18 @@ namespace ucubank_api::v1 {
     public:
         METHOD_LIST_BEGIN
             METHOD_ADD(User::info, "/info/", drg::Post);
+            METHOD_ADD(User::return200, "/info/", drg::Options);
+
             METHOD_ADD(User::login1, "/login1/", "VerifyJsonBodyFilter", drg::Post);
+            METHOD_ADD(User::return200, "/login1/", drg::Options);
+
             METHOD_ADD(User::login2, "/login2/", drg::Post);
             METHOD_ADD(User::register_, "/register/", drg::Post);
             METHOD_ADD(User::remove, "/remove/", drg::Delete);
             METHOD_ADD(User::logout, "/logout/", drg::Post);
         METHOD_LIST_END
+
+        void return200(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
         void info(const drg::HttpRequestPtr &req, std::function<void(const drg::HttpResponsePtr &)> &&callback);
 
