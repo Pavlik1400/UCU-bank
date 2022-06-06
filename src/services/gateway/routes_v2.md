@@ -128,7 +128,7 @@ Response if user is not an owner of an account:
 ```
 
 
-- `POST http://localhost:2020/ucubank_api/v2/account/info/`
+- `POST http://localhost:2020/ucubank_api/v2/account/user_info/`
 ```json
 {
   "account_number": "6744440301848953",
