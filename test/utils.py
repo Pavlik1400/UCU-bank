@@ -3,7 +3,7 @@ import random
 import string
 from dataclasses import dataclass
 from pprint import pprint
-from typing import List
+from typing import List, Dict
 
 import requests
 
@@ -92,7 +92,10 @@ def make_request(route: str, headers=None, data="", method="post"):
         "METHOD": method,
     })
 
-    resp = req(route, headers=headers, data=json.dumps(data)).json()
+    resp = req(route, headers=headers, data=json.dumps(data))
+    # print("<><><><>")
+    # print(resp.text)
+    resp = resp.json()
 
     print(Colors.CGREEN)
     print(f"<<< Reponse: ")
@@ -108,15 +111,42 @@ class GlobalState:
     OTP1: str = "None"
     OTP_KEY1: str = "None"
     USER1_ACCOUNTS: List = None
+    USER1: Dict = None
+    CRED_ID1: str = None
 
     TOKEN2: str = "None"
     UID2: str = "None"
     OTP2: str = "None"
     OTP_KEY2: str = "None"
     USER2_ACCOUNTS: List = None
+    USER2: Dict = None
 
     def __init__(self):
         self.USER1_ACCOUNTS = []
         self.USER2_ACCOUNTS = []
+
+        self.USER1 = {
+            "type": "regular",
+            "name": "user1",
+            "password": gen_random_string(20),
+            "date_of_birth": "2001-01-01",
+            "phone_num": gen_random_string(20),
+            "email": "user1@gmail.com",
+            "address": "1",
+            "gender": "user1"
+        }
+
+        self.USER2 = {
+            "type": "super",
+            "name": "user2",
+            "password": gen_random_string(20),
+            "date_of_birth": "2002-02-02",
+            "phone_num": gen_random_string(20),
+            "email": "user2@gmail.com",
+            "address": "2",
+            "gender": "user2",
+            "super-duper-secret": "4694944920569279849376435242991721996950851627475313791297870890"
+        }
+
 
 state = GlobalState()

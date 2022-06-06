@@ -2,7 +2,6 @@ import unittest
 
 from constants import *
 from utils import *
-from user import USER1
 
 unittest.TestLoader.sortTestMethodsUsing = None
 
@@ -22,7 +21,18 @@ class Test2AccountAPI(unittest.TestCase):
             }
         )
         self.assertEqual(resp.get("status", 0), 200)
-        state.USER1_ACCOUNTS.append({"account_type": "gold"})
+        # state.USER1_ACCOUNTS.append({"account_type": "gold"})
+
+        resp = make_request(
+            API_ROOT_v2 + self.account + "create/",
+            data={
+                "token": state.TOKEN2,
+                "user_id": state.UID2,
+                "account_type": "gold"
+            }
+        )
+        self.assertEqual(resp.get("status", 0), 200)
+        # state.USER2_ACCOUNTS.append({"account_type": "gold"})
 
     def test2get(self):
         print_header("test /account/get_accounts/")
@@ -41,6 +51,23 @@ class Test2AccountAPI(unittest.TestCase):
             self.assertTrue(acc["active"])
             self.assertEqual(acc["balance"], 0.0)
             self.assertEqual(acc["user_id"], state.UID1)
+
+        ##
+        resp = make_request(
+            API_ROOT_v2 + self.account + "get_accounts/",
+            data={
+                "token": state.TOKEN2,
+                "user_id": state.UID2,
+            }
+        )
+        self.assertEqual(resp.get("status", 0), 200)
+        self.assertTrue("accounts" in resp)
+
+        for acc in resp["accounts"]:
+            state.USER2_ACCOUNTS.append(acc)
+            self.assertTrue(acc["active"])
+            self.assertEqual(acc["balance"], 0.0)
+            self.assertEqual(acc["user_id"], state.UID2)
 
     def test3_info(self):
         print_header("test /account/info/")
@@ -68,7 +95,6 @@ class Test2AccountAPI(unittest.TestCase):
 
         self.assertEqual(resp.get("status", 0), 200)
         self.assertTrue("info" in resp)
-        self.assertEqual(resp["info"]["email"], USER1["email"])
-        self.assertEqual(resp["info"]["name"], USER1["name"])
-        self.assertEqual(resp["info"]["type"], USER1["type"])
-
+        self.assertEqual(resp["info"]["email"], state.USER1["email"])
+        self.assertEqual(resp["info"]["name"], state.USER1["name"])
+        self.assertEqual(resp["info"]["type"], state.USER1["type"])

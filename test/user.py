@@ -5,29 +5,6 @@ from utils import *
 
 unittest.TestLoader.sortTestMethodsUsing = None
 
-USER1 = {
-    "type": "regular",
-    "name": "user1",
-    "password": gen_random_string(20),
-    "date_of_birth": "2001-01-01",
-    "phone_num": gen_random_string(20),
-    "email": "user1@gmail.com",
-    "address": "1",
-    "gender": "user1"
-}
-
-USER2 = {
-    "type": "super",
-    "name": "user2",
-    "password": gen_random_string(20),
-    "date_of_birth": "2002-02-02",
-    "phone_num": gen_random_string(20),
-    "email": "user2@gmail.com",
-    "address": "2",
-    "gender": "user2",
-    "super-duper-secret": "4694944920569279849376435242991721996950851627475313791297870890"
-}
-
 
 class Test1UserAPI(unittest.TestCase):
     def setUp(self) -> None:
@@ -37,12 +14,12 @@ class Test1UserAPI(unittest.TestCase):
         print_header("test /user/register/")
         # register first user
         resp = make_request(API_ROOT_v2 + self.user + "register/",
-                            data=USER1)
+                            data=state.USER1)
         self.assertEqual(resp.get("status", 0), 200)
 
         # register second user
         resp = make_request(API_ROOT_v2 + self.user + "register/",
-                            data=USER2)
+                            data=state.USER2)
         self.assertEqual(resp.get("status", 0), 200)
 
     def test2_login1(self):
@@ -50,8 +27,8 @@ class Test1UserAPI(unittest.TestCase):
         # login first user
         resp = make_request(API_ROOT_v2 + self.user + "login1/",
                             data={
-                                "phone_num": USER1["phone_num"],
-                                "password": USER1["password"]
+                                "phone_num": state.USER1["phone_num"],
+                                "password": state.USER1["password"]
                             })
         self.assertEqual(resp.get("status", 0), 200)
         self.assertTrue("otp_key" in resp)
@@ -62,8 +39,8 @@ class Test1UserAPI(unittest.TestCase):
         # login second user
         resp = make_request(API_ROOT_v2 + self.user + "login1/",
                             data={
-                                "phone_num": USER2["phone_num"],
-                                "password": USER2["password"],
+                                "phone_num": state.USER2["phone_num"],
+                                "password": state.USER2["password"],
                             })
         self.assertEqual(resp.get("status", 0), 200)
         self.assertTrue("otp_key" in resp)
@@ -104,27 +81,27 @@ class Test1UserAPI(unittest.TestCase):
         resp = make_request(API_ROOT_v2 + self.user + "info/",
                             data={
                                 "token": state.TOKEN1,
-                                "phone_num": USER1["phone_num"]
+                                "phone_num": state.USER1["phone_num"]
                             })
         self.assertEqual(resp.get("status", 0), 200)
         self.assertTrue("info" in resp)
         for key in SAMPLE_INFO_FULL_RESPONSE["info"]:
             self.assertTrue(key in resp["info"])
-            if key in USER1:
-                self.assertEqual(resp["info"][key], USER1[key])
+            if key in state.USER1:
+                self.assertEqual(resp["info"][key], state.USER1[key])
 
         # regular user find information about other user
         resp = make_request(API_ROOT_v2 + self.user + "info/",
                             data={
                                 "token": state.TOKEN1,
-                                "phone_num": USER2["phone_num"]
+                                "phone_num": state.USER2["phone_num"]
                             })
         self.assertEqual(resp.get("status", 0), 200)
         self.assertTrue("info" in resp)
         for key in SAMPLE_INFO_PARTIAL_RESPONSE["info"]:
             self.assertTrue(key in resp["info"])
-            if key in USER2:
-                self.assertEqual(resp["info"][key], USER2[key])
+            if key in state.USER2:
+                self.assertEqual(resp["info"][key], state.USER2[key])
 
     def test5_logout(self):
         print_header("test /user/logout/")
@@ -137,14 +114,14 @@ class Test1UserAPI(unittest.TestCase):
 
         # info should fail
         resp = make_request(API_ROOT_v2 + self.user + "info/",
-                            data={"token": state.TOKEN1, "phone_num": USER1["phone_num"]})
+                            data={"token": state.TOKEN1, "phone_num": state.USER1["phone_num"]})
         self.assertEqual(resp.get("status", 0), 403)
 
         # login1
         resp = make_request(API_ROOT_v2 + self.user + "login1/",
                             data={
-                                "phone_num": USER1["phone_num"],
-                                "password": USER1["password"]
+                                "phone_num": state.USER1["phone_num"],
+                                "password": state.USER1["password"]
                             })
         self.assertEqual(resp.get("status", 0), 200)
         self.assertTrue("otp_key" in resp)
@@ -168,11 +145,11 @@ class Test1UserAPI(unittest.TestCase):
         resp = make_request(API_ROOT_v2 + self.user + "info/",
                             data={
                                 "token": state.TOKEN1,
-                                "phone_num": USER1["phone_num"]
+                                "phone_num": state.USER1["phone_num"]
                             })
         self.assertEqual(resp.get("status", 0), 200)
         self.assertTrue("info" in resp)
         for key in SAMPLE_INFO_FULL_RESPONSE["info"]:
             self.assertTrue(key in resp["info"])
-            if key in USER1:
-                self.assertEqual(resp["info"][key], USER1[key])
+            if key in state.USER1:
+                self.assertEqual(resp["info"][key], state.USER1[key])
