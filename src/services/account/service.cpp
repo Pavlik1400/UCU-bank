@@ -195,6 +195,7 @@ namespace account {
     }
 
     std::pair<account::status, user_t> Service::get_user(const std::string &card, const auth::AuthDU &ctrl) {
+        CUSTOM_LOG(lg, debug) << "get user info";
         const auto &[status, account] = get(card, {.data=user::privilege::SUPER});
         if (status) {
             return {status, {}};

@@ -60,10 +60,10 @@ namespace ucubank_api::v2 {
     jsonv Account::user_info_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
         auto acc_number = req_json["account_number"].as<str>();
 
-//        auto [status, user_info] = account_client.get_user_info(acc_number, privilege);
-//        if (status != account::OK)
-//            return fail(account::status_to_str(status), resp_json);
-//        resp_json["info"] = serialized_user_t(user_info);
+        auto [status, user_info] = account_client.get_user(acc_number, privilege);
+        if (status != account::OK)
+            return fail(account::status_to_str(status), resp_json);
+        resp_json["info"] = serialized_user_t(user_info);
         return resp_json;
     }
 
