@@ -8,7 +8,7 @@ namespace ucubank_api::v2 {
     Account::Account(const nlohmann::json &cnf) :
             APIBase(cnf),
             account_client(cnf["account"]["rpc_address"].get<str>(), cnf["account"]["rpc_port"].get<int>()) {
-        logger.info("Account API initialized");
+        logger.info("Account API v2 initialized");
     }
 
 

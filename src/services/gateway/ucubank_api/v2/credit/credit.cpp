@@ -3,7 +3,9 @@
 namespace ucubank_api::v2 {
     Credit::Credit(const nlohmann::json &cnf) :
             APIBase(cnf),
-            credit_client(cnf["credit"]["rpc_address"].get<str>(), cnf["credit"]["rpc_port"].get<int>()) {}
+            credit_client(cnf["credit"]["rpc_address"].get<str>(), cnf["credit"]["rpc_port"].get<int>()) {
+        logger.info("Credit API v2 initialized");
+    }
 
     jsonv Credit::create_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {
         auto card = req_json["card_number"].as<str>();

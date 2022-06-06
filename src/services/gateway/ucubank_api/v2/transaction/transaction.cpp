@@ -6,7 +6,7 @@ namespace ucubank_api::v2 {
     Transaction::Transaction(const nlohmann::json &cnf) :
             APIBase(cnf),
             transaction_client(cnf) {
-        logger.info("Transaction service initialized");
+        logger.info("Transaction API v2 initialized");
     }
 
     jsonv Transaction::create_h(const jsonv &req_json, jsonv &resp_json, const auth::AuthDU &privilege) {

@@ -3,7 +3,9 @@
 namespace ucubank_api::v2 {
     User::User(const nlohmann::json &cnf) :
             APIBase(cnf),
-            user_client(cnf["user"]["rpc_address"].get<str>(), cnf["user"]["rpc_port"].get<int>()) {}
+            user_client(cnf["user"]["rpc_address"].get<str>(), cnf["user"]["rpc_port"].get<int>()) {
+        logger.info("User API v2 initialized");
+    }
 
     jsonv User::login1_h(const jsonv &req_json, jsonv &resp_json) {
         auto phone_num = req_json["phone_num"].as<str>();
