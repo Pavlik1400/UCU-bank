@@ -8,88 +8,51 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import CloseIcon from '@mui/icons-material/Close';
 import { Box } from '@mui/system';
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
+import { getCredits } from '../../../store/slices/CreditsSlice'
+import { closeCredit } from '../../../store/slices/AllOtherAPI';
 import { useSelector, useDispatch } from 'react-redux'
-import { getTransactions } from '../../../store/slices/TransactionSlice'
-import { getUserAccounts } from '../../../store/slices/AccountSlice'
-import NewTransaction from '../NewTransaction'
+
+import CreateCredit from '../CreateCredit'
 
 
+const adaptBalance = (balance) => {return Math.round(balance * 100) / 100 + "$"}
+const adaptActive = (active) => {
+    if (active) return "active"
+    return "closed"
+}
 const adaptAny = (smthg) => {return smthg}
-const adaptAmount = (balance) => {return Math.round(balance * 100) / 100 + "$"}
-
-const categories = [
-    "CAFE_AND_RESTAURANTS",
-    "SALARY",
-    "TECH_EQUIPMENT",
-    "HOUSEHOLD_EQUIPMENT",
-    "OTHER_INCOME",
-    "ATM",
-    "PRODUCTS",
-    "GASOLINE",
-    "ENTERTAINMENT",
-    "CARD_TRANSFER",
-    "CREDIT_TRANSACTION",
-]
-const adaptCategory = (category) => {return categories[category] }
 
 
-const Transaction = () => {
+const CreditsContent = () => {
     const dispatch = useDispatch()
-    const accounts = useSelector((state) => state.account.accounts)
     const logined = useSelector((state) => state.auth.logined)
     const sessionToken = useSelector((state) => state.auth.sessionToken)
     const uid = useSelector((state) => state.auth.uid)
-    const last_transactions = useSelector((state) => state.transaction.last_transactions)
-    const openTransactionFunc = React.useRef(null)
+    const credits = useSelector((state) => state.credit.credits)
 
     React.useEffect(() => {
         if (logined) {
-            dispatch(getUserAccounts({
+            dispatch(getCredits({
                 user_id: uid,
                 token: sessionToken,
             }))
         }
     }, [dispatch, logined, uid, sessionToken]);
 
-    React.useEffect(() => {
-        if (logined) {
-            dispatch(getTransactions({
-                account_numbers: accounts.map((account) => account["number"]),
-                limit: 100,
-                token: sessionToken,
-            }))
-        }
-    }, [accounts, dispatch, logined, sessionToken]);
+    const openCreateCreditFunc = React.useRef(null)
 
     const aceptedKeys = {
-        "From": ["from_acc_number", adaptAny], 
-        "To": ["to_acc_number", adaptAny],
-        "Amount": ["amount", adaptAmount],
-        "Category": ["category", adaptCategory],
-        "Date": ["date", adaptAny], 
-        "Description": ["description", adaptAny], 
+        "Card": ["card_number", adaptAny], 
+        "Current Balance": ["current_balance", adaptBalance],
+        "Original Balance": ["original_balance", adaptBalance],
+        "Opening date": ["opening_date", adaptAny],
+        "Period": ["period", adaptAny],
+        "Percent": ["percent", adaptAny],
+        "Active": ["active", adaptActive],
     };
-
-    const [filteredTransactions, setFilteredTransactions] = React.useState([]);
-    React.useEffect(() => {
-        var tmp = [].concat.apply([], Object.keys(last_transactions).map((key) => [...last_transactions[key]]))
-        tmp = tmp.filter((value, index, self) =>
-            index === self.findIndex((t) => (
-                t.from_acc_number === value.from_acc_number && t.to_acc_number === value.to_acc_number && t.amount === value.amount
-                && t.category === value.category && t.date === value.date && t.description === value.description
-            ))
-        )
-        tmp.sort(function(a, b) {
-            var keyA = new Date(a.date),
-              keyB = new Date(b.date);
-            if (keyA < keyB) return 1;
-            if (keyA > keyB) return -1;
-            return 0;
-          });
-        setFilteredTransactions(tmp)
-    }, [last_transactions]);
 
     return (
     <div>
@@ -106,13 +69,13 @@ const Transaction = () => {
                         <Grid container >
                         <Grid item xs sx={{ mt: 1 }}>
                             <Typography variant="h4">
-                                Transactions
+                                Credits
                             </Typography>
                         </Grid>
                         <Grid item xs={2} sx={{ mt: 1 }}>
                             <Button variant="contained" onClick={() => {
-                                openTransactionFunc.current();
-                                }}>New Transaction</Button>
+                                    openCreateCreditFunc.current();
+                                }}>New Credit</Button>
                         </Grid>
                         </Grid>
                     </Box>
@@ -126,19 +89,38 @@ const Transaction = () => {
                                     <TableCell align="right" key={index}>{key}</TableCell>
                                 ))
                             }
+                        <TableCell align="right">Finish credit</TableCell>
                         </TableRow>
                         </TableHead>
                         <TableBody>
-                        {filteredTransactions.map((transactions_from_account, idx) => (
+                        {credits.map((row, idx) => (
                             <TableRow
                             key={idx}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                             {
-                                Object.keys(aceptedKeys).map((kkey, iindex) => ( 
-                                    <TableCell align="right" key={iindex}>{aceptedKeys[kkey][1](transactions_from_account[aceptedKeys[kkey][0]])}</TableCell>
+                                Object.keys(aceptedKeys).map((key, index) => ( 
+                                    <TableCell align="right" key={index}>{aceptedKeys[key][1](row[aceptedKeys[key][0]])}</TableCell>
                                 ))
                             }
+                            <TableCell align="right">
+                            {row["active"] && 
+                            <IconButton color="primary" aria-label="Close credit" onClick={async () => {
+                                const resp = await closeCredit(sessionToken, row["id"])
+                                const resp_json = await resp.json()
+                                if (resp_json["status"] !== 200) {
+                                    alert("Failed to cloase credit")
+                                } else {
+                                    dispatch(getCredits({
+                                        user_id: uid,
+                                        token: sessionToken,
+                                    }))
+                                }
+                            }}>
+                                <CloseIcon />
+                            </IconButton>
+                            }
+                            </TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -149,10 +131,11 @@ const Transaction = () => {
             </Grid>
             <Grid item xs={2}></Grid>
             </Grid>
-            <NewTransaction openTransactionFunc={openTransactionFunc}/>
+
+            <CreateCredit openCreateCreditFunc={openCreateCreditFunc}></CreateCredit>
         </Box> }
     </div>
   );
 }
 
-export default Transaction;
+export default CreditsContent;

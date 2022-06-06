@@ -12,14 +12,17 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
-import { useDispatch } from 'react-redux'
-import { createTransaction } from '../../../store/slices/TransactionSlice'
 import { Container } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux'
+
+import { createTransaction } from '../../../store/slices/TransactionSlice'
+import { getDataAboutUserFromAccount } from '../../../store/slices/AllOtherAPI'
 import './style.css'
 
 
 const NewTransactionConfirm = ({ openNewTransactionConfirmFunc, closeParent }) => {
     const dispatch = useDispatch()
+    const sessionToken = useSelector((state) => state.auth.sessionToken)
 
     const [open, setOpen] = React.useState(false);
     const [accountDataGot, setAccountDataGot] = React.useState(false);
@@ -35,23 +38,19 @@ const NewTransactionConfirm = ({ openNewTransactionConfirmFunc, closeParent }) =
       "type": ""
     });
 
-    const handleClickOpen = (transaction_data) => {
+    const handleClickOpen = async (transaction_data) => {
       setAccountDataGot(false);
       setTransactionData(transaction_data);
       setOpen(true);
 
       /// Here fetch data
-      setAccountDataFirst({
-        "email": "pasha@gmail.com",
-        "name": "pasha",
-        "type": "super"
-      });
+      const response1 = await getDataAboutUserFromAccount(sessionToken, transaction_data["from_acc_number"])
+      const response_json1 = await response1.json();
+      setAccountDataFirst(response_json1["info"]);
 
-      setAccountDataSecond({
-        "email": "yp@gmail.com",
-        "name": "yp",
-        "type": "super"
-      });
+      const response2 = await getDataAboutUserFromAccount(sessionToken, transaction_data["to_acc_number"])
+      const response_json2 = await response2.json();
+      setAccountDataSecond(response_json2["info"]);
       ///
 
       setAccountDataGot(true);
@@ -61,6 +60,7 @@ const NewTransactionConfirm = ({ openNewTransactionConfirmFunc, closeParent }) =
       setOpen(false);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => { openNewTransactionConfirmFunc.current = handleClickOpen }, [openNewTransactionConfirmFunc])
 
     return (
@@ -73,13 +73,16 @@ const NewTransactionConfirm = ({ openNewTransactionConfirmFunc, closeParent }) =
         <DialogContent>
           <Stack direction="row" spacing={2}>
             <Card sx={{ minWidth: 100, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <CardHeader avatar={<Avatar src="/broken-image.jpg" sx={{ marginRight: 0 }} />}/>
+              <CardHeader avatar={<Avatar src="/broken-image.jpg" sx={{ marginRight: 0 }} />} className="accountIcon"/>
               <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Typography gutterBottom variant="h5" component="div">
                   {accountDataFirst["name"]}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {accountDataFirst["email"]}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {transactionData["from_acc_number"]}
                 </Typography>
               </CardContent>
             </Card>
@@ -101,6 +104,9 @@ const NewTransactionConfirm = ({ openNewTransactionConfirmFunc, closeParent }) =
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {accountDataSecond["email"]}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {transactionData["to_acc_number"]}
                 </Typography>
               </CardContent>
             </Card>

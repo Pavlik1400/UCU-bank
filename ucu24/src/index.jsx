@@ -16,6 +16,7 @@ import store from './store/redux'
 import MainPageView from './views/MainPage'
 import TransactionView from './views/TransactionPage'
 import AccountView from './views/AccountPage'
+import CreditView from './views/CreditPage'
 
 const mainTheme = createTheme({
   palette: {
@@ -38,6 +39,9 @@ const mainTheme = createTheme({
             height: '100%',
           },
         },
+        "& .MuiCardHeader-avatar": {
+          marginRight: 0
+        }
       },
     },
   },
@@ -55,6 +59,7 @@ root.render(
           <Route path='/' element={<MainPageView/>} />
           <Route path='/transactions' element={<TransactionView/>} />
           <Route path='/accounts' element={<AccountView/>} />
+          <Route path='/credits' element={<CreditView/>} />
         </Routes>
       </Router>
     </ThemeProvider>
