@@ -11,16 +11,30 @@ const Logout = async (sessionToken) => {
 }
 
 
-const getDataAboutUserFromAccount = async (sessionToken, number) => {
-    await fetch(BASIC_ROOT + "/user/AAAAAAAAAAAAA/", {
+const getDataAboutUserFromAccount = async (sessionToken, account_number) => {
+    const resp = await fetch(BASIC_ROOT + "/account/user_info/", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             token: sessionToken,
-            number: number
+            account_number: account_number
         })
     })
+    return resp
 }
 
 
-export { Logout, getDataAboutUserFromAccount }
+const closeCredit = async (sessionToken, credit_id) => {
+    const resp = await fetch(BASIC_ROOT + "/credit/finish/", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            token: sessionToken,
+            id: credit_id
+        })
+    })
+    return resp
+}
+
+
+export { Logout, getDataAboutUserFromAccount, closeCredit }

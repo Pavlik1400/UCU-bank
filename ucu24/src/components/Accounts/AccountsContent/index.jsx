@@ -17,7 +17,7 @@ import CreateAccount from '../CreateAccount'
 
 
 const adaptCVV = (cvv) => {return "***"}
-const adaptBalance = (balance) => {return balance + "$"}
+const adaptBalance = (balance) => {return Math.round(balance * 100) / 100 + "$"}
 const adaptAny = (smthg) => {return smthg}
 
 

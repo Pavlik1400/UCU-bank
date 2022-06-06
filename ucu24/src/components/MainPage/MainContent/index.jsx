@@ -52,6 +52,13 @@ const MainContent = () => {
                 && t.category === value.category && t.date === value.date && t.description === value.description
             ))
         )
+        tmp.sort(function(a, b) {
+            var keyA = new Date(a.date),
+              keyB = new Date(b.date);
+            if (keyA < keyB) return 1;
+            if (keyA > keyB) return -1;
+            return 0;
+          });
         setFilteredTransactions(tmp)
     }, [last_transactions]);
 
@@ -92,7 +99,7 @@ const MainContent = () => {
                                                     *{value["number"].substring(12, 16)}
                                                 </Typography>
                                                 <Typography variant="subtitle2" color="text.secondary" component="div">
-                                                {value["balance"]}$
+                                                {Math.round(value["balance"] * 100) / 100}$
                                                 </Typography>
                                             </CardContent>
                                         </Box>
@@ -140,7 +147,7 @@ const MainContent = () => {
                                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                     <CardContent>
                                         <Typography component="div" variant="h6">
-                                            {value["amount"]}$
+                                            {Math.round(value["amount"] * 100) / 100}$
                                         </Typography>
                                         <Typography variant="subtitle2" color="text.secondary" component="div">
                                         From: *{value["from_acc_number"].substring(12,16)}

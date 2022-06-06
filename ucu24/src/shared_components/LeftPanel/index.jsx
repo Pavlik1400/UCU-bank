@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import {useNavigate} from 'react-router-dom';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import PaymentIcon from '@mui/icons-material/Payment';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
   
@@ -50,6 +51,7 @@ const LeftPanel = () => {
     const navigateTransactions = React.useCallback(() => navigate('/transactions', {replace: true}), [navigate]);
     const navigateHome = React.useCallback(() => navigate('/', {replace: true}), [navigate]);
     const navigateAccounts = React.useCallback(() => navigate('/accounts', {replace: true}), [navigate]);
+    const navigateCredits = React.useCallback(() => navigate('/credits', {replace: true}), [navigate]);
   
 
     const [open, setOpen] = React.useState(true);
@@ -91,6 +93,12 @@ const LeftPanel = () => {
                         <AccountBalanceWalletIcon />
                     </ListItemIcon>
                     <ListItemText primary="Accounts" />
+                    </ListItemButton>
+                    <ListItemButton onClick={navigateCredits}>
+                    <ListItemIcon>
+                        <PaymentIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Credits" />
                     </ListItemButton>
                 </List>
             </Drawer>

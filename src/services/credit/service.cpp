@@ -29,28 +29,21 @@ namespace credit {
         sopts.read_concern(rc_local);
         sopts.read_preference(rp_primary);
 
-        bool flagExist = true;
-//        if (!userClient.exists("0000000000")) {
-        if (1) {
-            flagExist = false;
-            user_t super_user_tmp {
-                "",
-                "super",
-                "do_you_wanna_have_a_bad_time_?",
-                "come_on_found_me_if_you_can",
-                "2022-10-10",
-                "0000000000",
-                "do_you_wanna_have_a_bad_time@do_you_wanna_have_a_bad_time.sans.com",
-                "lvivski kruasany",
-                "kruasan",
-            };
-            userClient.create(super_user_tmp);
-        }
+        user_t super_user_tmp {
+            "",
+            "super",
+            "do_you_wanna_have_a_bad_time_?",
+            "come_on_found_me_if_you_can",
+            "2022-10-10",
+            "0000000000",
+            "do_you_wanna_have_a_bad_time@do_you_wanna_have_a_bad_time.sans.com",
+            "lvivski kruasany",
+            "kruasan",
+        };
+        userClient.create(super_user_tmp);
         auto [st, super_inst] = userClient.get<user::by::PHONE_NO>("0000000000", {"", user::privilege::SUPER});
         super_user = super_inst;
-        if (!flagExist) {
-            accountClient.create(super_user.id, "", {"", user::privilege::SUPER});
-        }
+        accountClient.create(super_user.id, "", {"", user::privilege::SUPER});
         auto [st1, super_inst_acc_v] = accountClient.get_all(super_user.id, {"", user::privilege::SUPER});
         super_user_acc = super_inst_acc_v[0];
 
@@ -95,11 +88,9 @@ namespace credit {
         auto credit_id = generate_card_token();
 
         // generate unique card number
-        while (credits_collection.find_one(session, document{} << account::NUMBER << credit_id << finalize)) {
+        while (credits_collection.find_one(session, document{} << credit::ID << credit_id << finalize)) {
             credit_id = generate_card_token();
         }
-
-        CUSTOM_LOG(lg, debug) << "Generated credit_id";
 
         transaction_t trans{
                 super_user.id,
@@ -107,15 +98,13 @@ namespace credit {
                 card,
                 "Credit income transaction",
                 balance,
-                transaction::category::CARD_TRANSFER
+                transaction::category::CREDIT_TRANSACTION
         };
         auto tr_status = transactionClient.create(trans, {.data=user::privilege::SUPER});
         if (tr_status) {
             CUSTOM_LOG(lg, warning) << "Transaction failed: " << tr_status;
             return credit::status::TRANSACTION_FAILED;
         }
-
-        CUSTOM_LOG(lg, debug) << "Transaction done";
 
         auto doc =
                 document{} << credit::ID << credit_id << credit::USER_ID << user_id
@@ -124,9 +113,19 @@ namespace credit {
                         << credit::CURRENT_BALANCE << balance
                         << credit::PERCENT << credit::CREDIT_TYPES[credit_type].second
                         << credit::PERIOD << credit::CREDIT_TYPES[credit_type].first << finalize;
-        CUSTOM_LOG(lg, debug) << "Credit query created";
         auto status = credits_collection.insert_one(session, doc.view());
-        CUSTOM_LOG(lg, debug) << "Credit query done";
+
+        if (!status) {
+            transaction_t trans_revert{
+                    super_user_acc.number,
+                    super_user.id,
+                    card,
+                    "Credit revert transaction",
+                    balance,
+                    transaction::category::CREDIT_TRANSACTION
+            };
+            transactionClient.create(trans_revert, {.data=user::privilege::SUPER});
+        }
 
         return status ? credit::status::OK : credit::status::CREATION_FAILED;
     }
@@ -183,7 +182,7 @@ namespace credit {
                 super_user_acc.number,
                 "Credit transaction",
                 credit_inst.current_balance,
-                transaction::category::CARD_TRANSFER
+                transaction::category::CREDIT_TRANSACTION
         };
         auto tr_status = transactionClient.create(trans, {.data=user::privilege::SUPER});
         if (tr_status) {
@@ -273,14 +272,25 @@ namespace credit {
                     super_user_acc.number,
                     "Credit transaction",
                     amount_to_get,
-                    transaction::category::CARD_TRANSFER
+                    transaction::category::CREDIT_TRANSACTION
             };
             auto tr_status = transactionClient.create(trans, {.data=user::privilege::SUPER});
             if (tr_status) {
                 CUSTOM_LOG_SAFE(lg, warning) << "Transaction failed: " << tr_status;
                 continue;
             }
-            reduce_credit_amount(credit_, amount, credits_collection_for_thread, session_for_thread);
+            if (reduce_credit_amount(credit_, amount, credits_collection_for_thread, session_for_thread) == credit::status::TRANSACTION_FAILED) {
+                CUSTOM_LOG_SAFE(lg, error) << "Update credit failed";
+                transaction_t trans_revert{
+                        super_user.id,
+                        super_user_acc.number,
+                        credit_.card_number,
+                        "Credit transaction revert",
+                        amount_to_get,
+                        transaction::category::CREDIT_TRANSACTION
+                };
+                transactionClient.create(trans, {.data=user::privilege::SUPER});
+            }
         }
 
         timer_.expires_at(timer_.expires_at() + posix_time::seconds(credit_update_period));
