@@ -127,6 +127,28 @@ Response if user is not an owner of an account:
 }
 ```
 
+
+- `POST http://localhost:2020/ucubank_api/v2/account/info/`
+```json
+{
+  "account_number": "6744440301848953",
+  "token": "29572a30-2195-43f6-bd6b-6d130b9ac6a3"
+}
+```
+
+Response:
+
+```json
+{
+  "info": {
+    "email": "pasha@gmail.com",
+    "name": "pasha",
+    "type": "super"
+  },
+  "status": 200
+}
+```
+
 ## User API
 
 - `POST http://localhost:2020/ucubank_api/v2/user/info/`
