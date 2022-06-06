@@ -108,6 +108,7 @@ private:
     user::Client user;
     notification::Client notification;
     boost::uuids::random_generator uuid_gen;
+    bool mock;
 }; 
 } //auth
 

@@ -19,9 +19,10 @@ namespace ucubank_api {
         auto resp_json = Json::Value{};
         auto req_json_ptr = req->getJsonObject();
         if (!req_json_ptr) {
-            std::cout << "hello, world";
-            resp_json["status"] = 200;
-            return {true, jsonv{}, std::move(resp_json)};
+            resp_json["status"] = 400;
+            resp_json["message"] = "Request error: " + req->getJsonError();
+            IFDEBUG(std::cout << "[DBG]: " << "Request error: " + req->getJsonError() << "\n")
+            return {false, jsonv{}, std::move(resp_json)};
         }
         resp_json["status"] = 200;
         return {true, std::move(*req_json_ptr), std::move(resp_json)};
