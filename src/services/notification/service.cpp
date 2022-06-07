@@ -68,7 +68,11 @@ namespace notification {
         CUSTOM_LOG(lg, debug) << "Message content: " + message;
         const auto &[email, body] = decompose(message);
         std::cout << email << "<>" << body << "\n";
-        msender.with_receiver(email).with_body(body).send();
+        try {
+            msender.with_receiver(email).with_body(body).send();
+        } catch (std::runtime_error &exc) {
+            std::cerr << "Caught exception: " << exc.what() << "\n";
+        }
     }
 
     std::pair<std::string, std::string> Service::decompose(const std::string &message) {
