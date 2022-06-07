@@ -92,7 +92,7 @@ namespace auth {
         CUSTOM_LOG(lg, info) << LOG_FUNC(Service::tfa_req_otp, id_n_pwd);
         auto &[phoneNo, password] = id_n_pwd;
         auto st = user.valid_password(phoneNo, password);
-        std::cout << st << std::endl;
+        std::cout << st << "\n";
         switch (st) {
             case user::status::OK:
                 break;

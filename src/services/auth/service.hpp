@@ -79,7 +79,7 @@ private:
         oss << vals[0];
         auto end{vals.end()};
         for (auto val{vals.begin()+1}; val!=end; ++val) oss << sep << *val;
-        std::cerr << "STORED: {" << oss.str() << "}" << std::endl;
+        std::cerr << "STORED: {" << oss.str() << "}\n";
         redis_client.setex(token_type_to_str(T)+key, value_ttl<T>(), oss.str());
     }
     

@@ -1,5 +1,7 @@
 #include "basic/logging.hpp"
 
+//std::ostream bitBucket(0);
+
 void logger::my_color_formatter(logging::record_view const& record, logging::formatting_ostream& stream)
 {
     auto severity = record[logging::trivial::severity];

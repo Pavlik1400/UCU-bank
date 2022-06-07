@@ -240,7 +240,7 @@ namespace credit {
         try {
             client_sess.with_transaction(callback, sopts);
         } catch (const mongocxx::exception &e) {
-            CUSTOM_LOG_SAFE(lg, error) << "An exception occurred: " << e.what() << std::endl;
+            CUSTOM_LOG_SAFE(lg, error) << "An exception occurred: " << e.what() << "\n";
             return credit::status::TRANSACTION_FAILED;
         }
 

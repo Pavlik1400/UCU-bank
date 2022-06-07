@@ -44,10 +44,7 @@ void ucubank_api::v1::User::login1(const drogon::HttpRequestPtr &req,
 
         auto phone_num = req_json["phone_num"].as<std::string>();
         auto password = req_json["password"].as<std::string>();
-        std::cout << "num: " << phone_num << ", password: " << password << std::endl;
         auto [status, key_secret] = auth_client.tfa_pwd({phone_num, password});
-        std::cout << "Status: " << status << ", key_secret: " << key_secret.cred << ", " << key_secret.data
-                  << std::endl;
         if (status != auth::OK) {
             return fail_response(auth::status_to_str(status), callback, resp_json);
         }

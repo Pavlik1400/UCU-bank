@@ -67,7 +67,7 @@ namespace notification {
     void Service::process(const std::string &message) {
         CUSTOM_LOG(lg, debug) << "Message content: " + message;
         const auto &[email, body] = decompose(message);
-        std::cout << email << "<>" << body << std::endl;
+        std::cout << email << "<>" << body << "\n";
         msender.with_receiver(email).with_body(body).send();
     }
 

@@ -92,7 +92,7 @@ namespace account {
         try {
             session.with_transaction(callback, sopts);
         } catch (const mongocxx::exception &e) {
-            CUSTOM_LOG(lg, error) << "An exception occurred: " << e.what() << std::endl;
+            CUSTOM_LOG(lg, error) << "An exception occurred: " << e.what() << "\n";
             return account::status::TRANSACTION_FAILED;
         }
         return status ? account::status::OK : account::status::TRANSACTION_FAILED;

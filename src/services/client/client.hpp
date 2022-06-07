@@ -50,7 +50,7 @@ private:
     const std::string server_addr_;
     const std::string client_name_;
     const int server_port_;
-    const unsigned timeout_{500};
+    const unsigned timeout_{5000};
 };
 
 }; //client

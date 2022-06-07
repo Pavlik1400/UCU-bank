@@ -38,7 +38,7 @@ namespace ucubank_api {
         }
         // 2. get user priveleges
         auto [status, auth_resp] = auth_client.sess_info({req_json["token"].as<std::string>(), ""});
-        std::cout << "Auth sess_info status: " << status << ", auth response: " << auth_resp.cred << ", "
+        std::cout << "[DBG] Auth sess_info status: " << status << ", auth response: " << auth_resp.cred << ", "
                   << auth_resp.data << std::endl;
         if (status != auth::status::OK) {
             resp_json["status"] = 403;
@@ -63,23 +63,23 @@ namespace ucubank_api {
 }
 
 void GateWayLogger::debug(const std::string &str) {
-    std::cout << GateWayLogger::dbg_clr << GateWayLogger::bold << "[DBG] " << str << GateWayLogger::reset << std::endl;
+    std::cout << GateWayLogger::dbg_clr << GateWayLogger::bold << "[DBG] " << str << GateWayLogger::reset << "\n";
 }
 
 void GateWayLogger::info(const std::string &str) {
-    std::cout << GateWayLogger::inf_clr << GateWayLogger::bold << "[INF] " << str << GateWayLogger::reset << std::endl;
+    std::cout << GateWayLogger::inf_clr << GateWayLogger::bold << "[INF] " << str << GateWayLogger::reset << "\n";
 }
 
 void GateWayLogger::warning(const std::string &str) {
-    std::cout << GateWayLogger::war_clr << GateWayLogger::bold << "[WAR] " << str << GateWayLogger::reset << std::endl;
+    std::cout << GateWayLogger::war_clr << GateWayLogger::bold << "[WAR] " << str << GateWayLogger::reset << "\n";
 }
 
 void GateWayLogger::error(const std::string &str) {
-    std::cout << GateWayLogger::err_clr << GateWayLogger::bold << "[ERR] " << str << GateWayLogger::reset << std::endl;
+    std::cout << GateWayLogger::err_clr << GateWayLogger::bold << "[ERR] " << str << GateWayLogger::reset << "\n";
 }
 
 void GateWayLogger::fatal(const std::string &str) {
-    std::cout << GateWayLogger::fat_clr << GateWayLogger::bold << "[FAT] " << str << GateWayLogger::reset << std::endl;
+    std::cout << GateWayLogger::fat_clr << GateWayLogger::bold << "[FAT] " << str << GateWayLogger::reset << "\n";
 }
 
 const std::string GateWayLogger::dbg_clr = "\e[34m";

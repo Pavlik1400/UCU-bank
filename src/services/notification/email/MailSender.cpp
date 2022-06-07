@@ -34,7 +34,7 @@ namespace email {
             if (!ses_res.IsSuccess())
                 throw std::runtime_error("Error" + ses_res.GetError().GetMessage());
         } else {
-            std::cout << "MOCK" << std::endl;
+//            std::cout << "MOCK" << std::endl;
         }
     }
 

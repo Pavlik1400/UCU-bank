@@ -22,7 +22,7 @@ using jsonv = Json::Value;
 #define DEBUG_TRY try {
 
 #define DEBUG_CATCH } catch (const std::exception &exc) {\
-std::cerr << "Caught exception: " << exc.what() << std::endl;\
+std::cerr << "Caught exception: " << exc.what() << "\n";\
 resp_json["status"] = 500;\
 resp_json["message"] = std::string("Caught exception: ") + exc.what();\
 callback(drg::HttpResponse::newHttpJsonResponse(resp_json));\
@@ -30,7 +30,7 @@ callback(drg::HttpResponse::newHttpJsonResponse(resp_json));\
 
 
 #define DEBUG_CATCH_RESP(resp_json) } catch (const std::exception &exc) {\
-std::cerr << "Caught exception: " << exc.what() << std::endl;\
+std::cerr << "Caught exception: " << exc.what() << "\n";\
 resp_json["status"] = 500;\
 resp_json["message"] = std::string("Caught exception: ") + exc.what();\
 callback(drg::HttpResponse::newHttpJsonResponse(resp_json));\
@@ -44,10 +44,15 @@ callback(drg::HttpResponse::newHttpJsonResponse(resp_json));\
 
 #else
 
+#define IFDEBUG(code) \
+    {                 \
+        code;         \
+    }
+
 #define DEBUG_TRY
 #define DEBUG_CATCH
 #define DEBUG_CATCH_RESP(resp_json)
-#define IFDEBUG(code)
+//#define IFDEBUG(code)
 
 #endif //DEBUG
 

@@ -139,8 +139,8 @@ namespace transaction {
             return {transaction::BAD_CATEGORY, -1};
         }
         try {
-            std::cout << "Add transaction: from_n = " << tran.from_acc_number << ", to_n = " << tran.to_acc_number
-                      << std::endl;
+            CUSTOM_LOG(lg, debug) << "[DBG] Add transaction: from_n = " << tran.from_acc_number << ", to_n = "
+                                  << tran.to_acc_number << "\n";
             pq::work work(pq_connection.value());
             auto sql =
                     "INSERT INTO " + transaction::tables::money_transfer +
@@ -154,7 +154,6 @@ namespace transaction {
                     work.esc(tran.description) + "'," +
                     work.esc(std::to_string(tran.category)) +
                     ") RETURNING id";
-            std::cout << "SQL: " << sql << std::endl;
             pq::result insert_res(work.exec(sql));
             entry_id = insert_res.begin()[0].as<unsigned long long>();
             work.commit();

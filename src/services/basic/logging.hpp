@@ -26,6 +26,8 @@ namespace src = boost::log::sources;
 namespace keywords = boost::log::keywords;
 namespace sinks = boost::log::sinks;
 
+//extern std::ostream bitBucket;
+//#ifdef DEBUG
 #define CUSTOM_LOG(logger, sev) \
    BOOST_LOG_STREAM_WITH_PARAMS( \
       (logger), \
@@ -39,21 +41,29 @@ namespace sinks = boost::log::sinks;
       (logger), \
          (::boost::log::keywords::severity = (boost::log::trivial::sev)) \
    )
+//#else
+//#ifndef BITBUCKET
+//#define BITBUCKET
+//#define CUSTOM_LOG(logger, sev) std::cout << "\n"
+//#define CUSTOM_LOG_SAFE(logger, sev) std::cout << "\n"
+//#endif
+//#endif
 
 template<typename ValueType>
-ValueType set_get_attrib(const char* name, ValueType value) {
-    auto attr = logging::attribute_cast<attrs::mutable_constant<ValueType>>(logging::core::get()->get_thread_attributes()[name]);
+ValueType set_get_attrib(const char *name, ValueType value) {
+    auto attr = logging::attribute_cast<attrs::mutable_constant<ValueType>>(
+            logging::core::get()->get_thread_attributes()[name]);
     attr.set(value);
     return attr.get();
 }
 
-inline std::string path_to_filename(std::string path) {return path.substr(path.find_last_of("/\\")+1);}
+inline std::string path_to_filename(std::string path) { return path.substr(path.find_last_of("/\\") + 1); }
 
 namespace logger {
 
-    void my_color_formatter(logging::record_view const& record, logging::formatting_ostream& stream);
+    void my_color_formatter(logging::record_view const &record, logging::formatting_ostream &stream);
 
-    void my_file_formatter(logging::record_view const& record, logging::formatting_ostream& stream);
+    void my_file_formatter(logging::record_view const &record, logging::formatting_ostream &stream);
 
     void init();
 
