@@ -1,0 +1,529 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: my-conf
+data:
+  init.sh: |
+    #! bin/bash
+
+    echo  "====="
+    echo  "BEGIN"
+    echo  "====="
+
+    x=1
+    while [[ x -ne 0 ]]; do
+        mongosh -f --eval " rs.initiate();\
+                            cfg = rs.conf();
+                            cfg.members[0].host=\"${HOSTNAME}.mongo:27017\";\
+                            rs.reconfig(cfg); "
+        x=${?}
+        sleep 1
+
+        echo "====="
+        echo "*****"
+        echo "====="
+    done
+
+    echo "==="
+    echo "END"
+    echo "==="
+
+    while true; do
+      sleep 1
+    done
+  init.js: |
+    rs.initiate();
+    cfg = rs.conf();
+  # cfg.members[0].host="mongo-db:27017";
+  # rs.reconfig(cfg);
+  main.json: |
+    {
+      "transaction": {
+        "db": {
+          "dbname": "transactions",
+          "user": "postgres",
+          "password": "postgres",
+          "host": "postgres-db",
+          "port": "5432"
+        },
+        "reddis_address": "transaction-hash",
+        "reddis_port": 6379,
+        "rpc_address": "transaction",
+        "rpc_port": 54321
+      },
+
+      "notification": {
+        "broker_address": "queue",
+        "broker_port": "9092",
+        "topic": "notification"
+      },
+
+      "account": {
+        "reddis_address": "account-hash",
+        "reddis_port": 6379,
+        "rpc_address": "account",
+        "rpc_port": 54321
+      },
+
+      "user": {
+        "reddis_address": "user-hash",
+        "reddis_port": 6379,
+        "rpc_address": "user",
+        "rpc_port": 54321
+      },
+      
+      "credit": {
+        "reddis_address": "localhost",
+        "reddis_port": 6379,
+        "rpc_address": "credit",
+        "rpc_port": 54325,
+        "credit_update_period": 150,
+        "credit_update_measure": "seconds"
+      },
+
+      "auth": {
+        "reddis_address": "localhost",
+        "reddis_port": 6379,
+        "rpc_address": "auth",
+        "rpc_port": 54321,
+        "mock_mail": false
+      },
+
+      "mongo": {
+        "address": "mongo-db",
+        "port": "27017",
+        "replicaSet": "rs0"
+      }
+    }
+  gateway_config.json: |
+    {
+      "listeners": [
+        {
+          "address": "0.0.0.0",
+          "port": 2020,
+          "https": false
+        }
+      ],
+      "app": {
+        "upload_path": "uploads",
+        "threads": 8,
+        "max_connections": 100000,
+        "max_connections_per_ip": 0,
+        "log": {
+          "log_path": "./logs",
+          "logfile_base_name": "",
+          "log_size_limit": 100000000,
+          "log_level": "DEBUG"
+        },
+        "run_as_daemon": false,
+        "relaunch_on_error": false,
+        "use_gzip": false
+      }
+    }
+  credentials: |
+    [default]
+    aws_access_key_id = YOUR_AWS_ACCESS_KEY_HERE
+    aws_secret_access_key = YOUR_AWS_SECRET_ACCESS_KEY_HERE
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  ports:
+  - port: 27017
+    name: peer
+  clusterIP: None
+  selector:
+    app: mongo
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  serviceName: "mongo"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:5.0.9
+        command:
+          - mongod
+          - --replSet
+          - rs0
+          - --bind_ip_all
+        ports:
+          - containerPort: 27017
+            name: peer
+
+      - name: init-mongo
+        image: mongo:5.0.9
+        command:
+          - bash
+          - /config/init.sh
+        volumeMounts:
+        - mountPath: /config/init.sh
+          name: config
+          subPath: init.sh
+          readOnly: true 
+      volumes:
+      - name: config
+        configMap:
+          name: "my-conf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-db
+spec:
+  ports:
+  - port: 27017
+  selector:
+    app: mongo
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: user
+  labels:
+    app: user
+spec:
+  containers:
+  - name: user
+    image: mak9su4roi/user
+    imagePullPolicy: IfNotPresent #Never
+    volumeMounts:
+      - mountPath: /ucu-bank/configs/main.json
+        name: config
+        subPath: main.json
+        readOnly: true 
+    ports:
+    - containerPort: 54321
+      name: user-port
+  - name: init-mongo
+    image: mongo:5.0.9
+  volumes:
+    - name: config
+      configMap:
+        name: "my-conf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+spec:
+  ports:
+  - port: 54321
+  selector:
+    app: user
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: auth
+  labels:
+    app: auth
+spec:
+  containers:
+  - name: auth
+    image: mak9su4roi/auth
+    imagePullPolicy: IfNotPresent #Never
+    volumeMounts:
+      - mountPath: /ucu-bank/configs/main.json
+        name: config
+        subPath: main.json
+        readOnly: true 
+    ports:
+    - containerPort: 54321
+      name: auth-port
+  - name: hash
+    image: redis:7.0.0
+    ports:
+    - containerPort: 6379
+      name: hash-port
+  volumes:
+  - name: config
+    configMap:
+      name: "my-conf"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+spec:
+  ports:
+  - port: 54321
+  selector:
+    app: auth
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: queue
+  labels:
+    app: queue
+spec:
+  containers:
+  - name: kafka
+    image: mak9su4roi/queue
+    imagePullPolicy: IfNotPresent #Never
+    env:
+    - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+      value: localhost:2181
+    - name: ALLOW_PLAINTEXT_LISTENER
+      value: "yes"
+    ports:
+    - containerPort: 9092
+  - name: keeper
+    image: bitnami/zookeeper:3.7
+    env:
+    - name: ALLOW_ANONYMOUS_LOGIN
+      value: "yes"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: queue
+spec:
+  ports:
+  - port: 9092
+  selector:
+    app: queue
+
+--- 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification
+spec:
+  ports:
+  - port: 9092
+  selector:
+    app: notification
+
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: notification
+  labels:
+    app: notification
+spec:
+  containers:
+  - name: notification
+    image: mak9su4roi/notification
+    imagePullPolicy: IfNotPresent #Never
+    volumeMounts:
+      - mountPath: /ucu-bank/configs/main.json
+        name: config
+        subPath: main.json
+        readOnly: true
+      - mountPath: /root/.aws/credentials
+        name: config
+        subPath: credentials
+        readOnly: true
+  volumes:
+    - name: config
+      configMap:
+        name: "my-conf"
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: account
+  labels:
+    app: account
+spec:
+  containers:
+  - name: account
+    image: mak9su4roi/account
+    imagePullPolicy: IfNotPresent #Never
+    volumeMounts:
+      - mountPath: /ucu-bank/configs/main.json
+        name: config
+        subPath: main.json
+        readOnly: true 
+    ports:
+    - containerPort: 54321
+      name: account-port
+  - name: init-mongo
+    image: mongo:5.0.9
+  volumes:
+    - name: config
+      configMap:
+        name: "my-conf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account
+spec:
+  ports:
+  - port: 54321
+  selector:
+    app: account
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transaction
+spec:
+  ports:
+  - port: 54321
+  selector:
+    app: transaction
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: transaction
+  labels:
+    app: transaction
+spec:
+  containers:
+  - name: transaction
+    image: mak9su4roi/transaction
+    imagePullPolicy: IfNotPresent #Never
+    ports:
+    - containerPort: 54321
+    volumeMounts:
+      - mountPath: /ucu-bank/configs/main.json
+        name: config
+        subPath: main.json
+        readOnly: true
+  volumes:
+    - name: config
+      configMap:
+        name: "my-conf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: postgres-db
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgres-db
+  labels:
+    app: postgres-db
+spec:
+  containers:
+  - name: postgres-db
+    image: mak9su4roi/postgres-db
+    imagePullPolicy: IfNotPresent #Never
+    env:
+    - name: POSTGRES_USER
+      value: postgres
+    - name: POSTGRES_PASSWORD
+      value: postgres
+    - name: POSTGRES_DB
+      value: transactions
+    ports:
+    - containerPort: 5432
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: credit
+  labels:
+    app: credit
+spec:
+  containers:
+  - name: credit
+    image: mak9su4roi/credit
+    imagePullPolicy: IfNotPresent #Never
+    ports:
+    - containerPort: 54325 
+    volumeMounts:
+      - mountPath: /ucu-bank/configs/main.json
+        name: config
+        subPath: main.json
+        readOnly: true
+  volumes:
+    - name: config
+      configMap:
+        name: "my-conf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: credit
+spec:
+  ports:
+  - port: 54325
+  selector:
+    app: credit
+
+--- 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+spec:
+  containers:
+  - name: gateway
+    image: mak9su4roi/gateway
+    imagePullPolicy: IfNotPresent #Never
+    ports:
+    - containerPort: 2020
+    volumeMounts:
+      - mountPath: /ucu-bank/configs/main.json
+        name: config
+        subPath: main.json
+        readOnly: true
+      - mountPath: /ucu-bank/configs/gateway/gateway_config.json
+        name: config
+        subPath: gateway_config.json
+        readOnly: true
+      - mountPath: /ucu-bank/logs
+        name: empty-log-dir
+  volumes:
+    - name: config
+      configMap:
+        name: "my-conf"
+    - name: empty-log-dir
+      emptyDir: {} 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  ports:
+  - port: 2020
+  selector:
+    app: gateway
+

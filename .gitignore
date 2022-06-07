@@ -12,4 +12,3 @@ logs
 *.log
 vcpkg/*
 certificates
-kube.yaml

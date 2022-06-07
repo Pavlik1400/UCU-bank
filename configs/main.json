@@ -38,7 +38,7 @@
     "reddis_port": 6379,
     "rpc_address": "localhost",
     "rpc_port": 54324,
-    "mock_mail": true
+    "mock_mail": false
   },
 
   "credit": {
@@ -46,7 +46,7 @@
     "reddis_port": 6379,
     "rpc_address": "localhost",
     "rpc_port": 54325,
-    "credit_update_period": 15,
+    "credit_update_period": 150,
     "credit_update_measure": "seconds"
   },
 
