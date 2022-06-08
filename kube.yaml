@@ -10,32 +10,33 @@ data:
     echo  "BEGIN"
     echo  "====="
 
-    x=1
-    while [[ x -ne 0 ]]; do
-        mongosh -f --eval " rs.initiate();\
-                            cfg = rs.conf();
-                            cfg.members[0].host=\"${HOSTNAME}.mongo:27017\";\
-                            rs.reconfig(cfg); "
-        x=${?}
-        sleep 1
+    HOST="mongo-0.mongo:27017"
+    CUR="${HOSTNAME}.mongo:27017"
 
-        echo "====="
-        echo "*****"
-        echo "====="
-    done
+    if [[ "${HOST}" != "${CUR}" ]]; then
+
+      until mongosh --host=${HOST} --quiet \
+                      --eval="EJSON.stringify(rs.status())" 2>&1 \
+                      | grep -v "no replset config has been received"; do
+        sleep 1 
+      done
+      echo "add ${HOSTNAME}.mongo to rs0"
+      mongosh --host=${HOST} --quiet --eval="EJSON.stringify(rs.add('${CUR}'))"
+
+    else
+
+      echo "create  rs0"
+      until mongosh --quiet --eval "rs.initiate({'_id': 'rs0', 'members': [{'_id': 0, 'host': '${HOST}'}]})"; do
+        sleep 1
+      done
+
+    fi
 
     echo "==="
     echo "END"
     echo "==="
 
-    while true; do
-      sleep 1
-    done
-  init.js: |
-    rs.initiate();
-    cfg = rs.conf();
-  # cfg.members[0].host="mongo-db:27017";
-  # rs.reconfig(cfg);
+    while true; do sleep 1; done
   main.json: |
     {
       "transaction": {
@@ -77,16 +78,16 @@ data:
         "reddis_port": 6379,
         "rpc_address": "credit",
         "rpc_port": 54325,
-        "credit_update_period": 150,
+        "credit_update_period": 15,
         "credit_update_measure": "seconds"
       },
 
       "auth": {
-        "reddis_address": "localhost",
+        "reddis_address": "auth-hash",
         "reddis_port": 6379,
         "rpc_address": "auth",
         "rpc_port": 54321,
-        "mock_mail": false
+        "mock_mail": true
       },
 
       "mongo": {
@@ -120,10 +121,6 @@ data:
         "use_gzip": false
       }
     }
-  credentials: |
-    [default]
-    aws_access_key_id = YOUR_AWS_ACCESS_KEY_HERE
-    aws_secret_access_key = YOUR_AWS_SECRET_ACCESS_KEY_HERE
 
 ---
 apiVersion: v1
@@ -144,8 +141,8 @@ kind: StatefulSet
 metadata:
   name: mongo
 spec:
-  serviceName: "mongo"
-  replicas: 1
+  serviceName: mongo
+  replicas: 3
   selector:
     matchLabels:
       app: mongo
@@ -201,7 +198,7 @@ metadata:
 spec:
   containers:
   - name: user
-    image: mak9su4roi/user
+    image: mbilyk/user:v1.0
     imagePullPolicy: IfNotPresent #Never
     volumeMounts:
       - mountPath: /ucu-bank/configs/main.json
@@ -229,36 +226,68 @@ spec:
     app: user
 
 ---
-
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: auth
-  labels:
-    app: auth
 spec:
-  containers:
-  - name: auth
-    image: mak9su4roi/auth
-    imagePullPolicy: IfNotPresent #Never
-    volumeMounts:
-      - mountPath: /ucu-bank/configs/main.json
-        name: config
-        subPath: main.json
-        readOnly: true 
-    ports:
-    - containerPort: 54321
-      name: auth-port
-  - name: hash
-    image: redis:7.0.0
-    ports:
-    - containerPort: 6379
-      name: hash-port
-  volumes:
-  - name: config
-    configMap:
-      name: "my-conf"
+  selector:
+    matchLabels:
+      app: auth
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: mbilyk/auth:v1.0
+        imagePullPolicy: IfNotPresent #Never
+        volumeMounts:
+          - mountPath: /ucu-bank/configs/main.json
+            name: config
+            subPath: main.json
+            readOnly: true 
+        ports:
+        - containerPort: 54321
+          name: auth-port
+      volumes:
+      - name: config
+        configMap:
+          name: "my-conf"
+---
 
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-hash
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: auth-hash
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-hash
+spec:
+  selector:
+    matchLabels:
+      app: auth-hash
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auth-hash
+    spec:
+      containers:
+      - name: redis
+        image: redis
+        ports:
+        - containerPort: 6379
 ---
 apiVersion: v1
 kind: Service
@@ -293,7 +322,9 @@ spec:
     image: bitnami/zookeeper:3.7
     env:
     - name: ALLOW_ANONYMOUS_LOGIN
-      value: "yes"
+      value: "yes" 
+    ports:
+    - containerPort: 2181
 
 ---
 apiVersion: v1
@@ -329,49 +360,60 @@ metadata:
 spec:
   containers:
   - name: notification
-    image: mak9su4roi/notification
+    image: mbilyk/notification:v1.0
     imagePullPolicy: IfNotPresent #Never
     volumeMounts:
       - mountPath: /ucu-bank/configs/main.json
         name: config
         subPath: main.json
         readOnly: true
-      - mountPath: /root/.aws/credentials
-        name: config
-        subPath: credentials
+      - name: secret-creds
         readOnly: true
+        mountPath: "/root/.aws/" 
   volumes:
     - name: config
       configMap:
         name: "my-conf"
+    
+    - name: secret-creds
+      secret:
+        secretName: my-secret
 
 ---
 
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: account
-  labels:
-    app: account
 spec:
-  containers:
-  - name: account
-    image: mak9su4roi/account
-    imagePullPolicy: IfNotPresent #Never
-    volumeMounts:
-      - mountPath: /ucu-bank/configs/main.json
-        name: config
-        subPath: main.json
-        readOnly: true 
-    ports:
-    - containerPort: 54321
-      name: account-port
-  - name: init-mongo
-    image: mongo:5.0.9
-  volumes:
-    - name: config
-      configMap:
-        name: "my-conf"
+  selector:
+    matchLabels:
+      app: account
+  replicas: 3
+  template:
+    metadata:
+      name: account
+      labels:
+        app: account
+    spec:
+      containers:
+      - name: account
+        image: mbilyk/account:v1.0
+        imagePullPolicy: IfNotPresent #Never
+        volumeMounts:
+          - mountPath: /ucu-bank/configs/main.json
+            name: config
+            subPath: main.json
+            readOnly: true 
+        ports:
+        - containerPort: 54321
+          name: account-port
+      - name: init-mongo
+        image: mongo:5.0.9
+      volumes:
+        - name: config
+          configMap:
+            name: "my-conf"
 ---
 apiVersion: v1
 kind: Service
@@ -395,28 +437,36 @@ spec:
     app: transaction
 ---
 
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: transaction
-  labels:
-    app: transaction
 spec:
-  containers:
-  - name: transaction
-    image: mak9su4roi/transaction
-    imagePullPolicy: IfNotPresent #Never
-    ports:
-    - containerPort: 54321
-    volumeMounts:
-      - mountPath: /ucu-bank/configs/main.json
-        name: config
-        subPath: main.json
-        readOnly: true
-  volumes:
-    - name: config
-      configMap:
-        name: "my-conf"
+  selector:
+    matchLabels:
+      app: transaction
+  replicas: 3
+  template:
+    metadata:
+      name: transaction
+      labels:
+        app: transaction
+    spec:
+      containers:
+      - name: transaction
+        image: mbilyk/transaction:v1.0
+        imagePullPolicy: IfNotPresent #Never
+        ports:
+        - containerPort: 54321
+        volumeMounts:
+          - mountPath: /ucu-bank/configs/main.json
+            name: config
+            subPath: main.json
+            readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: "my-conf"
 ---
 apiVersion: v1
 kind: Service
@@ -460,7 +510,7 @@ metadata:
 spec:
   containers:
   - name: credit
-    image: mak9su4roi/credit
+    image: mbilyk/credit:v1.0
     imagePullPolicy: IfNotPresent #Never
     ports:
     - containerPort: 54325 
@@ -491,14 +541,15 @@ kind: Pod
 metadata:
   name: gateway
   labels:
-    app: gateway
+    app: uapi
 spec:
   containers:
   - name: gateway
-    image: mak9su4roi/gateway
+    image: mbilyk/gateway:v1.0
     imagePullPolicy: IfNotPresent #Never
     ports:
     - containerPort: 2020
+      name: gateway
     volumeMounts:
       - mountPath: /ucu-bank/configs/main.json
         name: config
@@ -516,14 +567,117 @@ spec:
         name: "my-conf"
     - name: empty-log-dir
       emptyDir: {} 
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: gateway
+# spec:
+#   ports:
+#   - port: 2020
+#     name: api-port
+#   selector:
+#     app: gateway
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+spec:
+  selector:
+    matchLabels:
+      app: uapi
+  template:
+    metadata:
+      labels:
+        app: uapi
+    spec:
+      containers:
+      - name: ui
+        image: yevhenpanke/ucu24-ui
+        ports:
+        - containerPort: 80
+          name: ui
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway
+  name: uapi
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:951466096062:certificate/1a97ef80-d770-422b-91c9-650def6598fb
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+    # this part will make more sense later
+    external-dns.alpha.kubernetes.io/hostname: ucu24.com
+  labels:
+    app: uapi
 spec:
-  ports:
-  - port: 2020
   selector:
-    app: gateway
+    app: uapi
+  type: LoadBalancer
+  ports:
+  - name: ui
+    port: 80
+  - name: gateway
+    port: 2020
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: external-dns
+rules:
+- apiGroups: [""]
+  resources: ["services","endpoints","pods"]
+  verbs: ["get","watch","list"]
+- apiGroups: ["extensions","networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: external-dns-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-dns
+subjects:
+- kind: ServiceAccount
+  name: external-dns
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+    spec:
+      serviceAccountName: external-dns
+      containers:
+      - name: external-dns
+        image: k8s.gcr.io/external-dns/external-dns:v0.10.2
+        args:
+        - --source=service
+        - --source=ingress
+        - --domain-filter=ucu24.com # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+        - --provider=aws
+        - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+        - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+        - --registry=txt
+        - --txt-owner-id=Z0518291ISNC7TEVF1Y2
+      securityContext:
+        fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
 
