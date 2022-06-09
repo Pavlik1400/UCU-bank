@@ -78,7 +78,7 @@ data:
         "reddis_port": 6379,
         "rpc_address": "credit",
         "rpc_port": 54325,
-        "credit_update_period": 15,
+        "credit_update_period": 150,
         "credit_update_measure": "seconds"
       },
 
@@ -87,7 +87,7 @@ data:
         "reddis_port": 6379,
         "rpc_address": "auth",
         "rpc_port": 54321,
-        "mock_mail": true
+        "mock_mail": false
       },
 
       "mongo": {
